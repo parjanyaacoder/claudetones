@@ -1,0 +1,6 @@
+{
+  "name": "poptunes",
+  "owner": { "name": "Parjanya Shukla" },
+  "description": "popUpi for Claude Code — meme sound effects on launch, every tool call, and errors",
+  "plugins": [{ "name": "poptunes", "source": "./" }]
+}

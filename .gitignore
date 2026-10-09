@@ -1,0 +1,7 @@
+# Ignore additional sound files (keep tracked starter sounds)
+/sounds/*
+!/sounds/error.wav
+!/sounds/fahhhhhhhhhhhhhh.mp3
+!/sounds/launch.wav
+!/sounds/ring.wav
+!/sounds/tf_nemesis.mp3
