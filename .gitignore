@@ -1,7 +1,21 @@
-# Ignore additional sound files (keep tracked starter sounds)
+# The sounds/ library holds ~1,800 clips we draw packs from — way too big for git.
+# Track only the clips the 7 universal events actually use: 1 free + 1 paid each.
 /sounds/*
-!/sounds/error.wav
-!/sounds/fahhhhhhhhhhhhhh.mp3
+# --- free tier (ships with the mod) ---
 !/sounds/launch.wav
 !/sounds/ring.wav
+!/sounds/timer.mp3
+!/sounds/keyboard-click.mp3
+!/sounds/error.wav
+!/sounds/ding-sound-effect-1.mp3
 !/sounds/tf_nemesis.mp3
+# --- paid tier (Pro pack) ---
+# NOTE: tracked here for the MVP only. At launch these move to the private CDN
+# (Cloudflare R2) and come out of the repo — see the anti-piracy plan.
+!/sounds/windows-xp-startup.mp3
+!/sounds/c418-stranger-think.mp3
+!/sounds/jeopardy-themelq.mp3
+!/sounds/counter-strike-ok-lets-go.mp3
+!/sounds/metal-gear-alert.mp3
+!/sounds/fahhhhhhhhhhhhhh.mp3
+!/sounds/gta-san-andreas-mission-complete.mp3

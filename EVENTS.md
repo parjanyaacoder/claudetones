@@ -1,74 +1,46 @@
 # poptunes — Events
 
-Every place poptunes *can* play a sound. An event does **not** name a file — it asks
-for one or more **moods**. At play time we pick a random clip tagged with a matching
-mood (see `CLIPS.md`). So a single event can have many apt clips and rotate between
-them, and a new clip joins an event just by carrying its mood.
+The seven events every developer hits in a session, plus one manual button. An event
+does **not** name a file — it asks for one or more **moods**. At play time we pick a
+random *entitled* clip tagged with a matching mood (see `CLIPS.md`): the free clip by
+default, and the paid clip instead once Pro is unlocked. A new clip joins an event
+just by carrying its mood.
 
 - **Moods** are the shared vocabulary between this file and `CLIPS.md` — defined once in `CLIPS.md`.
-- **Accepted moods** are listed in priority order: if no clip of the first mood exists, fall back to the next.
-- **Status:** `LIVE` = wired in the mod — it plays as soon as a clip carries one of its moods (silent until then) · `PLANNED` = not wired yet.
-- **Frequency** matters more than anything: a sound on a *very frequent* event becomes noise fast. Keep those pools empty (or use `/poptunes` to mute) until you want them. All sound is killable with `/poptunes`.
+- **Accepted moods** are listed in priority order: if no entitled clip of the first mood exists, fall back to the next.
+- **Tier:** `free` ships in the mod; `paid` activates after `/poptunes unlock <key>`.
+- **Frequency** matters more than anything: a sound on a *very frequent* event becomes noise fast. `terminal_command` and `tool_call` fire constantly, so they play at a lower gain (`GAIN` in `logic.ts`) — and everything is killable with `/poptunes`.
 
-## Lifecycle — the session
+## The 7 universal events
 
-| Event key | Engine hook | Fires when | Frequency | Accepted moods | Status |
-|---|---|---|---|---|---|
-| `boot` | `session.start` | Claude Code launches | once/session | `boot` | **LIVE** |
-| `shutdown` | `session.end` | you quit / session ends | once/session | `shutdown`, `boot` | **LIVE** |
-| `compact` | `session.compact` | context is compacted (the "memory wipe") | rare | `whoosh` | **LIVE** |
-
-## Your input
-
-| Event key | Engine hook | Fires when | Frequency | Accepted moods | Status |
-|---|---|---|---|---|---|
-| `submit` | `prompt.submit` | you send a prompt | frequent | `hype` | PLANNED |
-| `mention` | `prompt.mention` | you @-mention a file/agent | occasional | `pop` | PLANNED *(maybe skip)* |
-
-## Claude working & replying
-
-| Event key | Engine hook | Fires when | Frequency | Accepted moods | Status |
-|---|---|---|---|---|---|
-| `think` | `turn.start` | Claude begins working on your turn | frequent | `think` | **LIVE** |
-| `done` | `turn.complete` | Claude finishes its reply | frequent | `reward` | **LIVE** |
-| `interrupt` | `turn.abort` | you stop Claude (Esc) | occasional | `scratch`, `sad` | **LIVE** |
-| `permission` | `tool.check` | a permission prompt appears | occasional | `alert` | **LIVE** |
-
-## Tool calls
-
-| Event key | Engine hook | Fires when | Frequency | Accepted moods | Status |
-|---|---|---|---|---|---|
-| `tool` | `tool.call` | any tool call begins | **very frequent** | `ring` | **LIVE** |
-| `error` | `tool.call` → result `isError` | a tool/command fails | occasional | `error`, `sad` | **LIVE** |
-| `edit` | `tool.call {tool: Edit/Write}` | a file is edited | frequent | `type` | PLANNED |
-| `search` | `tool.call {tool: WebSearch}` | a web search runs | occasional | `connect` | PLANNED |
-
-## Smart (inspect the Bash command / result text)
-
-| Event key | How detected | Fires when | Frequency | Accepted moods | Status |
-|---|---|---|---|---|---|
-| `commit` | Bash cmd matches `git commit` | a commit lands | occasional | `kaching`, `reward` | PLANNED |
-| `push` | Bash cmd matches `git push` | a push goes out | occasional | `whoosh`, `hype` | PLANNED |
-| `tests-pass` | test cmd result success | tests go green | occasional | `reward` | PLANNED |
-| `tests-fail` | test cmd result failure | tests go red | occasional | `sad` | PLANNED |
-| `danger` | Bash cmd matches destructive pattern (`rm -rf`, force-push…) | a risky command runs | rare | `alert`, `destructive` | PLANNED |
-
-## Agents
-
-| Event key | Engine hook | Fires when | Frequency | Accepted moods | Status |
-|---|---|---|---|---|---|
-| `spawn` | `agent.spawn` | a subagent/worker launches | occasional | `hype` | PLANNED |
+| # | Event key | Engine hook | Fires when | Frequency | Accepted moods | 🆓 Free | 💎 Pro |
+|---|---|---|---|---|---|---|---|
+| 1 | `session_start` | `session.start` | a session opens | once/session | `boot` | `launch.wav` | `windows-xp-startup.mp3` |
+| 2 | `reasoning` | `turn.start` | Claude begins working on your turn | frequent | `think` | `ring.wav` | `c418-stranger-think.mp3` |
+| 3 | `long_reasoning` | `turn.start` + 8s timer | a turn is still going after 8s | occasional | `ponder` | `timer.mp3` | `jeopardy-themelq.mp3` |
+| 4 | `terminal_command` | `tool.call {tool: Bash}` | a shell command runs | **very frequent** | `type` | `keyboard-click.mp3` | `counter-strike-ok-lets-go.mp3` |
+| 5 | `tool_call` | `tool.call` (any other tool) | a non-Bash tool runs | **very frequent** | `ring` | `ring.wav` | `metal-gear-alert.mp3` |
+| 6 | `error` | `tool.call` → result `isError` | a tool/command fails | occasional | `error`, `sad` | `error.wav` | `fahhhhhhhhhhhhhh.mp3` |
+| 7 | `done` | `turn.complete` | Claude finishes its reply | frequent | `reward` | `ding-sound-effect-1.mp3` | `gta-san-andreas-mission-complete.mp3` |
 
 ## Manual (you fire them — a slash command)
 
-| Event key | Trigger | Fires when | Accepted moods | Status |
-|---|---|---|---|---|
-| `oops` | `/oops` | you caught Claude being wrong | `sad` | **LIVE** |
-| `soundboard` | `/siuuu`, `/bruh`, `/areybhai`, … | on demand | `meme` | PLANNED |
+| Event key | Trigger | Fires when | Accepted moods | 🆓 Free | 💎 Pro |
+|---|---|---|---|---|---|
+| `oops` | `/oops` | you caught Claude being wrong | `sad` | `tf_nemesis.mp3` | `fahhhhhhhhhhhhhh.mp3` |
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `/poptunes` | toggle mute on/off (persists across sessions) |
+| `/poptunes unlock <key>` | verify a key and activate the Pro pack |
+| `/oops` | play the sad sound, even while muted |
 
 ---
 
-### Notes on frequency (so it stays fun, not maddening)
-- **Never wire:** `turn.step`, `prompt.edit` — they fire constantly.
-- **Wired but hold the clips:** `tool`, `think`, `done` fire a lot. They're wired, but keep their mood pools empty (no `ring`/`think`/`reward` clip, or mute) until you actually want them — otherwise it's a wall of sound.
-- **Safe to fill now:** `boot`, `shutdown`, `error`, `oops`, `interrupt`, `compact`, `permission` — rare enough to delight.
+### Notes
+- **Choosing free vs. paid:** with Pro locked only `free` clips are eligible; once `/poptunes unlock` stores a license, a `paid` clip wins over its free sibling for the same mood.
+- **`long_reasoning`** is scheduled from `turn.start` with `$.clock.after(8000)` and cancelled on `turn.complete` / `turn.abort`, so the tick only lands on a genuinely slow turn.
+- **Never wired:** `turn.step`, `prompt.edit` — they fire constantly.
+- **Deliberately quiet:** `terminal_command` (gain 0.5) and `tool_call` (gain 0.55). Everything else plays at 1.

@@ -1,5 +1,6 @@
 {
   "name": "poptunes",
-  "version": "0.1.0",
-  "description": "popUpi for Claude Code — meme sound effects on launch, every tool call, and errors"
+  "version": "0.2.0",
+  "description": "Sound effects for Claude Code — 7 universal events (launch, thinking, shell, tools, errors, done), free + Pro packs, /poptunes config",
+  "author": { "name": "Parjanya Shukla", "url": "https://github.com/parjanyaacoder" }
 }
