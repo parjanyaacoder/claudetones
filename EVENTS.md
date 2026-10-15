@@ -1,4 +1,4 @@
-# poptunes — Events
+# claudetones — Events
 
 The seven events every developer hits in a session, plus one manual button. An event
 does **not** name a file — it asks for one or more **moods**. At play time we pick a
@@ -8,8 +8,8 @@ just by carrying its mood.
 
 - **Moods** are the shared vocabulary between this file and `CLIPS.md` — defined once in `CLIPS.md`.
 - **Accepted moods** are listed in priority order: if no entitled clip of the first mood exists, fall back to the next.
-- **Tier:** `free` ships in the mod; `paid` activates after `/poptunes unlock <key>`.
-- **Frequency** matters more than anything: a sound on a *very frequent* event becomes noise fast. `terminal_command` and `tool_call` fire constantly, so they play at a lower gain (`GAIN` in `logic.ts`) — and everything is killable with `/poptunes`.
+- **Tier:** `free` ships in the mod; `paid` activates after `/claudetones unlock <key>`.
+- **Frequency** matters more than anything: a sound on a *very frequent* event becomes noise fast. `terminal_command` and `tool_call` fire constantly, so they play at a lower gain (`GAIN` in `logic.ts`) — and everything is killable with `/claudetones`.
 
 ## The 7 universal events
 
@@ -33,14 +33,14 @@ just by carrying its mood.
 
 | Command | What it does |
 |---|---|
-| `/poptunes` | toggle mute on/off (persists across sessions) |
-| `/poptunes unlock <key>` | verify a key and activate the Pro pack |
+| `/claudetones` | toggle mute on/off (persists across sessions) |
+| `/claudetones unlock <key>` | verify a key and activate the Pro pack |
 | `/oops` | play the sad sound, even while muted |
 
 ---
 
 ### Notes
-- **Choosing free vs. paid:** with Pro locked only `free` clips are eligible; once `/poptunes unlock` stores a license, a `paid` clip wins over its free sibling for the same mood.
+- **Choosing free vs. paid:** with Pro locked only `free` clips are eligible; once `/claudetones unlock` stores a license, a `paid` clip wins over its free sibling for the same mood.
 - **`long_reasoning`** is scheduled from `turn.start` with `$.clock.after(8000)` and cancelled on `turn.complete` / `turn.abort`, so the tick only lands on a genuinely slow turn.
 - **Never wired:** `turn.step`, `prompt.edit` — they fire constantly.
 - **Deliberately quiet:** `terminal_command` (gain 0.5) and `tool_call` (gain 0.55). Everything else plays at 1.

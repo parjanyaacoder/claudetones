@@ -17,7 +17,7 @@ type DodoEvent = {
 }
 
 /**
- * Dodo Payments webhook. On a successful payment we mint a POPTUNES-XXXX-YYYY key,
+ * Dodo Payments webhook. On a successful payment we mint a CLAUDETONES-XXXX-YYYY key,
  * store it, and email it if an email provider is configured. The buyer can also
  * retrieve it from /success (which reads the payment_id Dodo appends to return_url).
  *

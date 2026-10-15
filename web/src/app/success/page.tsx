@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import ClaimLicense from '@/components/ClaimLicense'
 
 export const metadata = {
-  title: 'poptunes — your Pro pack',
+  title: 'claudetones — your Pro pack',
 }
 
 type SearchParams = { [key: string]: string | string[] | undefined }
@@ -13,7 +13,7 @@ export default function SuccessPage(props: { searchParams: Promise<SearchParams>
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-6 py-16">
       <Link href="/" className="mb-8 font-mono text-sm text-muted hover:text-white">
-        ← poptunes
+        ← claudetones
       </Link>
       <h1 className="mb-3 text-3xl font-bold text-white">You’re in. 🎉</h1>
       <p className="mb-8 text-muted">
@@ -25,8 +25,8 @@ export default function SuccessPage(props: { searchParams: Promise<SearchParams>
       </Suspense>
       <p className="mt-10 text-xs text-muted">
         Trouble? Email{' '}
-        <a className="underline" href="mailto:support@poptunes.dev">
-          support@poptunes.dev
+        <a className="underline" href="mailto:support@claudetones.dev">
+          support@claudetones.dev
         </a>
         .
       </p>

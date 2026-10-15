@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# poptunes demo reel — walks a session through the 7 universal events in order,
+# claudetones demo reel — walks a session through the 7 universal events in order,
 # playing each event's current Free clip. It mirrors the mood->clip mapping in
 # hooks/logic.ts, so it shows exactly what you'd hear live. Pass --pro to hear the
-# 💎 Pro clips instead (the ones /poptunes unlock turns on).
+# 💎 Pro clips instead (the ones /claudetones unlock turns on).
 #
-# Run it:        bash ~/Desktop/poptunes/demo.sh
-# Pro clips:     bash ~/Desktop/poptunes/demo.sh --pro
-# In a new tab:  bash ~/Desktop/poptunes/demo.sh --new-window
+# Run it:        bash ~/Desktop/claudetones/demo.sh
+# Pro clips:     bash ~/Desktop/claudetones/demo.sh --pro
+# In a new tab:  bash ~/Desktop/claudetones/demo.sh --new-window
 set -u
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -35,7 +35,7 @@ play() {
 clear
 cat <<BANNER
   ============================================
-     poptunes  —  demo reel  [${MODE}]
+     claudetones  —  demo reel  [${MODE}]
      the 7 universal events
   ============================================
 BANNER
@@ -82,4 +82,4 @@ play tf_nemesis.mp3 fahhhhhhhhhhhhhh.mp3
 pause
 
 printf '\n\033[1m[done] demo complete\033[0m\n'
-sub "Free clips ship in the mod; Pro clips turn on with: /poptunes unlock POPTUNES-XXXX-YYYY"
+sub "Free clips ship in the mod; Pro clips turn on with: /claudetones unlock CLAUDETONES-XXXX-YYYY"

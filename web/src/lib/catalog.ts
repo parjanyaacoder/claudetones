@@ -128,11 +128,11 @@ export function soundsFor(event: EventKey): { free: Sound; pro: Sound } {
 }
 
 export const PRO_PRICE = process.env.NEXT_PUBLIC_PRO_PRICE ?? '$12'
-export const GITHUB_URL = 'https://github.com/parjanyaacoder/poptunes'
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://poptunes.dev'
+export const GITHUB_URL = 'https://github.com/parjanyaacoder/claudetones'
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://claudetones.dev'
 
 /** Commands shown in the install CTA. */
 export const INSTALL_COMMANDS = [
-  'claude plugin marketplace add parjanyaacoder/poptunes',
-  'claude plugin install poptunes@poptunes',
+  'claude plugin marketplace add parjanyaacoder/claudetones',
+  'claude plugin install claudetones@claudetones',
 ]

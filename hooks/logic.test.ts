@@ -3,11 +3,11 @@ import { test, expect } from 'claude-code/testing'
 import {
   CLIPS,
   EVENTS,
-  POPTUNES_USAGE,
+  CLAUDETONES_USAGE,
   gainFor,
   isLicenseKeyFormat,
   normalizeLicenseKey,
-  parsePoptunes,
+  parseClaudetones,
   pickClip,
   type EventKey,
   type Mood,
@@ -98,20 +98,20 @@ test('gain is in range and the constant calls are quieter than a one-off stab', 
   expect(gainFor('tool_call')).toBeLessThan(gainFor('done'))
 })
 
-test('parsePoptunes: empty toggles, unlock carries the key, the rest explains itself', $ => {
-  expect(parsePoptunes('')).toEqual({ kind: 'toggle' })
-  expect(parsePoptunes('   ')).toEqual({ kind: 'toggle' })
-  expect(parsePoptunes('unlock POPTUNES-ABCD-1234')).toEqual({ kind: 'unlock', key: 'POPTUNES-ABCD-1234' })
-  expect(parsePoptunes('UNLOCK poptunes-abcd-1234').kind).toBe('unlock')
-  expect(parsePoptunes('unlock').kind).toBe('error')
-  expect(parsePoptunes('frobnicate')).toEqual({ kind: 'error', message: POPTUNES_USAGE })
+test('parseClaudetones: empty toggles, unlock carries the key, the rest explains itself', $ => {
+  expect(parseClaudetones('')).toEqual({ kind: 'toggle' })
+  expect(parseClaudetones('   ')).toEqual({ kind: 'toggle' })
+  expect(parseClaudetones('unlock CLAUDETONES-ABCD-1234')).toEqual({ kind: 'unlock', key: 'CLAUDETONES-ABCD-1234' })
+  expect(parseClaudetones('UNLOCK claudetones-abcd-1234').kind).toBe('unlock')
+  expect(parseClaudetones('unlock').kind).toBe('error')
+  expect(parseClaudetones('frobnicate')).toEqual({ kind: 'error', message: CLAUDETONES_USAGE })
 })
 
 test('license keys are normalized to upper case and format-checked', $ => {
-  expect(normalizeLicenseKey('  poptunes-abcd-1234 ')).toBe('POPTUNES-ABCD-1234')
-  expect(isLicenseKeyFormat('POPTUNES-ABCD-1234')).toBe(true)
-  expect(isLicenseKeyFormat('poptunes-abcd-1234')).toBe(true)
-  expect(isLicenseKeyFormat('POPTUNES-ABC-1234')).toBe(false) // one group too short
-  expect(isLicenseKeyFormat('POPTUNES-ABCD-123')).toBe(false)
+  expect(normalizeLicenseKey('  claudetones-abcd-1234 ')).toBe('CLAUDETONES-ABCD-1234')
+  expect(isLicenseKeyFormat('CLAUDETONES-ABCD-1234')).toBe(true)
+  expect(isLicenseKeyFormat('claudetones-abcd-1234')).toBe(true)
+  expect(isLicenseKeyFormat('CLAUDETONES-ABC-1234')).toBe(false) // one group too short
+  expect(isLicenseKeyFormat('CLAUDETONES-ABCD-123')).toBe(false)
   expect(isLicenseKeyFormat('nope')).toBe(false)
 })

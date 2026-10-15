@@ -1,6 +1,6 @@
 {
-  "name": "poptunes",
+  "name": "claudetones",
   "owner": { "name": "Parjanya Shukla" },
-  "description": "Sound effects for Claude Code — 7 universal events, free + Pro packs, /poptunes config",
-  "plugins": [{ "name": "poptunes", "source": "./" }]
+  "description": "Sound effects for Claude Code — 7 universal events, free + Pro packs, /claudetones config",
+  "plugins": [{ "name": "claudetones", "source": "./" }]
 }

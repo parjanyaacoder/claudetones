@@ -6,14 +6,14 @@ import {
   gainFor,
   isLicenseKeyFormat,
   normalizeLicenseKey,
-  parsePoptunes,
+  parseClaudetones,
   pickClip,
   type EventKey,
 } from './logic'
 
-// popUpi, but for Claude Code. Each engine event maps to a poptunes EVENT key; the
+// popUpi, but for Claude Code. Each engine event maps to a claudetones EVENT key; the
 // pure selector (logic.ts) turns that into a random mood-matched clip, or nothing.
-// Seven universal events cover a whole session; /poptunes mutes (and unlocks Pro);
+// Seven universal events cover a whole session; /claudetones mutes (and unlocks Pro);
 // /oops is a manual button that plays even muted. Every play is best-effort: a sound
 // glitch (or a surface with no player) must never disturb the tool or the turn.
 
@@ -24,7 +24,7 @@ const LONG_REASONING_MS = 8000
 // Step 2 stands up the real backend (Next.js /api/verify). Until it exists this lets
 // a well-formed key unlock locally so the flow is demoable end-to-end — remove it.
 const OFFLINE_UNLOCK = true
-const VERIFY_URL = 'https://poptunes.dev/api/verify'
+const VERIFY_URL = 'https://claudetones.dev/api/verify'
 
 // The live "still thinking" timer for the current turn. Reset on every reload; the
 // engine tears the old timer down with the old module.
@@ -32,7 +32,7 @@ let ponder: { cancel: () => void } | null = null
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'poptunes', description: 'Mute poptunes, or unlock the Pro pack (/poptunes unlock <key>)' })
+    await $.command.register({ name: 'claudetones', description: 'Mute claudetones, or unlock the Pro pack (/claudetones unlock <key>)' })
     await $.command.register({ name: 'oops', description: 'Caught Claude being wrong — play the sad sound' })
     await fireIfOn($, 'session_start')
     return next(e)
@@ -70,24 +70,24 @@ export const register: Register = on => {
     return r
   }).catch(($, e, next) => next(e)) // fail open: a sound must never break a tool call
 
-  on('command.run', { command: 'poptunes' }, async ($, e) => {
-    const action = parsePoptunes(e.args ?? '')
+  on('command.run', { command: 'claudetones' }, async ($, e) => {
+    const action = parseClaudetones(e.args ?? '')
     switch (action.kind) {
       case 'toggle': {
         const wasMuted = await muted($)
         await $.store.set(MUTE_KEY, !wasMuted)
-        return { text: wasMuted ? '🔊 poptunes on — ring the bells, captain' : '🔇 poptunes muted' }
+        return { text: wasMuted ? '🔊 claudetones on — ring the bells, captain' : '🔇 claudetones muted' }
       }
       case 'unlock': {
         if (!isLicenseKeyFormat(action.key)) {
-          return { text: '❌ That does not look like a key. They look like POPTUNES-XXXX-YYYY.' }
+          return { text: '❌ That does not look like a key. They look like CLAUDETONES-XXXX-YYYY.' }
         }
         const key = normalizeLicenseKey(action.key)
         if (!(await verifyLicense($, key))) {
-          return { text: '❌ Invalid license key. Grab one at https://poptunes.dev' }
+          return { text: '❌ Invalid license key. Grab one at https://claudetones.dev' }
         }
         await $.store.set(LICENSE_KEY, key)
-        return { text: '🎉 Poptunes Pro unlocked! Enjoy the good stuff.' }
+        return { text: '🎉 Claudetones Pro unlocked! Enjoy the good stuff.' }
       }
       default:
         return { text: action.message }

@@ -1,10 +1,10 @@
-# poptunes — Clips
+# claudetones — Clips
 
 The sound library. Each clip is a file in `sounds/` tagged with one or more **moods**
 and a **tier** (`free` or `paid`). An event (see `EVENTS.md`) asks for a mood; at play
-time poptunes picks a **random** entitled clip tagged with that mood. So:
+time claudetones picks a **random** entitled clip tagged with that mood. So:
 
-- **Free vs. paid:** only `free` clips play until `/poptunes unlock` stores a license; then a `paid` clip replaces its free sibling for the same mood.
+- **Free vs. paid:** only `free` clips play until `/claudetones unlock` stores a license; then a `paid` clip replaces its free sibling for the same mood.
 - **Many clips, one mood:** tag several clips the same way → they rotate at random.
 - **Adding a clip later:** drop the file in `sounds/`, add a row below with its mood(s) and tier. It instantly becomes eligible for every event that accepts that mood — no code change. *That tag is the "which event does this belong to" decision.*
 - A clip can carry several moods and play across several events (e.g. a `sad` clip serves `error` and `oops`).
@@ -70,4 +70,4 @@ the vibe. New clips flow straight into themed Pro packs.
 1. An event resolves its **accepted moods** (priority order, from `EVENTS.md`).
 2. Collect the **entitled** clips for the first mood: `free` only, or `free`+`paid` when Pro is unlocked; a `paid` clip wins over its free sibling.
 3. Pick one at **random** and play it. If none, fall through to the next accepted mood.
-4. `/poptunes` mutes everything; the manual `/oops` plays even while muted.
+4. `/claudetones` mutes everything; the manual `/oops` plays even while muted.

@@ -1,4 +1,4 @@
-// Pure config + selection for poptunes. No engine (`$`) or 'claude-code' import, so
+// Pure config + selection for claudetones. No engine (`$`) or 'claude-code' import, so
 // it is unit-testable and shared by register.ts and the test file.
 //
 // HOW IT WORKS: an event asks for one or more MOODS (priority order). Each CLIP is
@@ -46,7 +46,7 @@ export type ClipEntry = { file: string; moods: Mood[]; tier: Tier }
 
 // The sound library — single source of truth, mirror of CLIPS.md "in the box".
 // `file` is relative to the mod dir, as $.audio.play({ asset }) wants it. Free clips
-// ship with the mod; paid clips activate once /poptunes unlock succeeds.
+// ship with the mod; paid clips activate once /claudetones unlock succeeds.
 export const CLIPS: ClipEntry[] = [
   // session_start
   { file: 'sounds/launch.wav', moods: ['boot'], tier: 'free' },
@@ -93,7 +93,7 @@ export const GAIN: Partial<Record<EventKey, number>> = {
 }
 
 export const MUTE_KEY = 'muted'
-export const LICENSE_KEY = 'poptunes_license'
+export const LICENSE_KEY = 'claudetones_license'
 
 export function gainFor(event: EventKey): number {
   return GAIN[event] ?? 1
@@ -124,14 +124,14 @@ export function pickClip(event: EventKey, options: PickOptions = {}): string | n
   return null
 }
 
-// ---- /poptunes command ----------------------------------------------------------
+// ---- /claudetones command ----------------------------------------------------------
 
-export const POPTUNES_USAGE =
-  'poptunes commands:\n' +
-  '  /poptunes                     toggle mute\n' +
-  '  /poptunes unlock <key>        activate the Pro pack'
+export const CLAUDETONES_USAGE =
+  'claudetones commands:\n' +
+  '  /claudetones                     toggle mute\n' +
+  '  /claudetones unlock <key>        activate the Pro pack'
 
-export const LICENSE_PATTERN = /^POPTUNES-[A-Z0-9]{4}-[A-Z0-9]{4}$/
+export const LICENSE_PATTERN = /^CLAUDETONES-[A-Z0-9]{4}-[A-Z0-9]{4}$/
 
 export function normalizeLicenseKey(key: string): string {
   return key.trim().toUpperCase()
@@ -141,21 +141,21 @@ export function isLicenseKeyFormat(key: string): boolean {
   return LICENSE_PATTERN.test(normalizeLicenseKey(key))
 }
 
-export type PoptunesAction =
+export type ClaudetonesAction =
   | { kind: 'toggle' }
   | { kind: 'unlock'; key: string }
   | { kind: 'error'; message: string }
 
-// Parse the text after `/poptunes`. Pure, so the command surface is testable without
+// Parse the text after `/claudetones`. Pure, so the command surface is testable without
 // the engine: `''` toggles, `unlock <key>` unlocks, anything else explains itself.
-export function parsePoptunes(args: string): PoptunesAction {
+export function parseClaudetones(args: string): ClaudetonesAction {
   const trimmed = args.trim()
   if (trimmed === '') return { kind: 'toggle' }
 
   const [head = '', ...rest] = trimmed.split(/\s+/)
   if (head.toLowerCase() === 'unlock') {
     const key = rest.join(' ').trim()
-    return key ? { kind: 'unlock', key } : { kind: 'error', message: 'Give me a key: /poptunes unlock POPTUNES-XXXX-YYYY' }
+    return key ? { kind: 'unlock', key } : { kind: 'error', message: 'Give me a key: /claudetones unlock CLAUDETONES-XXXX-YYYY' }
   }
-  return { kind: 'error', message: POPTUNES_USAGE }
+  return { kind: 'error', message: CLAUDETONES_USAGE }
 }

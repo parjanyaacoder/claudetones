@@ -1,11 +1,11 @@
-# poptunes — web
+# claudetones — web
 
-The marketing site + license backend for the [poptunes](../) Claude Code plugin.
+The marketing site + license backend for the [claudetones](../) Claude Code plugin.
 
 - **Landing page** with an A/B soundboard (free vs. Pro for all 7 events)
 - **Checkout** through Dodo Payments
-- **`/api/webhook`** — mints a `POPTUNES-XXXX-YYYY` key on `payment.succeeded`
-- **`/api/verify`** — the endpoint the plugin calls from `/poptunes unlock`
+- **`/api/webhook`** — mints a `CLAUDETONES-XXXX-YYYY` key on `payment.succeeded`
+- **`/api/verify`** — the endpoint the plugin calls from `/claudetones unlock`
 - **`/success`** — reveals the key after purchase and shows the unlock command
 
 It runs with **zero configuration** in development (a local JSON store and a dev
@@ -28,7 +28,7 @@ curl -s -X POST localhost:3000/api/dev/mint | jq -r .key
 # verify it (this is what the plugin does)
 curl -s -X POST localhost:3000/api/verify \
   -H 'content-type: application/json' \
-  -d '{"key":"POPTUNES-XXXX-YYYY"}'
+  -d '{"key":"CLAUDETONES-XXXX-YYYY"}'
 ```
 
 ## Environment

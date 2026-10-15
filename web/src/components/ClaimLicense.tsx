@@ -100,8 +100,8 @@ export default function ClaimLicense({
         <p className="text-pop">{message}</p>
         <p className="text-sm text-muted">
           If you were charged, email{' '}
-          <a className="underline" href="mailto:support@poptunes.dev">
-            support@poptunes.dev
+          <a className="underline" href="mailto:support@claudetones.dev">
+            support@claudetones.dev
           </a>{' '}
           with your receipt and we’ll send your key.
         </p>
@@ -123,9 +123,9 @@ export default function ClaimLicense({
         <p className="mb-2 text-sm text-muted">Unlock it inside Claude Code:</p>
         <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-ink px-4 py-3">
           <code className="font-mono text-sm text-mint">
-            /poptunes unlock {key}
+            /claudetones unlock {key}
           </code>
-          <CopyButton value={`/poptunes unlock ${key}`} label="Copy command" />
+          <CopyButton value={`/claudetones unlock ${key}`} label="Copy command" />
         </div>
       </div>
     </div>

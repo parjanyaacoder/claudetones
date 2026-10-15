@@ -15,7 +15,7 @@ function Logo() {
         <span className="h-3.5 w-0.5 rounded-full bg-pop" />
         <span className="h-1.5 w-0.5 rounded-full bg-pop" />
       </span>
-      <span className="font-semibold tracking-tight text-white">poptunes</span>
+      <span className="font-semibold tracking-tight text-white">claudetones</span>
     </span>
   )
 }
@@ -24,7 +24,7 @@ function Nav() {
   return (
     <header className="sticky top-0 z-40 border-b border-line/80 bg-ink/80 backdrop-blur">
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
-        <Link href="/" aria-label="poptunes home">
+        <Link href="/" aria-label="claudetones home">
           <Logo />
         </Link>
         <div className="hidden items-center gap-6 text-sm text-muted sm:flex">
@@ -87,7 +87,7 @@ function Hero() {
         .
       </h1>
       <p className="mt-6 max-w-2xl text-lg text-muted">
-        poptunes plays a sound at every beat of a session — a chime when it opens, a tick
+        claudetones plays a sound at every beat of a session — a chime when it opens, a tick
         while Claude thinks, a ding when it&apos;s done, and a sting the moment something
         breaks. Seven events, zero config.
       </p>
@@ -149,12 +149,12 @@ function HowItWorks() {
     {
       n: '1',
       title: 'Install the plugin',
-      body: 'Two commands add the marketplace and install poptunes. No accounts, no config files.',
+      body: 'Two commands add the marketplace and install claudetones. No accounts, no config files.',
     },
     {
       n: '2',
       title: 'It scores itself',
-      body: 'poptunes hooks the session lifecycle and plays the right sound for each event automatically — free sounds by default.',
+      body: 'claudetones hooks the session lifecycle and plays the right sound for each event automatically — free sounds by default.',
     },
     {
       n: '3',
@@ -194,7 +194,7 @@ function Pricing() {
               'All 7 events covered',
               'One free sound per event',
               'Session lifecycle + tool calls + errors',
-              '/poptunes mute built in',
+              '/claudetones mute built in',
             ].map(item => (
               <li key={item} className="flex gap-2">
                 <span className="text-mint">✓</span>
@@ -246,7 +246,7 @@ function Faq() {
   const items = [
     {
       q: 'Is this an MCP server?',
-      a: 'No. poptunes is a pure Claude Code plugin — it hooks the session lifecycle and plays audio locally. Nothing runs in the cloud.',
+      a: 'No. claudetones is a pure Claude Code plugin — it hooks the session lifecycle and plays audio locally. Nothing runs in the cloud.',
     },
     {
       q: 'Will it slow Claude down?',
@@ -299,14 +299,14 @@ function Footer() {
           <a className="hover:text-white" href={GITHUB_URL} target="_blank" rel="noreferrer">
             GitHub
           </a>
-          <a className="hover:text-white" href="mailto:support@poptunes.dev">
+          <a className="hover:text-white" href="mailto:support@claudetones.dev">
             Support
           </a>
         </div>
       </div>
       <div className="mx-auto max-w-5xl px-6 pb-10">
         <p className="text-xs leading-relaxed text-muted/80">
-          poptunes is an independent project and is not affiliated with, endorsed by, or
+          claudetones is an independent project and is not affiliated with, endorsed by, or
           sponsored by any game studio, film, or music rights holder. Clip names are used
           descriptively. Pro purchasers license the software and the service of sourcing
           and organizing the clips.
