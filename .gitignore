@@ -1,3 +1,33 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.*
+
+# Next.js & Build
+.next/
+/out/
+/build/
+/dist/
+
+# Environment files
+.env*
+!.env.example
+
+# Local data & logs
+/.data/
+*.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Vercel & IDE
+.vercel/
+.DS_Store
+*.pem
+*.tsbuildinfo
+next-env.d.ts
+
 # The sounds/ library holds ~1,800 clips we draw packs from — way too big for git.
 # Track only the clips the 7 universal events actually use: 1 free + 1 paid each.
 /sounds/*
