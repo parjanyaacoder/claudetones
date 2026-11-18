@@ -39,13 +39,11 @@ next-env.d.ts
 !/sounds/error.wav
 !/sounds/ding-sound-effect-1.mp3
 !/sounds/tf_nemesis.mp3
-# --- paid tier (Pro pack) ---
-# NOTE: tracked here for the MVP only. At launch these move to the private CDN
-# (Cloudflare R2) and come out of the repo — see the anti-piracy plan.
-!/sounds/windows-xp-startup.mp3
-!/sounds/c418-stranger-think.mp3
-!/sounds/jeopardy-themelq.mp3
-!/sounds/counter-strike-ok-lets-go.mp3
-!/sounds/metal-gear-alert.mp3
-!/sounds/fahhhhhhhhhhhhhh.mp3
-!/sounds/gta-san-andreas-mission-complete.mp3
+# --- paid tier (Pro pack - CC0 / Royalty-Free) ---
+!/sounds/pro-session-start.mp3
+!/sounds/pro-reasoning.mp3
+!/sounds/pro-long-reasoning.mp3
+!/sounds/pro-terminal-command.mp3
+!/sounds/pro-tool-call.mp3
+!/sounds/pro-error.mp3
+!/sounds/pro-done.mp3

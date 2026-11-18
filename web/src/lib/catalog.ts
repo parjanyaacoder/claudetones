@@ -98,25 +98,25 @@ export type Sound = {
 export const SOUNDS: Sound[] = [
   // session_start
   { event: 'session_start', tier: 'free', name: 'Launch', src: '/sounds/launch.wav', vibe: 'ascending chime' },
-  { event: 'session_start', tier: 'pro', name: 'Windows XP Startup', src: '/sounds/windows-xp-startup.mp3', vibe: 'the classic boot' },
+  { event: 'session_start', tier: 'pro', name: 'Synth Power-Up', src: '/sounds/pro-session-start.mp3', vibe: 'electronic startup chord' },
   // reasoning
   { event: 'reasoning', tier: 'free', name: 'Ring', src: '/sounds/ring.wav', vibe: 'soft blip' },
-  { event: 'reasoning', tier: 'pro', name: 'C418 — Stranger Think', src: '/sounds/c418-stranger-think.mp3', vibe: 'contemplative' },
+  { event: 'reasoning', tier: 'pro', name: 'Crystal Ambient', src: '/sounds/pro-reasoning.mp3', vibe: 'contemplative chime' },
   // long_reasoning
   { event: 'long_reasoning', tier: 'free', name: 'Timer', src: '/sounds/timer.mp3', vibe: 'clock tick' },
-  { event: 'long_reasoning', tier: 'pro', name: 'Jeopardy Think', src: '/sounds/jeopardy-themelq.mp3', vibe: 'thinking music' },
+  { event: 'long_reasoning', tier: 'pro', name: 'Fast Countdown', src: '/sounds/pro-long-reasoning.mp3', vibe: 'rapid ticker countdown' },
   // terminal_command
   { event: 'terminal_command', tier: 'free', name: 'Keyboard Click', src: '/sounds/keyboard-click.mp3', vibe: 'keystroke' },
-  { event: 'terminal_command', tier: 'pro', name: 'CS — "OK Let\'s Go"', src: '/sounds/counter-strike-ok-lets-go.mp3', vibe: 'deploy' },
+  { event: 'terminal_command', tier: 'pro', name: 'Sci-Fi Confirm', src: '/sounds/pro-terminal-command.mp3', vibe: 'tactical execution ping' },
   // tool_call
   { event: 'tool_call', tier: 'free', name: 'Ring', src: '/sounds/ring.wav', vibe: 'soft blip' },
-  { event: 'tool_call', tier: 'pro', name: 'Metal Gear Alert', src: '/sounds/metal-gear-alert.mp3', vibe: 'the "!" alert' },
+  { event: 'tool_call', tier: 'pro', name: 'Alert Pulse', src: '/sounds/pro-tool-call.mp3', vibe: 'sharp attention alert' },
   // error
   { event: 'error', tier: 'free', name: 'Error', src: '/sounds/error.wav', vibe: 'clean sting' },
-  { event: 'error', tier: 'pro', name: 'Fahhhhh', src: '/sounds/fahhhhhhhhhhhhhh.mp3', vibe: 'shock meme' },
+  { event: 'error', tier: 'pro', name: 'Sad Trombone', src: '/sounds/pro-error.mp3', vibe: 'classic comedy fail horn' },
   // done
   { event: 'done', tier: 'free', name: 'Ding', src: '/sounds/ding-sound-effect-1.mp3', vibe: 'success' },
-  { event: 'done', tier: 'pro', name: 'GTA Mission Complete', src: '/sounds/gta-san-andreas-mission-complete.mp3', vibe: 'victory' },
+  { event: 'done', tier: 'pro', name: 'Level Complete', src: '/sounds/pro-done.mp3', vibe: 'triumphant arcade fanfare' },
 ]
 
 export function soundsFor(event: EventKey): { free: Sound; pro: Sound } {

@@ -33,18 +33,18 @@ Reserved for later packs (the classifier may tag these; no live event uses them 
 | File | What it is | Moods | Tier | Plays for |
 |---|---|---|---|---|
 | `sounds/launch.wav` | ascending chime | `boot` | 🆓 free | `session_start` |
-| `sounds/windows-xp-startup.mp3` | Windows XP startup | `boot` | 💎 paid | `session_start` |
+| `sounds/pro-session-start.mp3` | synth power-up chord | `boot` | 💎 paid | `session_start` |
 | `sounds/ring.wav` | soft blip / phone ring | `think`, `ring` | 🆓 free | `reasoning`, `tool_call` |
-| `sounds/c418-stranger-think.mp3` | C418 — strange, contemplative | `think` | 💎 paid | `reasoning` |
+| `sounds/pro-reasoning.mp3` | crystal contemplative chime | `think` | 💎 paid | `reasoning` |
 | `sounds/timer.mp3` | clock tick | `ponder` | 🆓 free | `long_reasoning` |
-| `sounds/jeopardy-themelq.mp3` | Jeopardy thinking music | `ponder` | 💎 paid | `long_reasoning` |
+| `sounds/pro-long-reasoning.mp3` | fast countdown ticker | `ponder` | 💎 paid | `long_reasoning` |
 | `sounds/keyboard-click.mp3` | keyboard click | `type` | 🆓 free | `terminal_command` |
-| `sounds/counter-strike-ok-lets-go.mp3` | CS "OK let's go" | `type` | 💎 paid | `terminal_command` |
-| `sounds/metal-gear-alert.mp3` | Metal Gear `!` alert | `ring` | 💎 paid | `tool_call` |
+| `sounds/pro-terminal-command.mp3` | sci-fi tactical confirm ping | `type` | 💎 paid | `terminal_command` |
+| `sounds/pro-tool-call.mp3` | alert pulse chime | `ring` | 💎 paid | `tool_call` |
 | `sounds/error.wav` | clean error sting | `error` | 🆓 free | `error` |
-| `sounds/fahhhhhhhhhhhhhh.mp3` | "fahhh" shock meme | `error`, `sad` | 💎 paid | `error`, `oops` |
+| `sounds/pro-error.mp3` | sad comedy trombone (womp womp) | `error`, `sad` | 💎 paid | `error`, `oops` |
 | `sounds/ding-sound-effect-1.mp3` | success ding | `reward` | 🆓 free | `done` |
-| `sounds/gta-san-andreas-mission-complete.mp3` | GTA mission complete | `reward` | 💎 paid | `done` |
+| `sounds/pro-done.mp3` | level completed victory fanfare | `reward` | 💎 paid | `done` |
 | `sounds/tf_nemesis.mp3` | dramatic/sad sting | `sad` | 🆓 free | `oops` |
 
 ## Wishlist — sourcing ideas by mood

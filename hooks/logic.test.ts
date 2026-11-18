@@ -56,14 +56,14 @@ test('locked: every event resolves to a free clip', $ => {
 })
 
 test('unlocked: a paid clip replaces its free sibling', $ => {
-  expect(pickClip('session_start', { unlocked: true })).toBe('sounds/windows-xp-startup.mp3')
-  expect(pickClip('reasoning', { unlocked: true })).toBe('sounds/c418-stranger-think.mp3')
-  expect(pickClip('long_reasoning', { unlocked: true })).toBe('sounds/jeopardy-themelq.mp3')
-  expect(pickClip('terminal_command', { unlocked: true })).toBe('sounds/counter-strike-ok-lets-go.mp3')
-  expect(pickClip('tool_call', { unlocked: true })).toBe('sounds/metal-gear-alert.mp3')
-  expect(pickClip('error', { unlocked: true })).toBe('sounds/fahhhhhhhhhhhhhh.mp3')
-  expect(pickClip('done', { unlocked: true })).toBe('sounds/gta-san-andreas-mission-complete.mp3')
-  expect(pickClip('oops', { unlocked: true })).toBe('sounds/fahhhhhhhhhhhhhh.mp3')
+  expect(pickClip('session_start', { unlocked: true })).toBe('sounds/pro-session-start.mp3')
+  expect(pickClip('reasoning', { unlocked: true })).toBe('sounds/pro-reasoning.mp3')
+  expect(pickClip('long_reasoning', { unlocked: true })).toBe('sounds/pro-long-reasoning.mp3')
+  expect(pickClip('terminal_command', { unlocked: true })).toBe('sounds/pro-terminal-command.mp3')
+  expect(pickClip('tool_call', { unlocked: true })).toBe('sounds/pro-tool-call.mp3')
+  expect(pickClip('error', { unlocked: true })).toBe('sounds/pro-error.mp3')
+  expect(pickClip('done', { unlocked: true })).toBe('sounds/pro-done.mp3')
+  expect(pickClip('oops', { unlocked: true })).toBe('sounds/pro-error.mp3')
 })
 
 test('a mood with no entitled clip falls through to the next accepted mood', $ => {

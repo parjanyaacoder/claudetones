@@ -50,24 +50,25 @@ export type ClipEntry = { file: string; moods: Mood[]; tier: Tier }
 export const CLIPS: ClipEntry[] = [
   // session_start
   { file: 'sounds/launch.wav', moods: ['boot'], tier: 'free' },
-  { file: 'sounds/windows-xp-startup.mp3', moods: ['boot'], tier: 'paid' },
+  { file: 'sounds/pro-session-start.mp3', moods: ['boot'], tier: 'paid' },
   // reasoning
   { file: 'sounds/ring.wav', moods: ['think', 'ring'], tier: 'free' },
-  { file: 'sounds/c418-stranger-think.mp3', moods: ['think'], tier: 'paid' },
+  { file: 'sounds/pro-reasoning.mp3', moods: ['think'], tier: 'paid' },
   // long_reasoning (> 8s on one turn)
   { file: 'sounds/timer.mp3', moods: ['ponder'], tier: 'free' },
-  { file: 'sounds/jeopardy-themelq.mp3', moods: ['ponder'], tier: 'paid' },
+  { file: 'sounds/pro-long-reasoning.mp3', moods: ['ponder'], tier: 'paid' },
   // terminal_command (a Bash tool call)
   { file: 'sounds/keyboard-click.mp3', moods: ['type'], tier: 'free' },
-  { file: 'sounds/counter-strike-ok-lets-go.mp3', moods: ['type'], tier: 'paid' },
+  { file: 'sounds/pro-terminal-command.mp3', moods: ['type'], tier: 'paid' },
   // tool_call (any other tool)
-  { file: 'sounds/metal-gear-alert.mp3', moods: ['ring'], tier: 'paid' },
+  { file: 'sounds/ring.wav', moods: ['ring'], tier: 'free' },
+  { file: 'sounds/pro-tool-call.mp3', moods: ['ring'], tier: 'paid' },
   // error
   { file: 'sounds/error.wav', moods: ['error'], tier: 'free' },
-  { file: 'sounds/fahhhhhhhhhhhhhh.mp3', moods: ['error', 'sad'], tier: 'paid' },
+  { file: 'sounds/pro-error.mp3', moods: ['error', 'sad'], tier: 'paid' },
   // done
   { file: 'sounds/ding-sound-effect-1.mp3', moods: ['reward'], tier: 'free' },
-  { file: 'sounds/gta-san-andreas-mission-complete.mp3', moods: ['reward'], tier: 'paid' },
+  { file: 'sounds/pro-done.mp3', moods: ['reward'], tier: 'paid' },
   // manual /oops (fires even while muted)
   { file: 'sounds/tf_nemesis.mp3', moods: ['sad'], tier: 'free' },
 ]
