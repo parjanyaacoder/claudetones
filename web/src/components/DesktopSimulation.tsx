@@ -125,7 +125,7 @@ export default function DesktopSimulation() {
         </p>
 
         {/* Segmented View Toggle */}
-        <div className="mt-2.5 inline-flex p-1 rounded-xl bg-surface-container-low border border-outline-variant/30 shadow-md">
+        <div className="mt-2.5 inline-flex p-1.5 rounded-xl bg-surface-container-low border border-outline-variant/30 shadow-md gap-2">
           <button
             onClick={() => setView('terminal')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all duration-200 cursor-pointer ${

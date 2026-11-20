@@ -4,163 +4,231 @@ import React, { useState, useRef } from 'react'
 import JSZip from 'jszip'
 import { playAcousticCue, type SoundType } from '@/lib/audio'
 
-type EventSlot = {
+type EventItem = {
   key: string
-  label: string
+  num: number
+  title: string
   trigger: string
-  defaultFile: string
-  defaultSrc: string
-  soundType: SoundType
   description: string
+  defaultFileName: string
+  defaultAudioSrc: string
+  soundType: SoundType
 }
 
-const EVENT_SLOTS: EventSlot[] = [
+const ALL_7_EVENTS: EventItem[] = [
   {
     key: 'session_start',
-    label: '1. Session Start',
+    num: 1,
+    title: 'Session Start',
     trigger: 'session.start',
-    defaultFile: 'launch.wav',
-    defaultSrc: '/sounds/launch.wav',
+    description: 'Welcome chime when Claude Code launches and connects.',
+    defaultFileName: 'launch.wav',
+    defaultAudioSrc: '/sounds/launch.wav',
     soundType: 'boot',
-    description: 'Chime on session initialization',
   },
   {
     key: 'reasoning',
-    label: '2. Reasoning Start',
+    num: 2,
+    title: 'Reasoning Start',
     trigger: 'turn.start',
-    defaultFile: 'ring.wav',
-    defaultSrc: '/sounds/ring.wav',
+    description: 'Subtle notification the moment Claude starts planning its response.',
+    defaultFileName: 'ring.wav',
+    defaultAudioSrc: '/sounds/ring.wav',
     soundType: 'tick',
-    description: 'Subtle tick as Claude starts thinking',
   },
   {
     key: 'long_reasoning',
-    label: '3. Deep Pondering',
+    num: 3,
+    title: 'Deep Pondering',
     trigger: 'turn.start > 8s',
-    defaultFile: 'timer.mp3',
-    defaultSrc: '/sounds/timer.mp3',
+    description: 'Chrono metronome during complex reasoning turns longer than 8 seconds.',
+    defaultFileName: 'timer.mp3',
+    defaultAudioSrc: '/sounds/timer.mp3',
     soundType: 'ponder',
-    description: 'Rhythmic pulse during extended reasoning',
   },
   {
     key: 'terminal_command',
-    label: '4. Bash Execution',
+    num: 4,
+    title: 'Bash Execution',
     trigger: 'tool.call: Bash',
-    defaultFile: 'keyboard-click.mp3',
-    defaultSrc: '/sounds/keyboard-click.mp3',
+    description: 'Mechanical feedback whenever a shell command or test runs.',
+    defaultFileName: 'keyboard-click.mp3',
+    defaultAudioSrc: '/sounds/keyboard-click.mp3',
     soundType: 'click',
-    description: 'Crisp feedback on shell commands',
   },
   {
     key: 'tool_call',
-    label: '5. File Mutation / Edit',
+    num: 5,
+    title: 'File Mutation / Edit',
     trigger: 'tool.call: Edit',
-    defaultFile: 'pro-tool-call.mp3',
-    defaultSrc: '/sounds/pro-tool-call.mp3',
+    description: 'Waterdrop click whenever Claude writes, edits, or patches files.',
+    defaultFileName: 'pro-tool-call.mp3',
+    defaultAudioSrc: '/sounds/pro-tool-call.mp3',
     soundType: 'pip',
-    description: 'Waterdrop click on file modification',
   },
   {
     key: 'error',
-    label: '6. Command Failed',
+    num: 6,
+    title: 'Command Failed',
     trigger: 'isError: true',
-    defaultFile: 'error.wav',
-    defaultSrc: '/sounds/error.wav',
+    description: 'Warning alert whenever a tool call, test, or terminal command fails.',
+    defaultFileName: 'error.wav',
+    defaultAudioSrc: '/sounds/error.wav',
     soundType: 'error',
-    description: 'Alert sting on exit error',
   },
   {
     key: 'done',
-    label: '7. Turn Complete',
+    num: 7,
+    title: 'Turn Complete',
     trigger: 'turn.complete',
-    defaultFile: 'ding-sound-effect-1.mp3',
-    defaultSrc: '/sounds/ding-sound-effect-1.mp3',
+    description: 'Triumphant victory fanfare when Claude finishes all tasks and tests pass.',
+    defaultFileName: 'ding-sound-effect-1.mp3',
+    defaultAudioSrc: '/sounds/ding-sound-effect-1.mp3',
     soundType: 'fanfare',
-    description: 'Satisfying task completion fanfare',
   },
 ]
 
-type UploadedSlot = {
+type EventCustomState = {
+  enabled: boolean
   file: File | null
   previewUrl: string | null
   fileName: string
 }
 
 export default function SoundPackStudio() {
-  const [packName, setPackName] = useState('custom-atelier')
+  const [packName, setPackName] = useState('arcade-flow')
   const [authorName, setAuthorName] = useState('community-dev')
-  const [vibe, setVibe] = useState('Tactile mechanical audio palette')
-  const [slots, setSlots] = useState<Record<string, UploadedSlot>>({})
+  const [eventStates, setEventStates] = useState<Record<string, EventCustomState>>(() => {
+    const initial: Record<string, EventCustomState> = {}
+    ALL_7_EVENTS.forEach((evt) => {
+      initial[evt.key] = {
+        enabled: true,
+        file: null,
+        previewUrl: null,
+        fileName: evt.defaultFileName,
+      }
+    })
+    return initial
+  })
+
   const [activePlayKey, setActivePlayKey] = useState<string | null>(null)
   const [isExporting, setIsExporting] = useState(false)
-  const [published, setPublished] = useState(false)
   const [copiedCli, setCopiedCli] = useState(false)
+  const [publishSuccess, setPublishSuccess] = useState(false)
 
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
-  const handleFileUpload = (key: string, file: File) => {
-    const url = URL.createObjectURL(file)
-    setSlots((prev) => ({
+  // Toggle event on/off
+  const toggleEvent = (key: string) => {
+    setEventStates((prev) => ({
       ...prev,
       [key]: {
+        ...prev[key],
+        enabled: !prev[key].enabled,
+      },
+    }))
+  }
+
+  // Handle custom audio file upload
+  const handleFileUpload = (key: string, file: File) => {
+    const previewUrl = URL.createObjectURL(file)
+    setEventStates((prev) => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        enabled: true, // Auto-enable when file uploaded
         file,
-        previewUrl: url,
+        previewUrl,
         fileName: file.name,
       },
     }))
   }
 
-  const handlePlaySound = (slot: EventSlot) => {
-    const custom = slots[slot.key]
-    setActivePlayKey(slot.key)
+  // Reset custom file back to default
+  const handleResetToDefault = (key: string, defaultName: string) => {
+    setEventStates((prev) => {
+      if (prev[key].previewUrl) {
+        URL.revokeObjectURL(prev[key].previewUrl!)
+      }
+      return {
+        ...prev,
+        [key]: {
+          ...prev[key],
+          file: null,
+          previewUrl: null,
+          fileName: defaultName,
+        },
+      }
+    })
+  }
 
-    if (custom?.previewUrl) {
-      const audio = new Audio(custom.previewUrl)
+  // Play sound
+  const handlePlaySound = (evt: EventItem) => {
+    const state = eventStates[evt.key]
+    if (!state.enabled) return
+
+    setActivePlayKey(evt.key)
+    if (state.previewUrl) {
+      const audio = new Audio(state.previewUrl)
       audio.volume = 0.6
       audio.play().catch(() => {})
     } else {
-      playAcousticCue(slot.soundType, slot.defaultSrc)
+      playAcousticCue(evt.soundType, evt.defaultAudioSrc)
     }
 
     setTimeout(() => {
-      setActivePlayKey((curr) => (curr === slot.key ? null : curr))
+      setActivePlayKey((curr) => (curr === evt.key ? null : curr))
     }, 1200)
   }
 
-  const handleDownloadZip = async () => {
+  // Bulk enable / disable
+  const setAllEnabled = (enabled: boolean) => {
+    setEventStates((prev) => {
+      const updated = { ...prev }
+      ALL_7_EVENTS.forEach((e) => {
+        updated[e.key] = { ...updated[e.key], enabled }
+      })
+      return updated
+    })
+  }
+
+  const enabledCount = Object.values(eventStates).filter((s) => s.enabled).length
+
+  // Export Sound Pack .zip
+  const handleExportZip = async () => {
     setIsExporting(true)
     try {
       const zip = new JSZip()
-      const folderName = packName.toLowerCase().replace(/[^a-z0-9_-]/g, '-') || 'custom-pack'
-      const packFolder = zip.folder(folderName) || zip
+      const slug = packName.toLowerCase().replace(/[^a-z0-9_-]/g, '-') || 'custom-pack'
+      const packFolder = zip.folder(slug) || zip
       const soundsFolder = packFolder.folder('sounds') || packFolder
 
       const manifestEvents: Record<string, string> = {}
 
-      for (const slot of EVENT_SLOTS) {
-        const uploaded = slots[slot.key]
-        let fileName = slot.defaultFile
-        if (uploaded?.file) {
-          fileName = uploaded.file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-          const arrayBuffer = await uploaded.file.arrayBuffer()
-          soundsFolder.file(fileName, arrayBuffer)
+      for (const evt of ALL_7_EVENTS) {
+        const state = eventStates[evt.key]
+        if (!state.enabled) continue
+
+        const cleanFileName = state.fileName.replace(/[^a-zA-Z0-9._-]/g, '_')
+        if (state.file) {
+          const buffer = await state.file.arrayBuffer()
+          soundsFolder.file(cleanFileName, buffer)
         } else {
-          // Fetch default sound
           try {
-            const resp = await fetch(slot.defaultSrc)
+            const resp = await fetch(evt.defaultAudioSrc)
             const blob = await resp.blob()
-            soundsFolder.file(fileName, blob)
+            soundsFolder.file(cleanFileName, blob)
           } catch (e) {
-            console.warn('Could not bundle default sound:', slot.defaultSrc, e)
+            console.warn('Could not bundle default sound:', evt.defaultAudioSrc, e)
           }
         }
-        manifestEvents[slot.key] = `sounds/${fileName}`
+        manifestEvents[evt.key] = `sounds/${cleanFileName}`
       }
 
       const manifest = {
-        name: folderName,
+        name: slug,
         author: authorName,
-        description: vibe,
+        description: `Custom soundpack with ${enabledCount} events`,
         version: '1.0.0',
         events: manifestEvents,
       }
@@ -168,30 +236,26 @@ export default function SoundPackStudio() {
       packFolder.file('manifest.json', JSON.stringify(manifest, null, 2))
       packFolder.file(
         'README.md',
-        `# ${packName}\n\nCreated with Claudetones Pack Studio.\n\nAuthor: ${authorName}\nDescription: ${vibe}\n\n## Installation\n\nCopy this folder into:\n\`~/.claude/plugins/claudetones/packs/${folderName}/\`\n\nThen in Claude Code:\n\`/claudetones pack ${folderName}\`\n`
+        `# ${packName}\n\nCreated with Claudetones Sound Pack Studio.\n\nAuthor: ${authorName}\nActive Events: ${enabledCount} of 7\n\n## Installation\n\nExtract this folder into:\n\`~/.claude/plugins/claudetones/packs/${slug}/\`\n\nActivate in Claude Code:\n\`/claudetones pack ${slug}\`\n`
       )
 
-      const content = await zip.generateAsync({ type: 'blob' })
-      const downloadUrl = URL.createObjectURL(content)
+      const blob = await zip.generateAsync({ type: 'blob' })
+      const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
-      a.href = downloadUrl
-      a.download = `${folderName}.zip`
+      a.href = url
+      a.download = `${slug}.zip`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
-      URL.revokeObjectURL(downloadUrl)
+      URL.revokeObjectURL(url)
     } catch (err) {
-      console.error('Export error:', err)
+      console.error('Failed to export pack zip:', err)
     } finally {
       setIsExporting(false)
     }
   }
 
-  const handlePublish = () => {
-    setPublished(true)
-  }
-
-  const copyInstallCli = () => {
+  const handleCopyCli = () => {
     const slug = packName.toLowerCase().replace(/[^a-z0-9_-]/g, '-') || 'custom-pack'
     navigator.clipboard.writeText(`/claudetones pack ${slug}`)
     setCopiedCli(true)
@@ -200,176 +264,258 @@ export default function SoundPackStudio() {
 
   return (
     <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16" id="byos-section">
-      <div className="bg-surface-container-low rounded-3xl p-6 sm:p-10 border border-outline-variant/20 shadow-xl space-y-8">
+      <div className="bg-surface-container-low rounded-3xl p-6 sm:p-10 border border-outline-variant/20 shadow-2xl space-y-8">
         {/* Studio Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-outline-variant/15 pb-6">
-          <div>
-            <div className="flex items-center gap-2 text-primary-container font-label-sm text-label-sm uppercase tracking-wider mb-1.5">
-              <span className="material-symbols-outlined text-[16px]">tune</span>
-              <span>Acoustic Pack Studio &amp; Creator</span>
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-outline-variant/15 pb-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-primary-container font-label-sm text-label-sm uppercase tracking-wider">
+              <span className="material-symbols-outlined text-[17px]">tune</span>
+              <span>Sound Pack Studio &amp; Creator</span>
             </div>
-            <h2 className="font-headline-lg text-headline-lg text-on-surface">Bring Your Own Sounds (BYOS)</h2>
-            <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-1 leading-relaxed">
-              Drop any audio files (WAV, MP3) for the 7 lifecycle events to build your custom soundpack. Download a
-              ready-to-use pack or publish it for the community.
+            <h2 className="font-headline-lg text-headline-lg text-on-surface">
+              Build Your Custom Sound Pack
+            </h2>
+            <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl leading-relaxed">
+              Every sound pack supports <strong>all 7 lifecycle events</strong>. Customize your audio by uploading custom
+              files (WAV, MP3) for any event, and toggle individual events on or off to tailor your workflow.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          {/* Action CTAs */}
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
-              onClick={handleDownloadZip}
+              onClick={handleExportZip}
               disabled={isExporting}
-              className="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all flex items-center gap-2 cursor-pointer shadow-md font-medium"
+              className="px-5 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all flex items-center gap-2 cursor-pointer shadow-md font-medium"
             >
-              <span className="material-symbols-outlined text-[17px]">
+              <span className="material-symbols-outlined text-[18px]">
                 {isExporting ? 'hourglass_top' : 'download'}
               </span>
               <span>{isExporting ? 'Packaging...' : 'Export Pack (.zip)'}</span>
             </button>
             <button
-              onClick={handlePublish}
+              onClick={() => setPublishSuccess(true)}
               className="px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed font-label-md text-label-md transition-all flex items-center gap-2 cursor-pointer border border-outline-variant/30 font-medium"
             >
-              <span className="material-symbols-outlined text-[17px] text-[#61C554]">share</span>
+              <span className="material-symbols-outlined text-[18px] text-[#61C554]">share</span>
               <span>Publish Pack</span>
             </button>
           </div>
         </div>
 
-        {/* Metadata Controls */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-surface-container p-3.5 rounded-xl border border-outline-variant/20 space-y-1">
-            <label className="text-[11px] font-mono uppercase tracking-wider text-outline block">Pack Identifier</label>
-            <input
-              type="text"
-              value={packName}
-              onChange={(e) => setPackName(e.target.value)}
-              className="w-full bg-surface-container-lowest px-3 py-1.5 rounded-lg text-xs font-mono text-on-surface border border-outline-variant/30 focus:outline-none focus:border-primary-container"
-              placeholder="e.g. 8bit-retro"
-            />
+        {/* Unified Pack Identity Bar */}
+        <div className="bg-surface-container p-4 sm:p-5 rounded-2xl border border-outline-variant/20 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-outline uppercase tracking-wider">Pack Name:</span>
+              <input
+                type="text"
+                value={packName}
+                onChange={(e) => setPackName(e.target.value)}
+                className="bg-surface-container-lowest px-3 py-1.5 rounded-lg text-xs font-mono text-primary-container font-semibold border border-outline-variant/30 focus:outline-none focus:border-primary-container min-w-[160px]"
+                placeholder="my-sound-pack"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-outline uppercase tracking-wider">Author:</span>
+              <input
+                type="text"
+                value={authorName}
+                onChange={(e) => setAuthorName(e.target.value)}
+                className="bg-surface-container-lowest px-3 py-1.5 rounded-lg text-xs font-mono text-tertiary-fixed border border-outline-variant/30 focus:outline-none focus:border-primary-container min-w-[140px]"
+                placeholder="@developer"
+              />
+            </div>
           </div>
-          <div className="bg-surface-container p-3.5 rounded-xl border border-outline-variant/20 space-y-1">
-            <label className="text-[11px] font-mono uppercase tracking-wider text-outline block">Author / Handle</label>
-            <input
-              type="text"
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              className="w-full bg-surface-container-lowest px-3 py-1.5 rounded-lg text-xs font-mono text-on-surface border border-outline-variant/30 focus:outline-none focus:border-primary-container"
-              placeholder="e.g. @developer"
-            />
-          </div>
-          <div className="bg-surface-container p-3.5 rounded-xl border border-outline-variant/20 space-y-1">
-            <label className="text-[11px] font-mono uppercase tracking-wider text-outline block">Vibe &amp; Mood</label>
-            <input
-              type="text"
-              value={vibe}
-              onChange={(e) => setVibe(e.target.value)}
-              className="w-full bg-surface-container-lowest px-3 py-1.5 rounded-lg text-xs font-sans text-on-surface border border-outline-variant/30 focus:outline-none focus:border-primary-container"
-              placeholder="e.g. Nostalgic arcade feedback"
-            />
+
+          <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-container-lowest border border-outline-variant/25">
+              <span className={`w-2 h-2 rounded-full ${enabledCount > 0 ? 'bg-[#61C554]' : 'bg-outline'}`}></span>
+              <span className="text-xs font-mono text-tertiary-fixed font-medium">
+                {enabledCount} of 7 Events Active
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setAllEnabled(true)}
+                className="text-[11px] font-mono text-outline hover:text-on-surface underline cursor-pointer"
+              >
+                Enable All
+              </button>
+              <span className="text-outline text-xs">•</span>
+              <button
+                type="button"
+                onClick={() => setAllEnabled(false)}
+                className="text-[11px] font-mono text-outline hover:text-on-surface underline cursor-pointer"
+              >
+                Mute All
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* The 7 Event Slots Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {EVENT_SLOTS.map((slot) => {
-            const uploaded = slots[slot.key]
-            const isPlaying = activePlayKey === slot.key
+        {/* Cohesive 7 Events List */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-2 text-xs font-mono text-outline uppercase tracking-wider">
+            <span>Supported Sonic Events (All 7 Available in this Pack)</span>
+            <span>Audio Source &amp; Controls</span>
+          </div>
 
-            return (
-              <div
-                key={slot.key}
-                className="p-4 rounded-xl bg-surface-container border border-outline-variant/20 flex flex-col justify-between space-y-3 hover:border-primary-container/40 transition-colors"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-mono text-xs text-primary-container font-semibold">{slot.trigger}</span>
-                    <span className="text-[10px] font-mono text-outline">{slot.label}</span>
+          <div className="divide-y divide-outline-variant/15 rounded-2xl bg-surface-container border border-outline-variant/20 overflow-hidden">
+            {ALL_7_EVENTS.map((evt) => {
+              const state = eventStates[evt.key]
+              const isPlaying = activePlayKey === evt.key
+              const isCustom = Boolean(state.file)
+
+              return (
+                <div
+                  key={evt.key}
+                  className={`p-4 sm:p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 transition-colors ${
+                    state.enabled ? 'hover:bg-surface-container-high/40' : 'opacity-50 bg-[#161413]/60'
+                  }`}
+                >
+                  {/* Left: Toggle + Event Name + Trigger */}
+                  <div className="flex items-start sm:items-center gap-3.5">
+                    {/* Toggle Switch */}
+                    <button
+                      type="button"
+                      onClick={() => toggleEvent(evt.key)}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        state.enabled ? 'bg-primary-container' : 'bg-surface-container-highest'
+                      }`}
+                      role="switch"
+                      aria-checked={state.enabled}
+                      title={state.enabled ? 'Click to disable event in pack' : 'Click to enable event in pack'}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                          state.enabled ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-headline-sm text-sm font-semibold text-tertiary-fixed">
+                          {evt.num}. {evt.title}
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-surface-container-lowest text-primary-container border border-outline-variant/25">
+                          {evt.trigger}
+                        </span>
+                        {isCustom && (
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-[#61C554]/15 text-[#61C554] border border-[#61C554]/30 font-medium">
+                            Custom Audio
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-on-surface-variant max-w-lg leading-relaxed">
+                        {evt.description}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-xs text-on-surface-variant">{slot.description}</p>
-                </div>
 
-                {/* File Drop / Status */}
-                <div className="pt-2 border-t border-outline-variant/15 flex items-center justify-between gap-2">
-                  <div className="truncate text-xs font-mono text-tertiary flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[15px] text-outline">
-                      {uploaded ? 'upload_file' : 'audio_file'}
-                    </span>
-                    <span className="truncate max-w-[140px] text-tertiary-fixed">
-                      {uploaded ? uploaded.fileName : slot.defaultFile}
-                    </span>
-                  </div>
+                  {/* Right: Sound Slot + Upload Button + Play Button */}
+                  <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-between lg:justify-end pt-2 lg:pt-0">
+                    {/* Audio File Name Display */}
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/25 text-xs font-mono text-tertiary-fixed">
+                      <span className="material-symbols-outlined text-[15px] text-primary-container">
+                        {isCustom ? 'music_note' : 'audiotrack'}
+                      </span>
+                      <span className="max-w-[160px] truncate">{state.fileName}</span>
+                      {isCustom && (
+                        <button
+                          type="button"
+                          onClick={() => handleResetToDefault(evt.key, evt.defaultFileName)}
+                          className="ml-1 text-outline hover:text-error text-xs cursor-pointer"
+                          title="Reset to default sound"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
 
-                  <div className="flex items-center gap-1.5 shrink-0">
+                    {/* Hidden Native File Input */}
                     <input
                       type="file"
                       accept="audio/*"
                       ref={(el) => {
-                        fileInputRefs.current[slot.key] = el
+                        fileInputRefs.current[evt.key] = el
                       }}
                       className="hidden"
                       onChange={(e) => {
                         const file = e.target.files?.[0]
-                        if (file) handleFileUpload(slot.key, file)
+                        if (file) handleFileUpload(evt.key, file)
                       }}
                     />
+
+                    {/* Upload Custom Audio Button */}
                     <button
                       type="button"
-                      onClick={() => fileInputRefs.current[slot.key]?.click()}
-                      className="px-2 py-1 rounded bg-surface-container-high hover:bg-surface-bright text-outline hover:text-on-surface text-[11px] font-mono transition-colors cursor-pointer"
-                      title="Upload custom WAV/MP3"
+                      onClick={() => fileInputRefs.current[evt.key]?.click()}
+                      className="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed text-xs font-mono transition-colors border border-outline-variant/30 flex items-center gap-1.5 cursor-pointer"
+                      title="Upload custom WAV/MP3 file for this event"
                     >
-                      Browse
+                      <span className="material-symbols-outlined text-[15px] text-primary-container">
+                        cloud_upload
+                      </span>
+                      <span>Upload Sound</span>
                     </button>
+
+                    {/* Play / Preview Sound Button */}
                     <button
                       type="button"
-                      onClick={() => handlePlaySound(slot)}
-                      className={`px-2.5 py-1 rounded font-label-sm text-label-sm transition-all flex items-center gap-1 cursor-pointer ${
-                        isPlaying
-                          ? 'bg-primary-container text-on-primary-container'
+                      disabled={!state.enabled}
+                      onClick={() => handlePlaySound(evt)}
+                      className={`px-3 py-1.5 rounded-lg font-label-sm text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
+                        !state.enabled
+                          ? 'opacity-40 cursor-not-allowed bg-surface-container-highest text-outline'
+                          : isPlaying
+                          ? 'bg-primary-container text-on-primary-container shadow-md'
                           : 'bg-surface-container-highest hover:bg-primary-container hover:text-on-primary-container text-tertiary-fixed'
                       }`}
                     >
-                      <span className="material-symbols-outlined text-[13px]">
+                      <span className="material-symbols-outlined text-[15px]">
                         {isPlaying ? 'volume_up' : 'play_arrow'}
                       </span>
-                      <span>Play</span>
+                      <span>{isPlaying ? 'Playing' : 'Play'}</span>
                     </button>
                   </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
 
-        {/* Publish Modal / Community Banner */}
-        {published && (
-          <div className="p-5 rounded-2xl bg-[#1c1714] border border-primary-container/40 shadow-lg space-y-3">
+        {/* Publish & CLI Command Drawer */}
+        {publishSuccess && (
+          <div className="p-5 sm:p-6 rounded-2xl bg-[#1c1714] border border-primary-container/40 shadow-xl space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[20px] text-[#61C554]">check_circle</span>
                 <span className="text-sm font-semibold text-tertiary-fixed">
-                  Soundpack &quot;{packName}&quot; packaged &amp; ready!
+                  Sound pack &quot;{packName}&quot; ready with {enabledCount} of 7 events!
                 </span>
               </div>
               <button
-                onClick={() => setPublished(false)}
+                onClick={() => setPublishSuccess(false)}
                 className="text-xs text-outline hover:text-on-surface cursor-pointer"
               >
                 Dismiss
               </button>
             </div>
             <p className="text-xs text-on-surface-variant leading-relaxed">
-              To activate this pack locally, export the zip, extract it into your Claude Code config directory, and hot-swap
-              using the slash command below:
+              Export the pack zip, extract it into your Claude Code soundpack library, and run the command below inside
+              your Claude Code session to switch packs:
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/25">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-xl bg-surface-container-lowest border border-outline-variant/25">
               <code className="font-mono text-xs text-primary-container">
-                ~/.claude/plugins/claudetones/packs/{packName.toLowerCase().replace(/[^a-z0-9_-]/g, '-') || 'custom-pack'}/
+                /claudetones pack {packName.toLowerCase().replace(/[^a-z0-9_-]/g, '-') || 'custom-pack'}
               </code>
               <button
-                onClick={copyInstallCli}
-                className="px-3 py-1 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed text-xs font-mono transition-colors cursor-pointer shrink-0"
+                onClick={handleCopyCli}
+                className="px-3.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed text-xs font-mono transition-colors cursor-pointer shrink-0 border border-outline-variant/30"
               >
                 {copiedCli ? 'Copied Command!' : 'Copy /pack Command'}
               </button>
