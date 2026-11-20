@@ -5,6 +5,7 @@ import Link from 'next/link'
 import RotatingWord from '@/components/RotatingWord'
 import DesktopSimulation from '@/components/DesktopSimulation'
 import SoundboardMatrix from '@/components/SoundboardMatrix'
+import SoundPackStudio from '@/components/SoundPackStudio'
 import SlashCommands from '@/components/SlashCommands'
 import { GITHUB_URL } from '@/lib/catalog'
 
@@ -61,7 +62,7 @@ export default function Home() {
                 href="#byos-section"
                 className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
               >
-                Custom Audio
+                Pack Studio
               </a>
               <a
                 href="#slash-commands"
@@ -162,8 +163,14 @@ export default function Home() {
         {/* ================= SCREEN 2: HEADING & INTERACTIVE SIMULATION ================= */}
         <DesktopSimulation />
 
+        {/* ================= SCREEN 3: DEDICATED SOUNDBOARD MATRIX ================= */}
+        <SoundboardMatrix />
+
+        {/* ================= SCREEN 4: BYOS PACK STUDIO & CREATOR ================= */}
+        <SoundPackStudio />
+
         {/* QUICK METRICS STRIP */}
-        <section className="max-w-5xl mx-auto px-6 py-10">
+        <section className="max-w-5xl mx-auto px-6 py-8">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 p-6 rounded-2xl bg-surface-container-low border border-outline-variant/15">
             <div className="flex flex-col items-center text-center">
               <span className="font-label-md text-label-md text-primary-container font-semibold">&lt; 0.2ms</span>
@@ -183,9 +190,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        {/* INTERACTIVE SOUNDBOARD MATRIX */}
-        <SoundboardMatrix />
 
         {/* SYSTEMS ENGINEERING: ZERO TERMINAL LAG */}
         <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16">
@@ -226,100 +230,6 @@ export default function Home() {
               <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
                 Zero outbound sockets, zero external telemetry. All sound assets run entirely locally on your hardware.
               </p>
-            </div>
-          </div>
-        </section>
-
-        {/* BRING YOUR OWN SOUNDS (BYOS) */}
-        <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16" id="byos-section">
-          <div className="bg-surface-container-low rounded-3xl p-8 lg:p-12 overflow-hidden relative border border-outline-variant/20">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-              <div className="lg:col-span-6 space-y-6">
-                <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary-container block">
-                  Extensible Acoustic Engine
-                </span>
-                <h2 className="font-headline-lg text-headline-lg text-on-surface leading-tight">
-                  Bring Your Own Sounds (BYOS)
-                </h2>
-                <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                  Drop any 44.1kHz or 48kHz WAV cues into your config directory. Swap packs instantly via CLI.
-                </p>
-                <div className="grid grid-cols-2 gap-3 pt-2">
-                  <div className="p-3 rounded-xl bg-surface-container flex items-center gap-3">
-                    <span className="text-xl">🕹️</span>
-                    <div>
-                      <div className="font-body-sm text-body-sm font-medium text-tertiary-fixed">Retro 8-Bit</div>
-                      <div className="font-label-sm text-label-sm text-outline">NES / GameBoy cues</div>
-                    </div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-surface-container flex items-center gap-3">
-                    <span className="text-xl">⌨️</span>
-                    <div>
-                      <div className="font-body-sm text-body-sm font-medium text-tertiary-fixed">Sublime Keeb</div>
-                      <div className="font-label-sm text-label-sm text-outline">Holy Panda switches</div>
-                    </div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-surface-container flex items-center gap-3">
-                    <span className="text-xl">💾</span>
-                    <div>
-                      <div className="font-body-sm text-body-sm font-medium text-tertiary-fixed">Windows 95</div>
-                      <div className="font-label-sm text-label-sm text-outline">Brian Eno chords</div>
-                    </div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-surface-container flex items-center gap-3">
-                    <span className="text-xl">🔬</span>
-                    <div>
-                      <div className="font-body-sm text-body-sm font-medium text-tertiary-fixed">Portal GLaDOS</div>
-                      <div className="font-label-sm text-label-sm text-outline">Aperture Science chime</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Directory Tree Preview Mockup */}
-              <div className="lg:col-span-6">
-                <div className="bg-surface-container-lowest rounded-xl p-5 font-code text-code text-on-surface-variant shadow-xl border border-outline-variant/20">
-                  <div className="flex items-center justify-between pb-3 mb-3 text-outline border-b border-outline-variant/15">
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[16px] text-primary-container">folder_open</span>
-                      <span className="text-tertiary-fixed">~/.claude/plugins/claudetones/</span>
-                    </div>
-                    <span className="font-label-sm text-label-sm text-outline">config.json</span>
-                  </div>
-                  <div className="space-y-1.5 pl-2">
-                    <div className="text-tertiary">
-                      <span className="text-outline">└──</span>{' '}
-                      <span className="text-primary-container font-semibold">sounds/</span>
-                    </div>
-                    <div className="pl-4 text-on-surface">
-                      <span className="text-outline">│&nbsp;&nbsp;└──</span> session_start.wav
-                    </div>
-                    <div className="pl-4 text-on-surface">
-                      <span className="text-outline">│&nbsp;&nbsp;└──</span> turn_start.wav
-                    </div>
-                    <div className="pl-4 text-on-surface">
-                      <span className="text-outline">│&nbsp;&nbsp;└──</span> bash_exec.wav
-                    </div>
-                    <div className="pl-4 text-on-surface">
-                      <span className="text-outline">│&nbsp;&nbsp;└──</span> file_edit.wav
-                    </div>
-                    <div className="pl-4 text-on-surface">
-                      <span className="text-outline">│&nbsp;&nbsp;└──</span> error_sting.wav
-                    </div>
-                    <div className="pl-4 text-on-surface">
-                      <span className="text-outline">│&nbsp;&nbsp;└──</span> turn_complete.wav
-                    </div>
-                    <div className="text-tertiary">
-                      <span className="text-outline">└──</span>{' '}
-                      <span className="text-tertiary-fixed font-semibold">claudetones.config.json</span>
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-3 text-outline font-label-sm text-label-sm flex items-center justify-between border-t border-outline-variant/15">
-                    <span>Format: 16-bit PCM WAV, 44.1kHz</span>
-                    <span className="text-primary-container font-semibold">Drag &amp; Drop Ready</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </section>
@@ -384,7 +294,9 @@ export default function Home() {
               </h4>
               {faqOpen[2] && (
                 <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-                  Simply place 7 WAV files inside <code className="text-tertiary-fixed">~/.claude/plugins/claudetones/packs/&lt;name&gt;/</code> with a manifest json. You can share your pack folder or publish it to the community catalog.
+                  Use the Pack Studio above to upload your WAV files and export a zip, or place 7 WAV files inside{' '}
+                  <code className="text-tertiary-fixed">~/.claude/plugins/claudetones/packs/&lt;name&gt;/</code> with a
+                  manifest json.
                 </p>
               )}
             </div>
@@ -471,7 +383,7 @@ export default function Home() {
                       className="text-on-surface-variant hover:text-on-surface transition-colors"
                       href="#byos-section"
                     >
-                      Acoustic Presets
+                      Pack Studio
                     </a>
                   </li>
                 </ul>
