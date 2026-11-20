@@ -155,17 +155,7 @@ html, body {
   animation: blink-cursor 0.9s infinite;
 }
 
-@keyframes rotate-words {
-  0%, 25% { transform: translateY(0%); }
-  33%, 58% { transform: translateY(-33.333%); }
-  66%, 92% { transform: translateY(-66.666%); }
-  100% { transform: translateY(0%); }
-}
 
-.rotating-events-track {
-  display: inline-block;
-  animation: rotate-words 6s cubic-bezier(0.83, 0, 0.17, 1) infinite;
-}
 
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;

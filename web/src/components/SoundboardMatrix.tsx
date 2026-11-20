@@ -142,7 +142,7 @@ export default function SoundboardMatrix() {
                   <span className="material-symbols-outlined text-[16px]">
                     {isPlaying ? 'volume_up' : 'play_arrow'}
                   </span>
-                  <span>{isPlaying ? 'Playing' : 'Audition'}</span>
+                  <span>{isPlaying ? 'Playing' : 'Play'}</span>
                 </button>
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function SoundboardMatrix() {
             className="px-6 py-3 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-md"
           >
             <span className="material-symbols-outlined text-[20px]">celebration</span>
-            <span>Audition Victory Fanfare</span>
+            <span>Play Victory Fanfare</span>
           </button>
         </div>
       </div>

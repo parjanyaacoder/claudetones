@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import RotatingWord from '@/components/RotatingWord'
 import DesktopSimulation from '@/components/DesktopSimulation'
 import SoundboardMatrix from '@/components/SoundboardMatrix'
 import SlashCommands from '@/components/SlashCommands'
@@ -104,18 +105,11 @@ export default function Home() {
         <div className="absolute top-[30rem] -left-32 w-[420px] h-[420px] bg-outline-variant/10 blur-[120px] pointer-events-none rounded-full"></div>
         <div className="absolute top-[60rem] -right-32 w-[480px] h-[480px] bg-primary/5 blur-[130px] pointer-events-none rounded-full"></div>
 
-        {/* HERO SECTION */}
-        <section className="relative max-w-6xl mx-auto px-6 lg:px-12 pt-12 pb-12 md:pt-20 md:pb-16 flex flex-col items-center text-center">
-          {/* Headline */}
+        {/* ================= SCREEN 1: CLEAN LANDING SCREEN ================= */}
+        <section className="relative min-h-[calc(100vh-4rem)] flex flex-col justify-center items-center text-center px-6 lg:px-12 py-12">
+          {/* Headline with Silky Smooth Word Transition */}
           <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight max-w-4xl leading-tight mb-6">
-            Give your Claude Code sounds on every{' '}
-            <span className="text-primary-container inline-flex relative h-[1.15em] overflow-hidden align-baseline">
-              <span className="rotating-events-track italic">
-                <span className="h-[1.15em] flex items-center">tool call.</span>
-                <span className="h-[1.15em] flex items-center text-[#ffb4ab]">error.</span>
-                <span className="h-[1.15em] flex items-center text-[#61C554]">success.</span>
-              </span>
-            </span>
+            Give your Claude Code sounds on every <RotatingWord />
           </h1>
 
           {/* Subtitle */}
@@ -156,29 +150,39 @@ export default function Home() {
             </a>
           </div>
 
-          {/* Quick Metrics Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-14 pt-8 w-full max-w-3xl border-t border-outline-variant/20">
-            <div className="flex flex-col items-center">
-              <span className="font-label-md text-label-md text-primary-container font-semibold">&lt; 0.2ms</span>
-              <span className="font-body-sm text-body-sm text-on-surface-variant">DSP Dispatch Latency</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="font-label-md text-label-md text-tertiary-fixed font-semibold">100% Offline</span>
-              <span className="font-body-sm text-body-sm text-on-surface-variant">Zero Cloud Telemetry</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="font-label-md text-label-md text-tertiary-fixed font-semibold">Native Audio</span>
-              <span className="font-body-sm text-body-sm text-on-surface-variant">CoreAudio &amp; ALSA Fork</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="font-label-md text-label-md text-tertiary-fixed font-semibold">7 Soundpacks</span>
-              <span className="font-body-sm text-body-sm text-on-surface-variant">Fully Customizable WAVs</span>
-            </div>
+          {/* Scroll Down Indicator */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-tertiary/60 hover:text-primary-container transition-colors">
+            <a href="#claude-desktop-demo" aria-label="Scroll to live demo" className="flex flex-col items-center gap-1">
+              <span className="font-label-sm text-[10px] uppercase tracking-widest text-outline">Interactive Demo</span>
+              <span className="material-symbols-outlined text-[18px] animate-bounce">expand_more</span>
+            </a>
           </div>
         </section>
 
-        {/* INTERACTIVE DESKTOP & TERMINAL SIMULATION */}
+        {/* ================= SCREEN 2: HEADING & INTERACTIVE SIMULATION ================= */}
         <DesktopSimulation />
+
+        {/* QUICK METRICS STRIP */}
+        <section className="max-w-5xl mx-auto px-6 py-10">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 p-6 rounded-2xl bg-surface-container-low border border-outline-variant/15">
+            <div className="flex flex-col items-center text-center">
+              <span className="font-label-md text-label-md text-primary-container font-semibold">&lt; 0.2ms</span>
+              <span className="font-body-sm text-body-sm text-on-surface-variant">DSP Dispatch Latency</span>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="font-label-md text-label-md text-tertiary-fixed font-semibold">100% Offline</span>
+              <span className="font-body-sm text-body-sm text-on-surface-variant">Zero Cloud Telemetry</span>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="font-label-md text-label-md text-tertiary-fixed font-semibold">Native Audio</span>
+              <span className="font-body-sm text-body-sm text-on-surface-variant">CoreAudio &amp; ALSA Fork</span>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="font-label-md text-label-md text-tertiary-fixed font-semibold">7 Soundpacks</span>
+              <span className="font-body-sm text-body-sm text-on-surface-variant">Customizable WAVs</span>
+            </div>
+          </div>
+        </section>
 
         {/* INTERACTIVE SOUNDBOARD MATRIX */}
         <SoundboardMatrix />
