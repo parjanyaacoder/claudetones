@@ -5,9 +5,6 @@ import { useCallback, useState } from 'react'
 import { EVENTS, soundsFor } from '@/lib/catalog'
 import type { Sound } from '@/lib/catalog'
 
-// One shared player for the whole soundboard — only one clip plays at a time.
-// Kept module-level (not a ref/state) so it's created lazily on the client and
-// never participates in render or effect dependencies.
 let sharedAudio: HTMLAudioElement | null = null
 
 function getAudio(): HTMLAudioElement | null {
@@ -41,7 +38,7 @@ function SoundButton({
   onPlay: (sound: Sound, id: string) => void
 }) {
   const isPlaying = playing === id
-  const isPro = sound.tier === 'pro'
+  const isArcade = sound.theme === 'arcade'
   return (
     <button
       type="button"
@@ -49,27 +46,31 @@ function SoundButton({
       aria-pressed={isPlaying}
       className={`group flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition ${
         isPlaying
-          ? 'border-pop bg-pop/10 text-white'
+          ? 'border-pop bg-pop/15 text-white shadow-lg shadow-pop/10'
           : 'border-line bg-ink-card/60 text-white/90 hover:border-pop/60 hover:bg-ink-card'
       }`}
     >
       <span
-        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs ${
-          isPro ? 'bg-gold/15 text-gold' : 'bg-mint/15 text-mint'
+        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+          isPlaying
+            ? 'bg-pop text-ink'
+            : isArcade
+            ? 'bg-gold/15 text-gold group-hover:bg-gold/25'
+            : 'bg-mint/15 text-mint group-hover:bg-mint/25'
         }`}
       >
-        {isPlaying ? <Equalizer /> : isPro ? '★' : '▶'}
+        {isPlaying ? <Equalizer /> : '▶'}
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-medium">{sound.name}</span>
         <span className="block truncate text-xs text-muted">{sound.vibe}</span>
       </span>
       <span
-        className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-          isPro ? 'bg-gold/15 text-gold' : 'bg-mint/15 text-mint'
+        className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+          isArcade ? 'bg-gold/15 text-gold' : 'bg-mint/15 text-mint'
         }`}
       >
-        {isPro ? 'Pro' : 'Free'}
+        {isArcade ? 'Arcade' : 'Minimal'}
       </span>
     </button>
   )
@@ -99,41 +100,50 @@ export default function Soundboard() {
   )
 
   return (
-    <div className="space-y-2.5">
-      {EVENTS.map(event => {
-        const { free, pro } = soundsFor(event.key)
-        return (
-          <div
-            key={event.key}
-            className="rounded-2xl border border-line bg-ink-soft/70 p-3 sm:p-4"
-          >
-            <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span className="text-lg" aria-hidden>
-                {event.emoji}
-              </span>
-              <h3 className="text-sm font-semibold text-white">{event.title}</h3>
-              <code className="rounded bg-ink px-1.5 py-0.5 font-mono text-[11px] text-muted">
-                {event.trigger}
-              </code>
-              <p className="w-full text-xs text-muted">{event.description}</p>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between pb-2 border-b border-line/60">
+        <span className="text-xs font-mono uppercase tracking-wider text-muted">
+          7 Universal Audio Triggers
+        </span>
+        <span className="text-xs text-muted">Click any sound to listen</span>
+      </div>
+
+      <div className="grid gap-3">
+        {EVENTS.map(event => {
+          const { minimal, arcade } = soundsFor(event.key)
+          return (
+            <div
+              key={event.key}
+              className="rounded-2xl border border-line bg-ink-soft/70 p-3.5 transition hover:border-line/80 sm:p-4"
+            >
+              <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span className="text-lg" aria-hidden>
+                  {event.emoji}
+                </span>
+                <h3 className="text-sm font-semibold text-white">{event.title}</h3>
+                <code className="rounded bg-ink px-1.5 py-0.5 font-mono text-[11px] text-muted">
+                  {event.trigger}
+                </code>
+                <p className="w-full text-xs text-muted">{event.description}</p>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <SoundButton
+                  sound={minimal}
+                  id={`${event.key}-minimal`}
+                  playing={playing}
+                  onPlay={play}
+                />
+                <SoundButton
+                  sound={arcade}
+                  id={`${event.key}-arcade`}
+                  playing={playing}
+                  onPlay={play}
+                />
+              </div>
             </div>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <SoundButton
-                sound={free}
-                id={`${event.key}-free`}
-                playing={playing}
-                onPlay={play}
-              />
-              <SoundButton
-                sound={pro}
-                id={`${event.key}-pro`}
-                playing={playing}
-                onPlay={play}
-              />
-            </div>
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </div>
   )
 }

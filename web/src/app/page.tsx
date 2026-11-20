@@ -1,52 +1,58 @@
 import Link from 'next/link'
 
-import BuyButton from '@/components/BuyButton'
 import CopyButton from '@/components/CopyButton'
 import Soundboard from '@/components/Soundboard'
-import { GITHUB_URL, INSTALL_COMMANDS, PRO_PRICE, SOUNDS } from '@/lib/catalog'
+import { GITHUB_URL, INSTALL_COMMANDS, SOUNDS } from '@/lib/catalog'
 
 const installSnippet = INSTALL_COMMANDS.join('\n')
 
 function Logo() {
   return (
-    <span className="inline-flex items-center gap-2">
-      <span className="flex h-6 w-6 items-end justify-center gap-0.5 rounded-md bg-pop/15 p-1">
-        <span className="h-2 w-0.5 rounded-full bg-pop" />
-        <span className="h-3.5 w-0.5 rounded-full bg-pop" />
-        <span className="h-1.5 w-0.5 rounded-full bg-pop" />
+    <span className="inline-flex items-center gap-2.5">
+      <span className="flex h-7 w-7 items-end justify-center gap-0.5 rounded-lg bg-pop/15 p-1.5 shadow-inner">
+        <span className="h-2 w-1 rounded-full bg-pop" />
+        <span className="h-4 w-1 rounded-full bg-pop animate-pulse" />
+        <span className="h-2.5 w-1 rounded-full bg-pop" />
       </span>
-      <span className="font-semibold tracking-tight text-white">claudetones</span>
+      <span className="font-bold tracking-tight text-white text-base">claudetones</span>
     </span>
   )
 }
 
 function Nav() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-ink/80 backdrop-blur">
-      <nav className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
+    <header className="sticky top-0 z-40 border-b border-line/80 bg-ink/85 backdrop-blur-md">
+      <nav className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5">
         <Link href="/" aria-label="claudetones home">
           <Logo />
         </Link>
-        <div className="hidden items-center gap-6 text-sm text-muted sm:flex">
-          <a className="hover:text-white" href="#sounds">
-            Sounds
+        <div className="hidden items-center gap-7 text-sm font-medium text-muted sm:flex">
+          <a className="transition hover:text-white" href="#sounds">
+            Soundboard
           </a>
-          <a className="hover:text-white" href="#how">
+          <a className="transition hover:text-white" href="#how">
             How it works
           </a>
-          <a className="hover:text-white" href="#pricing">
-            Pricing
+          <a className="transition hover:text-white" href="#custom">
+            Custom Sounds
           </a>
-          <a className="hover:text-white" href={GITHUB_URL} target="_blank" rel="noreferrer">
-            GitHub
+          <a className="transition hover:text-white" href="#commands">
+            Commands
           </a>
         </div>
-        <a
-          href="#pricing"
-          className="rounded-lg bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-white/20"
-        >
-          Get Pro
-        </a>
+        <div className="flex items-center gap-3">
+          <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl border border-line bg-ink-card/80 px-3.5 py-1.5 text-sm font-medium text-white transition hover:border-pop/60 hover:bg-ink-soft"
+          >
+            <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+              <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+            </svg>
+            <span>Star on GitHub</span>
+          </a>
+        </div>
       </nav>
     </header>
   )
@@ -54,14 +60,14 @@ function Nav() {
 
 function InstallBlock() {
   return (
-    <div className="rounded-2xl border border-line bg-ink-soft/80 p-4">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <span className="font-mono text-xs uppercase tracking-wider text-muted">
-          Install in Claude Code
+    <div className="rounded-2xl border border-line bg-ink-soft/90 p-4 shadow-xl">
+      <div className="mb-2.5 flex items-center justify-between gap-3">
+        <span className="font-mono text-xs uppercase tracking-wider text-muted font-semibold">
+          ⚡ 1-Click Install in Claude Code
         </span>
-        <CopyButton value={installSnippet} label="Copy" />
+        <CopyButton value={installSnippet} label="Copy Commands" />
       </div>
-      <pre className="overflow-x-auto font-mono text-sm leading-relaxed text-mint">
+      <pre className="overflow-x-auto rounded-xl bg-ink p-3 font-mono text-sm leading-relaxed text-mint">
         {INSTALL_COMMANDS.map(cmd => (
           <div key={cmd}>
             <span className="select-none text-muted">$ </span>
@@ -76,53 +82,84 @@ function InstallBlock() {
 function Hero() {
   return (
     <section className="mx-auto max-w-5xl px-6 pt-16 pb-12 sm:pt-24">
-      <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-line bg-ink-soft px-3 py-1 font-mono text-xs text-muted">
-        <span className="h-1.5 w-1.5 rounded-full bg-mint" />A Claude Code plugin
-      </p>
-      <h1 className="max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-6xl">
+      <div className="flex flex-wrap items-center gap-2.5 mb-6">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-mint/30 bg-mint/10 px-3 py-1 font-mono text-xs font-semibold text-mint">
+          <span className="h-2 w-2 rounded-full bg-mint animate-ping" />
+          100% Free & Open Source
+        </span>
+        <span className="rounded-full border border-line bg-ink-soft px-3 py-1 font-mono text-xs text-muted">
+          Official Claude Code Mod
+        </span>
+      </div>
+
+      <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.15] tracking-tight text-white sm:text-6xl">
         Give your Claude Code sessions a{' '}
-        <span className="bg-gradient-to-r from-pop to-pop-2 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-pop via-pop-2 to-mint bg-clip-text text-transparent">
           soundtrack
         </span>
         .
       </h1>
-      <p className="mt-6 max-w-2xl text-lg text-muted">
-        claudetones plays a sound at every beat of a session — a chime when it opens, a tick
-        while Claude thinks, a ding when it&apos;s done, and a sting the moment something
-        breaks. Seven events, zero config.
+
+      <p className="mt-6 max-w-2xl text-lg text-muted leading-relaxed">
+        claudetones plays crisp audio cues at every beat of your workflow — a chime when you open the terminal, a tick while Claude thinks, a click on every Bash command, and a victory fanfare when your task lands.
       </p>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-        <div className="space-y-4">
+      <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <div className="space-y-5">
           <InstallBlock />
-          <div className="flex flex-wrap items-center gap-4">
-            <BuyButton>{`Get the Pro pack — ${PRO_PRICE} once`}</BuyButton>
+          <div className="flex flex-wrap items-center gap-4 pt-1">
             <a
               href="#sounds"
-              className="text-sm font-medium text-muted underline-offset-4 hover:text-white hover:underline"
+              className="inline-flex items-center gap-2 rounded-xl bg-pop px-5 py-3 text-sm font-semibold text-ink transition hover:bg-pop/90 shadow-lg shadow-pop/20"
             >
-              Hear the sounds ↓
+              <span>Play Interactive Soundboard</span>
+              <span>↓</span>
+            </a>
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-line bg-ink-card px-5 py-3 text-sm font-medium text-white transition hover:border-pop/60"
+            >
+              <span>View Source</span>
             </a>
           </div>
           <p className="text-xs text-muted">
-            Free pack included. {SOUNDS.length} sounds, works wherever Claude Code runs.
+            Zero setup required • Runs completely offline • Built-in volume leveling
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { n: '7', label: 'events covered' },
-            { n: String(SOUNDS.length), label: 'sounds' },
-            { n: '0', label: 'lines of config' },
-          ].map(stat => (
-            <div
-              key={stat.label}
-              className="rounded-2xl border border-line bg-ink-card/60 px-4 py-5 text-center"
-            >
-              <div className="text-3xl font-bold text-white">{stat.n}</div>
-              <div className="mt-1 text-xs text-muted">{stat.label}</div>
+        {/* Mock Terminal Card */}
+        <div className="rounded-2xl border border-line bg-ink-card/80 p-5 font-mono text-xs shadow-2xl backdrop-blur">
+          <div className="mb-4 flex items-center justify-between border-b border-line/60 pb-3">
+            <div className="flex gap-1.5">
+              <span className="h-3 w-3 rounded-full bg-red-500/80" />
+              <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
+              <span className="h-3 w-3 rounded-full bg-green-500/80" />
             </div>
-          ))}
+            <span className="text-[11px] text-muted font-sans">terminal — zsh</span>
+          </div>
+          <div className="space-y-3 leading-relaxed">
+            <div>
+              <span className="text-muted">$ </span>
+              <span className="text-white font-semibold">claude</span>
+              <div className="text-mint pl-4">🎵 session.start → Launch Chime</div>
+            </div>
+            <div>
+              <span className="text-muted">&gt; </span>
+              <span className="text-white">refactor auth & run test suite</span>
+              <div className="text-gold pl-4">💭 turn.start → Deep Reasoning Ticker</div>
+            </div>
+            <div>
+              <span className="text-muted">⚡ </span>
+              <span className="text-white">Bash: npm test</span>
+              <div className="text-pop pl-4">⌨️ tool.call → Sci-Fi Confirm Click</div>
+            </div>
+            <div>
+              <span className="text-mint font-bold">✔ 14 tests passing</span>
+              <div className="text-mint pl-4">🎉 turn.complete → Level Complete Fanfare</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -131,15 +168,14 @@ function Hero() {
 
 function Sounds() {
   return (
-    <section id="sounds" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-14">
-      <h2 className="text-3xl font-bold tracking-tight text-white">Hear it first.</h2>
-      <p className="mt-3 max-w-2xl text-muted">
-        Every event ships with a free sound and a Pro alternative. Tap any button to play
-        it — green is the free pack, gold is Pro.
-      </p>
-      <div className="mt-8">
-        <Soundboard />
+    <section id="sounds" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-16">
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold tracking-tight text-white">Interactive Soundboard</h2>
+        <p className="mt-2 text-muted">
+          Click any button below to audition the built-in sound themes. Every event includes both a clean <strong>Minimal</strong> chime and a retro <strong>Arcade</strong> synth.
+        </p>
       </div>
+      <Soundboard />
     </section>
   )
 }
@@ -148,31 +184,31 @@ function HowItWorks() {
   const steps = [
     {
       n: '1',
-      title: 'Install the plugin',
-      body: 'Two commands add the marketplace and install claudetones. No accounts, no config files.',
+      title: 'One-Click Install',
+      body: 'Add the plugin from the marketplace. It immediately activates in your next Claude Code session without touching config files.',
     },
     {
       n: '2',
-      title: 'It scores itself',
-      body: 'claudetones hooks the session lifecycle and plays the right sound for each event automatically — free sounds by default.',
+      title: 'Pure Hook Lifecycle',
+      body: 'Hooks directly into the engine lifecycle (session.start, turn.start, tool.call, error, complete) with non-blocking audio dispatch.',
     },
     {
       n: '3',
-      title: 'Go Pro for the meme pack',
-      body: 'One key swaps every free sound for its Pro sibling: Jeopardy, Metal Gear, GTA, and friends.',
+      title: '100% Offline & Lightweight',
+      body: 'Zero network calls, no cloud telemetry, and no DRM. Native audio playback using your macOS system audio player.',
     },
   ]
   return (
-    <section id="how" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-14">
+    <section id="how" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-16 border-t border-line/60">
       <h2 className="text-3xl font-bold tracking-tight text-white">How it works</h2>
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+      <div className="mt-8 grid gap-5 sm:grid-cols-3">
         {steps.map(step => (
-          <div key={step.n} className="rounded-2xl border border-line bg-ink-soft/70 p-5">
-            <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-full bg-pop/15 font-mono text-sm font-semibold text-pop">
+          <div key={step.n} className="rounded-2xl border border-line bg-ink-soft/70 p-6">
+            <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-xl bg-pop/15 font-mono text-sm font-bold text-pop">
               {step.n}
             </div>
-            <h3 className="font-semibold text-white">{step.title}</h3>
-            <p className="mt-2 text-sm text-muted">{step.body}</p>
+            <h3 className="font-semibold text-white text-base">{step.title}</h3>
+            <p className="mt-2 text-sm text-muted leading-relaxed">{step.body}</p>
           </div>
         ))}
       </div>
@@ -180,63 +216,55 @@ function HowItWorks() {
   )
 }
 
-function Pricing() {
+function CustomSoundsGuide() {
   return (
-    <section id="pricing" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-14">
-      <h2 className="text-3xl font-bold tracking-tight text-white">Simple pricing</h2>
-      <p className="mt-3 text-muted">Pay once. It&apos;s a file, not a subscription.</p>
-      <div className="mt-8 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-line bg-ink-soft/70 p-6">
-          <h3 className="text-lg font-semibold text-white">Free</h3>
-          <div className="mt-2 text-4xl font-extrabold text-white">$0</div>
-          <ul className="mt-6 space-y-2 text-sm text-muted">
-            {[
-              'All 7 events covered',
-              'One free sound per event',
-              'Session lifecycle + tool calls + errors',
-              '/claudetones mute built in',
-            ].map(item => (
-              <li key={item} className="flex gap-2">
-                <span className="text-mint">✓</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-6">
-            <InstallBlock />
-          </div>
-        </div>
-
-        <div className="relative rounded-2xl border border-pop/50 bg-gradient-to-b from-pop/10 to-ink-soft/70 p-6">
-          <span className="absolute right-5 top-5 rounded-full bg-pop px-2.5 py-0.5 text-[11px] font-semibold text-ink">
-            Pro
+    <section id="custom" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-16 border-t border-line/60">
+      <div className="rounded-3xl border border-line bg-gradient-to-br from-ink-soft via-ink-card to-ink p-8 sm:p-10 shadow-2xl">
+        <div className="max-w-2xl">
+          <span className="font-mono text-xs uppercase tracking-wider text-pop font-semibold">
+            BYOS • Bring Your Own Sounds
           </span>
-          <h3 className="text-lg font-semibold text-white">Pro Pack</h3>
-          <div className="mt-2 text-4xl font-extrabold text-white">
-            {PRO_PRICE}
-            <span className="ml-1 text-sm font-normal text-muted">once</span>
-          </div>
-          <ul className="mt-6 space-y-2 text-sm text-muted">
-            {[
-              'All 7 Pro sounds unlocked',
-              'Each replaces its free sibling',
-              'Activates on 2 devices',
-              'Lifetime updates to the Pro pack',
-              'Unlock with one key — no account',
-            ].map(item => (
-              <li key={item} className="flex gap-2">
-                <span className="text-gold">★</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-6">
-            <BuyButton>Buy Pro — {PRO_PRICE}</BuyButton>
-            <p className="mt-3 text-xs text-muted">
-              Secure checkout by Dodo Payments. Your key appears instantly after payment.
-            </p>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-white">
+            Use your favorite meme sounds locally
+          </h2>
+          <p className="mt-3 text-muted leading-relaxed">
+            Want Windows XP startup, Vine booms, or GTA victory fanfares? Drop any personal <code className="rounded bg-ink px-1.5 py-0.5 text-xs text-white">.mp3</code> or <code className="rounded bg-ink px-1.5 py-0.5 text-xs text-white">.wav</code> into your local sounds directory.
+          </p>
+
+          <div className="mt-6 space-y-3 font-mono text-xs text-mint">
+            <div className="rounded-xl border border-line/80 bg-ink p-3.5">
+              <span className="text-muted"># 1. Drop your custom audio into the sounds directory:</span>
+              <div className="text-white mt-1">~/.claude/plugins/claudetones/sounds/my-custom-sound.mp3</div>
+            </div>
+            <div className="rounded-xl border border-line/80 bg-ink p-3.5">
+              <span className="text-muted"># 2. Test it instantly inside Claude Code:</span>
+              <div className="text-white mt-1">/claudetones test done</div>
+            </div>
           </div>
         </div>
+      </div>
+    </section>
+  )
+}
+
+function Commands() {
+  const cmds = [
+    { cmd: '/claudetones', desc: 'Toggle mute on or off across your sessions' },
+    { cmd: '/claudetones test [event]', desc: 'Audition a sound immediately (e.g. /claudetones test error)' },
+    { cmd: '/claudetones status', desc: 'Check whether audio is currently muted or active' },
+    { cmd: '/oops', desc: 'Caught Claude hallucinating? Plays the sad sound even when muted' },
+  ]
+  return (
+    <section id="commands" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-16 border-t border-line/60">
+      <h2 className="text-3xl font-bold tracking-tight text-white">Slash Commands</h2>
+      <p className="mt-2 text-muted">Control your audio environment directly inside your terminal.</p>
+      <div className="mt-6 divide-y divide-line rounded-2xl border border-line bg-ink-soft/70 overflow-hidden">
+        {cmds.map(c => (
+          <div key={c.cmd} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-2">
+            <code className="font-mono text-sm text-pop font-semibold">{c.cmd}</code>
+            <span className="text-sm text-muted">{c.desc}</span>
+          </div>
+        ))}
       </div>
     </section>
   )
@@ -245,41 +273,33 @@ function Pricing() {
 function Faq() {
   const items = [
     {
-      q: 'Is this an MCP server?',
-      a: 'No. claudetones is a pure Claude Code plugin — it hooks the session lifecycle and plays audio locally. Nothing runs in the cloud.',
+      q: 'Is claudetones completely free?',
+      a: 'Yes, 100% free and open-source under the MIT license. No paywalls, no subscriptions, and no accounts required.',
     },
     {
-      q: 'Will it slow Claude down?',
-      a: 'No. Sounds are fire-and-forget: the hook kicks off the clip and returns immediately, so nothing blocks the model.',
+      q: 'Will it slow down Claude Code or block tools?',
+      a: 'Never. Sounds are dispatched asynchronously (fire-and-forget). The hook notifies the audio player and immediately lets Claude continue its turn without delay.',
     },
     {
-      q: 'What do I get for Pro?',
-      a: 'The meme pack: one alternate sound for each of the seven events (Jeopardy while it thinks, Metal Gear on tool calls, GTA on done…). Unlock it with a single key.',
+      q: 'How does it play audio without external apps?',
+      a: 'It uses Claude Code’s native $.audio.play engine API, which interacts with your operating system’s audio layer with zero latency.',
     },
     {
-      q: 'How many machines can I use?',
-      a: 'Two devices per key. The key activates on first use and remembers the machines it has seen.',
-    },
-    {
-      q: 'Can I use my own sounds?',
-      a: 'Not yet — custom sound packs and per-event config are on the roadmap. Pro buyers get lifetime updates.',
-    },
-    {
-      q: 'Refunds?',
-      a: 'Dodo Payments is the merchant of record and handles receipts and refunds. Email support and we’ll make it right.',
+      q: 'Can I mute it during meetings or calls?',
+      a: 'Yes! Just type /claudetones to toggle mute instantly. Your mute preference is remembered across sessions.',
     },
   ]
   return (
-    <section id="faq" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-14">
-      <h2 className="text-3xl font-bold tracking-tight text-white">Questions</h2>
+    <section id="faq" className="mx-auto max-w-5xl scroll-mt-20 px-6 py-16 border-t border-line/60">
+      <h2 className="text-3xl font-bold tracking-tight text-white">Frequently Asked Questions</h2>
       <div className="mt-8 divide-y divide-line rounded-2xl border border-line bg-ink-soft/70">
         {items.map(item => (
-          <details key={item.q} className="group px-5 py-4">
+          <details key={item.q} className="group px-6 py-4">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white">
               {item.q}
               <span className="text-muted transition group-open:rotate-45">+</span>
             </summary>
-            <p className="mt-3 text-sm text-muted">{item.a}</p>
+            <p className="mt-3 text-sm text-muted leading-relaxed">{item.a}</p>
           </details>
         ))}
       </div>
@@ -289,28 +309,18 @@ function Faq() {
 
 function Footer() {
   return (
-    <footer className="mt-10 border-t border-line/80">
+    <footer className="border-t border-line/80 bg-ink">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-6 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
         <Logo />
-        <div className="flex flex-wrap gap-5">
-          <a className="hover:text-white" href="#sounds">
-            Sounds
+        <div className="flex flex-wrap items-center gap-6">
+          <a className="hover:text-white transition" href="#sounds">
+            Soundboard
           </a>
-          <a className="hover:text-white" href={GITHUB_URL} target="_blank" rel="noreferrer">
+          <a className="hover:text-white transition" href={GITHUB_URL} target="_blank" rel="noreferrer">
             GitHub
           </a>
-          <a className="hover:text-white" href="mailto:support@claudetones.dev">
-            Support
-          </a>
+          <span className="text-xs text-muted/60">Released under MIT License</span>
         </div>
-      </div>
-      <div className="mx-auto max-w-5xl px-6 pb-10">
-        <p className="text-xs leading-relaxed text-muted/80">
-          claudetones is an independent project and is not affiliated with, endorsed by, or
-          sponsored by any game studio, film, or music rights holder. Clip names are used
-          descriptively. Pro purchasers license the software and the service of sourcing
-          and organizing the clips.
-        </p>
       </div>
     </footer>
   )
@@ -318,16 +328,17 @@ function Footer() {
 
 export default function Home() {
   return (
-    <>
+    <div className="min-h-screen bg-ink text-white selection:bg-pop/30">
       <Nav />
       <main>
         <Hero />
         <Sounds />
         <HowItWorks />
-        <Pricing />
+        <CustomSoundsGuide />
+        <Commands />
         <Faq />
       </main>
       <Footer />
-    </>
+    </div>
   )
 }

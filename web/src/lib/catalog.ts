@@ -1,11 +1,5 @@
-// The clip catalog for the marketing soundboard. This is the website's mirror of
-// the mod's hooks/logic.ts: same 7 universal events, same free/paid split, same
-// files. Keep them in sync — if you add a clip to logic.ts, add a row here so the
-// site can preview it.
-//
-// Audio lives in public/sounds/ and is served at /sounds/<file>. The Pro clips are
-// public *previews* for the soundboard's sales pitch; the real, unlocked delivery
-// moves to the private R2 bucket at launch (see the anti-piracy plan).
+// The clip catalog for the marketing soundboard.
+// 100% Free & Open Source for Claude Code.
 
 export type EventKey =
   | 'session_start'
@@ -21,9 +15,7 @@ export type EventMeta = {
   index: number
   emoji: string
   title: string
-  /** The engine hook that fires it. */
   trigger: string
-  /** One line of what it feels like. */
   description: string
 }
 
@@ -34,102 +26,100 @@ export const EVENTS: EventMeta[] = [
     emoji: '🚀',
     title: 'Session opens',
     trigger: 'session.start',
-    description: 'A little chime every time you sit down to work.',
+    description: 'A cheerful chime every time you start coding.',
   },
   {
     key: 'reasoning',
     index: 2,
     emoji: '💭',
-    title: 'Claude starts thinking',
+    title: 'Claude thinking',
     trigger: 'turn.start',
-    description: 'A soft blip as a turn begins.',
+    description: 'A soft blip as Claude starts generating thoughts.',
   },
   {
     key: 'long_reasoning',
     index: 3,
     emoji: '⏳',
-    title: 'Still thinking (>8s)',
+    title: 'Deep ponder (>8s)',
     trigger: 'turn.start + 8s timer',
-    description: 'A clock tick when a turn drags on.',
+    description: 'A clock tick when Claude tackles a complex turn.',
   },
   {
     key: 'terminal_command',
     index: 4,
     emoji: '⌨️',
-    title: 'A shell command runs',
+    title: 'Shell command',
     trigger: 'tool.call · Bash',
-    description: 'A keyboard click on every Bash call.',
+    description: 'Crisp mechanical feedback on every Bash execution.',
   },
   {
     key: 'tool_call',
     index: 5,
     emoji: '🛠️',
-    title: 'Any other tool runs',
-    trigger: 'tool.call',
-    description: 'A blip whenever a non-Bash tool fires.',
+    title: 'Tool execution',
+    trigger: 'tool.call · Read/Edit/Grep',
+    description: 'A subtle blip whenever a file or tool is accessed.',
   },
   {
     key: 'error',
     index: 6,
     emoji: '💥',
-    title: 'Something fails',
+    title: 'Command failed',
     trigger: 'tool.call → isError',
-    description: 'A sting the instant a command errors out.',
+    description: 'Instant audible sting the moment a test or command fails.',
   },
   {
     key: 'done',
     index: 7,
     emoji: '🎉',
-    title: 'Claude finishes',
+    title: 'Task finished',
     trigger: 'turn.complete',
-    description: 'A satisfying ding when the reply lands.',
+    description: 'A satisfying victory ding when your response is ready.',
   },
 ]
 
 export type Sound = {
   event: EventKey
-  tier: 'free' | 'pro'
+  theme: 'minimal' | 'arcade'
   name: string
-  /** Public URL served from public/sounds/. */
   src: string
   vibe: string
 }
 
 export const SOUNDS: Sound[] = [
   // session_start
-  { event: 'session_start', tier: 'free', name: 'Launch', src: '/sounds/launch.wav', vibe: 'ascending chime' },
-  { event: 'session_start', tier: 'pro', name: 'Synth Power-Up', src: '/sounds/pro-session-start.mp3', vibe: 'electronic startup chord' },
+  { event: 'session_start', theme: 'minimal', name: 'Launch Chime', src: '/sounds/launch.wav', vibe: 'ascending chime' },
+  { event: 'session_start', theme: 'arcade', name: 'Synth Power-Up', src: '/sounds/pro-session-start.mp3', vibe: 'electronic boot chord' },
   // reasoning
-  { event: 'reasoning', tier: 'free', name: 'Ring', src: '/sounds/ring.wav', vibe: 'soft blip' },
-  { event: 'reasoning', tier: 'pro', name: 'Crystal Ambient', src: '/sounds/pro-reasoning.mp3', vibe: 'contemplative chime' },
+  { event: 'reasoning', theme: 'minimal', name: 'Soft Blip', src: '/sounds/ring.wav', vibe: 'subtle blip' },
+  { event: 'reasoning', theme: 'arcade', name: 'Crystal Ambient', src: '/sounds/pro-reasoning.mp3', vibe: 'contemplative chime' },
   // long_reasoning
-  { event: 'long_reasoning', tier: 'free', name: 'Timer', src: '/sounds/timer.mp3', vibe: 'clock tick' },
-  { event: 'long_reasoning', tier: 'pro', name: 'Fast Countdown', src: '/sounds/pro-long-reasoning.mp3', vibe: 'rapid ticker countdown' },
+  { event: 'long_reasoning', theme: 'minimal', name: 'Clock Tick', src: '/sounds/timer.mp3', vibe: 'steady ticker' },
+  { event: 'long_reasoning', theme: 'arcade', name: 'Fast Countdown', src: '/sounds/pro-long-reasoning.mp3', vibe: 'rapid timer countdown' },
   // terminal_command
-  { event: 'terminal_command', tier: 'free', name: 'Keyboard Click', src: '/sounds/keyboard-click.mp3', vibe: 'keystroke' },
-  { event: 'terminal_command', tier: 'pro', name: 'Sci-Fi Confirm', src: '/sounds/pro-terminal-command.mp3', vibe: 'tactical execution ping' },
+  { event: 'terminal_command', theme: 'minimal', name: 'Keyboard Click', src: '/sounds/keyboard-click.mp3', vibe: 'mechanical keystroke' },
+  { event: 'terminal_command', theme: 'arcade', name: 'Sci-Fi Confirm', src: '/sounds/pro-terminal-command.mp3', vibe: 'tactical execution ping' },
   // tool_call
-  { event: 'tool_call', tier: 'free', name: 'Ring', src: '/sounds/ring.wav', vibe: 'soft blip' },
-  { event: 'tool_call', tier: 'pro', name: 'Alert Pulse', src: '/sounds/pro-tool-call.mp3', vibe: 'sharp attention alert' },
+  { event: 'tool_call', theme: 'minimal', name: 'Soft Ring', src: '/sounds/ring.wav', vibe: 'clean notification' },
+  { event: 'tool_call', theme: 'arcade', name: 'Alert Pulse', src: '/sounds/pro-tool-call.mp3', vibe: 'sharp attention alert' },
   // error
-  { event: 'error', tier: 'free', name: 'Error', src: '/sounds/error.wav', vibe: 'clean sting' },
-  { event: 'error', tier: 'pro', name: 'Sad Trombone', src: '/sounds/pro-error.mp3', vibe: 'classic comedy fail horn' },
+  { event: 'error', theme: 'minimal', name: 'Error Sting', src: '/sounds/error.wav', vibe: 'clean failure sting' },
+  { event: 'error', theme: 'arcade', name: 'Sad Trombone', src: '/sounds/pro-error.mp3', vibe: 'classic comedy fail horn' },
   // done
-  { event: 'done', tier: 'free', name: 'Ding', src: '/sounds/ding-sound-effect-1.mp3', vibe: 'success' },
-  { event: 'done', tier: 'pro', name: 'Level Complete', src: '/sounds/pro-done.mp3', vibe: 'triumphant arcade fanfare' },
+  { event: 'done', theme: 'minimal', name: 'Success Ding', src: '/sounds/ding-sound-effect-1.mp3', vibe: 'clean task ding' },
+  { event: 'done', theme: 'arcade', name: 'Level Complete', src: '/sounds/pro-done.mp3', vibe: 'triumphant victory fanfare' },
 ]
 
-export function soundsFor(event: EventKey): { free: Sound; pro: Sound } {
+export function soundsFor(event: EventKey): { minimal: Sound; arcade: Sound } {
   const forEvent = SOUNDS.filter(s => s.event === event)
   return {
-    free: forEvent.find(s => s.tier === 'free')!,
-    pro: forEvent.find(s => s.tier === 'pro')!,
+    minimal: forEvent.find(s => s.theme === 'minimal')!,
+    arcade: forEvent.find(s => s.theme === 'arcade')!,
   }
 }
 
-export const PRO_PRICE = process.env.NEXT_PUBLIC_PRO_PRICE ?? '$12'
 export const GITHUB_URL = 'https://github.com/parjanyaacoder/claudetones'
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://claudetones.dev'
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://claudetones.vercel.app'
 
 /** Commands shown in the install CTA. */
 export const INSTALL_COMMANDS = [

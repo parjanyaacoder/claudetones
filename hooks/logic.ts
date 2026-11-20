@@ -1,12 +1,8 @@
 // Pure config + selection for claudetones. No engine (`$`) or 'claude-code' import, so
 // it is unit-testable and shared by register.ts and the test file.
 //
-// HOW IT WORKS: an event asks for one or more MOODS (priority order). Each CLIP is
-// tagged with moods and a TIER. pickClip() walks the moods, keeps the clips the user
-// is entitled to (free, or free+paid once Pro is unlocked), and returns one at
-// random — or null, and then nothing plays. Add a clip by dropping the file in
-// sounds/ and adding one row to CLIPS below; it instantly serves every event that
-// accepts its mood. Keep EVENTS.md and CLIPS.md (the human-readable spec) in sync.
+// 100% Free & Open Source. Every engine event maps to a claudetones EVENT key; the
+// pure selector turns that into a random mood-matched clip.
 
 export type Mood =
   | 'boot'
@@ -29,7 +25,7 @@ export type Mood =
   | 'meme'
 
 // The 7 universal events every developer hits, in engine order, plus the manual
-// `oops` button. One free + one paid clip each (see CLIPS) — the MVP catalog.
+// `oops` button.
 export type EventKey =
   | 'session_start'
   | 'reasoning'
@@ -40,41 +36,35 @@ export type EventKey =
   | 'done'
   | 'oops'
 
-export type Tier = 'free' | 'paid'
-
-export type ClipEntry = { file: string; moods: Mood[]; tier: Tier }
+export type ClipEntry = { file: string; moods: Mood[]; name?: string }
 
 // The sound library — single source of truth, mirror of CLIPS.md "in the box".
-// `file` is relative to the mod dir, as $.audio.play({ asset }) wants it. Free clips
-// ship with the mod; paid clips activate once /claudetones unlock succeeds.
 export const CLIPS: ClipEntry[] = [
   // session_start
-  { file: 'sounds/launch.wav', moods: ['boot'], tier: 'free' },
-  { file: 'sounds/pro-session-start.mp3', moods: ['boot'], tier: 'paid' },
+  { file: 'sounds/launch.wav', moods: ['boot'], name: 'Launch Chime' },
+  { file: 'sounds/pro-session-start.mp3', moods: ['boot'], name: 'Synth Power-Up' },
   // reasoning
-  { file: 'sounds/ring.wav', moods: ['think', 'ring'], tier: 'free' },
-  { file: 'sounds/pro-reasoning.mp3', moods: ['think'], tier: 'paid' },
+  { file: 'sounds/ring.wav', moods: ['think', 'ring'], name: 'Soft Blip' },
+  { file: 'sounds/pro-reasoning.mp3', moods: ['think'], name: 'Crystal Ambient' },
   // long_reasoning (> 8s on one turn)
-  { file: 'sounds/timer.mp3', moods: ['ponder'], tier: 'free' },
-  { file: 'sounds/pro-long-reasoning.mp3', moods: ['ponder'], tier: 'paid' },
+  { file: 'sounds/timer.mp3', moods: ['ponder'], name: 'Clock Tick' },
+  { file: 'sounds/pro-long-reasoning.mp3', moods: ['ponder'], name: 'Fast Countdown' },
   // terminal_command (a Bash tool call)
-  { file: 'sounds/keyboard-click.mp3', moods: ['type'], tier: 'free' },
-  { file: 'sounds/pro-terminal-command.mp3', moods: ['type'], tier: 'paid' },
+  { file: 'sounds/keyboard-click.mp3', moods: ['type'], name: 'Keyboard Click' },
+  { file: 'sounds/pro-terminal-command.mp3', moods: ['type'], name: 'Sci-Fi Confirm' },
   // tool_call (any other tool)
-  { file: 'sounds/ring.wav', moods: ['ring'], tier: 'free' },
-  { file: 'sounds/pro-tool-call.mp3', moods: ['ring'], tier: 'paid' },
+  { file: 'sounds/ring.wav', moods: ['ring'], name: 'Soft Ring' },
+  { file: 'sounds/pro-tool-call.mp3', moods: ['ring'], name: 'Alert Pulse' },
   // error
-  { file: 'sounds/error.wav', moods: ['error'], tier: 'free' },
-  { file: 'sounds/pro-error.mp3', moods: ['error', 'sad'], tier: 'paid' },
+  { file: 'sounds/error.wav', moods: ['error'], name: 'Error Sting' },
+  { file: 'sounds/pro-error.mp3', moods: ['error', 'sad'], name: 'Sad Trombone' },
   // done
-  { file: 'sounds/ding-sound-effect-1.mp3', moods: ['reward'], tier: 'free' },
-  { file: 'sounds/pro-done.mp3', moods: ['reward'], tier: 'paid' },
+  { file: 'sounds/ding-sound-effect-1.mp3', moods: ['reward'], name: 'Success Ding' },
+  { file: 'sounds/pro-done.mp3', moods: ['reward'], name: 'Level Complete' },
   // manual /oops (fires even while muted)
-  { file: 'sounds/tf_nemesis.mp3', moods: ['sad'], tier: 'free' },
+  { file: 'sounds/tf_nemesis.mp3', moods: ['sad'], name: 'Dramatic Nemesis' },
 ]
 
-// Each event's accepted moods, in priority order — mirror of EVENTS.md. An event
-// with no entitled clip for any of its moods simply stays silent until one is added.
 export const EVENTS: Record<EventKey, Mood[]> = {
   session_start: ['boot'],
   reasoning: ['think'],
@@ -94,7 +84,6 @@ export const GAIN: Partial<Record<EventKey, number>> = {
 }
 
 export const MUTE_KEY = 'muted'
-export const LICENSE_KEY = 'claudetones_license'
 
 export function gainFor(event: EventKey): number {
   return GAIN[event] ?? 1
@@ -102,25 +91,17 @@ export function gainFor(event: EventKey): number {
 
 export type PickOptions = {
   clips?: ClipEntry[]
-  /** Pro is active: paid clips become eligible and win over a free sibling. */
-  unlocked?: boolean
-  /** Injectable RNG so tests are deterministic. */
   rand?: () => number
 }
 
 // Pick a clip for an event. Walk its accepted moods in priority order; for the first
-// mood with any entitled clip, return one at random. When Pro is unlocked a paid
-// clip replaces its free sibling; when locked, only free clips play. null when
-// nothing matches — then nothing plays.
+// mood with any matching clip, return one at random.
 export function pickClip(event: EventKey, options: PickOptions = {}): string | null {
-  const { clips = CLIPS, unlocked = false, rand = Math.random } = options
+  const { clips = CLIPS, rand = Math.random } = options
   for (const mood of EVENTS[event]) {
     const matching = clips.filter(c => c.moods.includes(mood))
     if (matching.length === 0) continue
-    const paid = matching.filter(c => c.tier === 'paid')
-    const pool = unlocked && paid.length > 0 ? paid : matching.filter(c => c.tier === 'free')
-    if (pool.length === 0) continue
-    return pool[Math.min(pool.length - 1, Math.floor(rand() * pool.length))]!.file
+    return matching[Math.min(matching.length - 1, Math.floor(rand() * matching.length))]!.file
   }
   return null
 }
@@ -129,34 +110,37 @@ export function pickClip(event: EventKey, options: PickOptions = {}): string | n
 
 export const CLAUDETONES_USAGE =
   'claudetones commands:\n' +
-  '  /claudetones                     toggle mute\n' +
-  '  /claudetones unlock <key>        activate the Pro pack'
-
-export const LICENSE_PATTERN = /^CLAUDETONES-[A-Z0-9]{4}-[A-Z0-9]{4}$/
-
-export function normalizeLicenseKey(key: string): string {
-  return key.trim().toUpperCase()
-}
-
-export function isLicenseKeyFormat(key: string): boolean {
-  return LICENSE_PATTERN.test(normalizeLicenseKey(key))
-}
+  '  /claudetones              toggle mute\n' +
+  '  /claudetones test [event] test an event sound (e.g. done, error)\n' +
+  '  /claudetones status       show mute status\n' +
+  '  /oops                     caught Claude being wrong'
 
 export type ClaudetonesAction =
   | { kind: 'toggle' }
-  | { kind: 'unlock'; key: string }
+  | { kind: 'test'; event: EventKey }
+  | { kind: 'status' }
+  | { kind: 'help' }
   | { kind: 'error'; message: string }
 
-// Parse the text after `/claudetones`. Pure, so the command surface is testable without
-// the engine: `''` toggles, `unlock <key>` unlocks, anything else explains itself.
+// Parse the text after `/claudetones`.
 export function parseClaudetones(args: string): ClaudetonesAction {
   const trimmed = args.trim()
   if (trimmed === '') return { kind: 'toggle' }
 
   const [head = '', ...rest] = trimmed.split(/\s+/)
-  if (head.toLowerCase() === 'unlock') {
-    const key = rest.join(' ').trim()
-    return key ? { kind: 'unlock', key } : { kind: 'error', message: 'Give me a key: /claudetones unlock CLAUDETONES-XXXX-YYYY' }
+  const sub = head.toLowerCase()
+  if (sub === 'test') {
+    const ev = (rest[0] || 'done').toLowerCase() as EventKey
+    if (ev in EVENTS) {
+      return { kind: 'test', event: ev }
+    }
+    return {
+      kind: 'error',
+      message: `Unknown event: ${ev}. Choose from: ${Object.keys(EVENTS).join(', ')}`,
+    }
   }
+  if (sub === 'status') return { kind: 'status' }
+  if (sub === 'help') return { kind: 'help' }
+
   return { kind: 'error', message: CLAUDETONES_USAGE }
 }
