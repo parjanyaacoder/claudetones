@@ -159,9 +159,9 @@ export default function DesktopSimulation() {
       </div>
 
       {/* Main Showcase Layout: Vertical Stages Stepper (Left) + Square-Proportioned Window (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch max-w-6xl mx-auto w-full">
-        {/* ================= VERTICAL STAGES STEPPER (3.5 cols) ================= */}
-        <div className="lg:col-span-3.5 bg-surface-container-low rounded-2xl p-4 border border-outline-variant/20 shadow-xl flex flex-col justify-between h-[600px] shrink-0">
+      <div className="flex flex-col lg:flex-row gap-5 items-stretch justify-center max-w-6xl mx-auto w-full">
+        {/* ================= VERTICAL STAGES STEPPER ================= */}
+        <div className="w-full lg:w-72 shrink-0 bg-surface-container-low rounded-2xl p-4 border border-outline-variant/20 shadow-xl flex flex-col justify-between h-[600px]">
           <div>
             {/* Header with Auto-play & Replay Controls */}
             <div className="flex items-center justify-between pb-3 border-b border-outline-variant/15">
@@ -261,8 +261,8 @@ export default function DesktopSimulation() {
           </div>
         </div>
 
-        {/* ================= SQUARE-PROPORTIONED WINDOW COMPONENT (8.5 cols) ================= */}
-        <div className="lg:col-span-8.5 w-full">
+        {/* ================= SQUARE-PROPORTIONED WINDOW COMPONENT ================= */}
+        <div className="w-full flex-1 min-w-0">
           {/* ================= 1. CLAUDE CODE DESKTOP APP VIEW ================= */}
           {view === 'desktop' && (
             <div className="relative w-full rounded-2xl bg-[#111113] border border-[#27272a] shadow-2xl overflow-hidden transition-all duration-300 h-[600px] flex flex-col justify-between">
@@ -282,26 +282,20 @@ export default function DesktopSimulation() {
                   </div>
 
                   {/* Window Navigation Icons */}
-                  <div className="flex items-center gap-1 text-[#a1a1aa] text-xs">
-                    <button className="p-1 hover:text-white rounded hover:bg-[#27272a] transition-colors">
+                  <div className="flex items-center gap-1 text-[#71717a] text-xs">
+                    <span className="p-1">
                       <span className="material-symbols-outlined text-[14px]">left_panel_close</span>
-                    </button>
-                    <button className="p-1 hover:text-white rounded hover:bg-[#27272a] transition-colors">
+                    </span>
+                    <span className="p-1">
                       <span className="material-symbols-outlined text-[14px]">chevron_left</span>
-                    </button>
-                    <button className="p-1 hover:text-white rounded hover:bg-[#27272a] transition-colors">
+                    </span>
+                    <span className="p-1">
                       <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-                    </button>
-                    <button className="p-1 hover:text-white rounded hover:bg-[#27272a] transition-colors">
-                      <span className="material-symbols-outlined text-[14px]">search</span>
-                    </button>
-                    <button className="p-1 hover:text-white rounded hover:bg-[#27272a] transition-colors">
-                      <span className="material-symbols-outlined text-[14px]">code</span>
-                    </button>
+                    </span>
                   </div>
 
                   {/* Active Task Selector Dropdown */}
-                  <div className="flex items-center gap-1 text-xs text-[#f4f4f5] font-medium px-2 py-0.5 rounded hover:bg-[#27272a] cursor-pointer">
+                  <div className="flex items-center gap-1 text-xs text-[#f4f4f5] font-medium px-2 py-0.5 rounded bg-[#27272a]/50">
                     <span className="truncate max-w-[150px] sm:max-w-none">Fix product grid layout shift</span>
                     <span className="material-symbols-outlined text-[13px] text-[#71717a]">expand_more</span>
                   </div>
@@ -309,16 +303,7 @@ export default function DesktopSimulation() {
 
                 {/* Right Window Utilities & Live Audio Status */}
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5 text-[#71717a] text-xs hidden sm:flex">
-                    <span className="material-symbols-outlined text-[14px] hover:text-white cursor-pointer">splitscreen</span>
-                    <span className="material-symbols-outlined text-[14px] hover:text-white cursor-pointer">chevron_right</span>
-                    <span className="material-symbols-outlined text-[14px] hover:text-white cursor-pointer">add_box</span>
-                    <span className="material-symbols-outlined text-[14px] hover:text-white cursor-pointer">language</span>
-                    <span className="material-symbols-outlined text-[14px] hover:text-white cursor-pointer">folder</span>
-                    <span className="material-symbols-outlined text-[14px] hover:text-white cursor-pointer">more_horiz</span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 bg-[#27272a] px-2 py-0.5 rounded-full border border-primary-container/40">
+                  <div className="flex items-center gap-1.5 bg-[#27272a] px-2.5 py-0.5 rounded-full border border-primary-container/40">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#61C554] animate-pulse"></span>
                     <span className="text-[10px] font-mono text-tertiary-fixed font-medium">claudetones active</span>
                   </div>
@@ -326,9 +311,9 @@ export default function DesktopSimulation() {
               </div>
 
               {/* Main Body: Sidebar + Conversation Pane (Generous Spacing) */}
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-12 bg-[#111113] overflow-hidden">
-                {/* Left Sidebar (Col 4) with proper breathing room */}
-                <aside className="hidden md:flex md:col-span-4 bg-[#18181b] border-r border-[#27272a] flex-col justify-between p-3.5 select-none text-xs font-sans">
+              <div className="flex-1 flex overflow-hidden bg-[#111113]">
+                {/* Left Sidebar with proper breathing room */}
+                <aside className="hidden md:flex w-52 shrink-0 bg-[#18181b] border-r border-[#27272a] flex-col justify-between p-3.5 select-none text-xs font-sans">
                   <div className="space-y-4 overflow-y-auto">
                     {/* Needs input */}
                     <div className="space-y-1">
@@ -392,8 +377,8 @@ export default function DesktopSimulation() {
                   </div>
                 </aside>
 
-                {/* Right Chat & Task Flow (Col 8) with spacious layout */}
-                <main className="col-span-1 md:col-span-8 flex flex-col justify-between bg-[#111113] p-5 overflow-hidden">
+                {/* Right Chat & Task Flow with spacious layout */}
+                <main className="flex-1 flex flex-col justify-between bg-[#111113] p-5 overflow-hidden min-w-0">
                   <div className="space-y-4">
                     {/* User Prompt Bubble */}
                     <div className="flex justify-end">

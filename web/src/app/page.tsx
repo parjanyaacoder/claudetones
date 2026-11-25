@@ -336,138 +336,46 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer className="w-full bg-[#181615] border-t border-[#2E2B28] mt-auto">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
-            <div className="md:col-span-5 space-y-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-primary-container/20 border border-primary-container/40 flex items-center justify-center text-primary-container">
-                  <span className="material-symbols-outlined text-[18px]">graphic_eq</span>
-                </div>
-                <span className="font-serif text-lg font-medium text-on-surface">claudetones</span>
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-primary-container/20 border border-primary-container/40 flex items-center justify-center text-primary-container">
+                <span className="material-symbols-outlined text-[18px]">graphic_eq</span>
               </div>
-              <p className="font-body-sm text-body-sm text-on-surface-variant max-w-sm leading-relaxed">
-                An acoustic companion and audio design atelier engineered for reflective thinking and rhythmic
-                human-machine dialogue.
-              </p>
-            </div>
-
-            <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-6">
-              <div className="space-y-3">
-                <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline block">
-                  Experience
-                </span>
-                <ul className="space-y-2 font-body-sm text-body-sm">
-                  <li>
-                    <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
-                      Overview
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="text-on-surface-variant hover:text-on-surface transition-colors"
-                      href="#claude-desktop-demo"
-                    >
-                      Interactive App
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="text-on-surface-variant hover:text-on-surface transition-colors"
-                      href="#soundboard-matrix"
-                    >
-                      Soundboard
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="text-on-surface-variant hover:text-on-surface transition-colors"
-                      href="#byos-section"
-                    >
-                      Pack Studio
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-3">
-                <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline block">
-                  Documentation
-                </span>
-                <ul className="space-y-2 font-body-sm text-body-sm">
-                  <li>
-                    <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
-                      Specifications
-                    </a>
-                  </li>
-                  <li>
-                    <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
-                      Web Audio API
-                    </a>
-                  </li>
-                  <li>
-                    <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
-                      Keyboard Cues
-                    </a>
-                  </li>
-                  <li>
-                    <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
-                      Release Notes
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-3">
-                <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline block">
-                  Ecosystem
-                </span>
-                <ul className="space-y-2 font-body-sm text-body-sm">
-                  <li>
-                    <a
-                      className="text-on-surface-variant hover:text-on-surface transition-colors"
-                      href={GITHUB_URL}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      GitHub Repo
-                    </a>
-                  </li>
-                  <li>
-                    <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
-                      Claude Desktop Mod
-                    </a>
-                  </li>
-                  <li>
-                    <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
-                      Anthropic Style Kit
-                    </a>
-                  </li>
-                </ul>
+              <div>
+                <span className="font-serif text-lg font-medium text-on-surface block leading-tight">claudetones</span>
+                <span className="text-xs text-on-surface-variant font-mono">100% Free & Open-Source Claude Code Audio Mod</span>
               </div>
             </div>
-          </div>
 
-          <div className="pt-6 border-t border-[#2E2B28]/60 flex flex-col sm:flex-row items-center justify-between gap-4 font-label-sm text-label-sm text-secondary">
-            <div className="flex items-center gap-2 text-on-surface-variant">
-              <span>© 2025 Claudetones Atelier.</span>
-              <span>Crafted for reflective computation.</span>
-            </div>
-            <div className="flex items-center gap-6 text-on-surface-variant">
-              <a className="hover:text-on-surface transition-colors" href="#">
-                Privacy Policy
+            <nav className="flex flex-wrap items-center justify-center gap-6 text-xs font-mono text-on-surface-variant">
+              <a href="#claude-desktop-demo" className="hover:text-on-surface transition-colors">
+                Interactive App
               </a>
-              <a className="hover:text-on-surface transition-colors" href="#">
-                Acoustic Ethics
+              <a href="#soundboard-matrix" className="hover:text-on-surface transition-colors">
+                Soundboard
+              </a>
+              <a href="#byos-section" className="hover:text-on-surface transition-colors">
+                Pack Studio
+              </a>
+              <a href="#slash-commands" className="hover:text-on-surface transition-colors">
+                Slash Commands
               </a>
               <a
-                className="hover:text-on-surface transition-colors"
                 href={GITHUB_URL}
                 target="_blank"
                 rel="noreferrer"
+                className="hover:text-on-surface transition-colors text-primary-container flex items-center gap-1 font-semibold"
               >
-                GitHub
+                <span>GitHub</span>
+                <span className="material-symbols-outlined text-[13px]">arrow_outward</span>
               </a>
-            </div>
+            </nav>
+          </div>
+
+          <div className="pt-6 mt-6 border-t border-[#2E2B28]/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono text-outline">
+            <span>© 2025 Claudetones • Open-source Claude Code plugin</span>
+            <span>MIT Licensed • Zero Cloud Telemetry</span>
           </div>
         </div>
       </footer>
