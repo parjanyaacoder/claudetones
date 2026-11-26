@@ -47,11 +47,11 @@ Reserved for later packs (the classifier may tag these; no live event uses them 
 | `sounds/pro-done.mp3` | level completed victory fanfare | `reward` | 💎 paid | `done` |
 | `sounds/tf_nemesis.mp3` | dramatic/sad sting | `sad` | 🆓 free | `oops` |
 
-## Wishlist — sourcing ideas by mood
+## Sound Sourcing Policy
 
-Grab these yourself (myinstants, Voicy, soundboard sites) for personal use, drop into
-`sounds/`, then add a row above with the mood + tier shown. Names are just pointers to
-the vibe. New clips flow straight into themed Pro packs.
+All community and bundled sounds for this project are strictly sourced from **[Myinstants](https://www.myinstants.com)**. No other audio platforms are used.
+
+Drop any clips downloaded from Myinstants into `sounds/`, then tag them with the corresponding lifecycle mood in the table below.
 
 | Mood | Clip ideas |
 |---|---|
