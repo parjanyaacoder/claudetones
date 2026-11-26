@@ -17,11 +17,23 @@ import {
 
 const LONG_REASONING_MS = 8000
 const PAUSE_KEY = 'paused'
-const DEBOUNCE_MS = 220
+const DEBOUNCE_MS = 250
+
+const EVENT_PRIORITY: Record<EventKey, number> = {
+  oops: 100,
+  error: 90,
+  done: 80,
+  session_start: 70,
+  long_reasoning: 50,
+  reasoning: 40,
+  terminal_command: 20,
+  tool_call: 10,
+}
 
 let ponder: { cancel: () => void } | null = null
 let currentSessionId: string | null = null
 let lastSoundTime = 0
+let lastEventPriority = 0
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
@@ -171,12 +183,22 @@ async function isSessionActive($: EngineInterface, e?: any): Promise<boolean> {
 }
 
 async function fire($: EngineInterface, event: EventKey, bypassThrottle = false): Promise<void> {
-  // Prevent parallel overlapping sounds from playing on top of each other
   const now = Date.now()
-  if (!bypassThrottle && now - lastSoundTime < DEBOUNCE_MS) {
-    return
+  const priority = EVENT_PRIORITY[event] ?? 10
+  const elapsed = now - lastSoundTime
+
+  // Parallel collision guard:
+  // When multiple events fire simultaneously (e.g. 5 parallel tool calls in one turn):
+  // 1. Equal or lower priority events within the 250ms window are dropped to prevent cacophony.
+  // 2. Higher priority events (e.g. 'error' or 'done') supersede and play immediately.
+  if (!bypassThrottle && elapsed < DEBOUNCE_MS) {
+    if (priority <= lastEventPriority) {
+      return
+    }
   }
+
   lastSoundTime = now
+  lastEventPriority = priority
 
   const file = pickClip(event)
   if (file) void $.audio.play({ asset: file, gain: gainFor(event) }).catch(() => {})
