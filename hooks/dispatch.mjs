@@ -7,7 +7,7 @@
  */
 
 import { spawn } from 'child_process'
-import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync, appendFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { homedir } from 'os'
@@ -27,6 +27,7 @@ const EVENT_SOUND_MAP = {
   file_edit: 'sounds/pro-tool-call.mp3',
   file_read: 'sounds/mouse-click-sound-fx.mp3',
   tool_call: 'sounds/ring.wav',
+  web_search: 'sounds/dialup.mp3',
   mcp_connect: 'sounds/the-bluetooth-device-its-connected-succesfull.mp3',
   mcp_tool_call: 'sounds/magic-reveal-audio.mp3',
   skill_invoke: 'sounds/fairy-sparkle.mp3',
@@ -52,6 +53,7 @@ const EVENT_PRIORITY = {
   session_start: 65,
   subagent_spawn: 60,
   skill_invoke: 55,
+  web_search: 52,
   mcp_tool_call: 50,
   context_compact: 45,
   long_reasoning: 40,
@@ -62,14 +64,23 @@ const EVENT_PRIORITY = {
   tool_call: 10,
 }
 
-// State file for cross-process anti-concurrency lock
+// State & telemetry files
 const STATE_FILE = join(homedir(), '.claude', '.claudetones_state.json')
+const LOG_FILE = join(homedir(), '.claude', 'claudetones_telemetry.log')
 const DEBOUNCE_MS = 250
+
+function logTelemetry(evt, action, sound, priority, elapsedMs, details = '') {
+  try {
+    const time = new Date().toISOString().replace('T', ' ').slice(0, 23)
+    const line = `[${time}] [${evt.toUpperCase().padEnd(18)}] ${action.padEnd(18)} | sound: ${sound} (prio: ${priority}, elapsed: ${elapsedMs}ms) ${details}\n`
+    appendFileSync(LOG_FILE, line)
+  } catch {}
+}
 
 function checkAndLock(evt) {
   const now = Date.now()
   const priority = EVENT_PRIORITY[evt] ?? 10
-  let state = { lastTime: 0, lastPriority: 0 }
+  let state = { lastTime: 0, lastPriority: 0, lastSound: '' }
 
   try {
     if (existsSync(STATE_FILE)) {
@@ -78,14 +89,35 @@ function checkAndLock(evt) {
   } catch {}
 
   const elapsed = now - (state.lastTime || 0)
+  const relPath = EVENT_SOUND_MAP[evt] || 'sounds/ring.wav'
+
   if (elapsed < DEBOUNCE_MS) {
     if (priority <= (state.lastPriority || 0)) {
-      return false // Drop concurrent lower-priority sound
+      logTelemetry(
+        evt,
+        'SKIPPED_COLLISION',
+        relPath,
+        priority,
+        elapsed,
+        `Parallel event within ${DEBOUNCE_MS}ms dropped (prio ${priority} <= ${state.lastPriority})`
+      )
+      return false
+    } else {
+      logTelemetry(
+        evt,
+        'SUPERSEDED_STOPPED',
+        relPath,
+        priority,
+        elapsed,
+        `Preempted previous [${state.lastSound || 'sound'}] (prio ${priority} > ${state.lastPriority})`
+      )
     }
+  } else {
+    logTelemetry(evt, 'PLAYED', relPath, priority, elapsed, 'Dispatched to OS audio process')
   }
 
   try {
-    writeFileSync(STATE_FILE, JSON.stringify({ lastTime: now, lastPriority: priority }))
+    writeFileSync(STATE_FILE, JSON.stringify({ lastTime: now, lastPriority: priority, lastSound: relPath }))
   } catch {}
 
   return true
@@ -96,10 +128,14 @@ function playSound() {
     return
   }
 
-  const relPath = EVENT_SOUND_MAP[event] || 'sounds/ring.wav'
-  const fullPath = join(PLUGIN_ROOT, relPath)
+  let relPath = EVENT_SOUND_MAP[event] || 'sounds/ring.wav'
+  let fullPath = join(PLUGIN_ROOT, relPath)
 
-  if (!existsSync(fullPath)) return
+  // Safe fallback if clip file was not shipped
+  if (!existsSync(fullPath)) {
+    fullPath = join(PLUGIN_ROOT, 'sounds/ring.wav')
+    if (!existsSync(fullPath)) return
+  }
 
   const isMac = process.platform === 'darwin'
   const binary = isMac ? 'afplay' : 'aplay'

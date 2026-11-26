@@ -8,9 +8,10 @@ import {
   pickClip,
   type EventKey,
 } from './logic'
+import { recordTelemetry, readTelemetryLogs, clearTelemetryLogs } from './telemetry'
 
 // claudetones for Claude Code: Expansive Acoustic Architecture
-// Covers Core Lifecycle, MCP Protocol, Agent Skills, Plugins, Subagents, and Memory.
+// Covers Core Lifecycle, Web Search, MCP Protocol, Agent Skills, Plugins, Subagents, and Memory.
 
 const LONG_REASONING_MS = 8000
 const PAUSE_KEY = 'paused'
@@ -27,6 +28,7 @@ const EVENT_PRIORITY: Record<EventKey, number> = {
   session_start: 65,
   subagent_spawn: 60,
   skill_invoke: 55,
+  web_search: 52,
   mcp_tool_call: 50,
   context_compact: 45,
   long_reasoning: 40,
@@ -41,6 +43,7 @@ let ponder: { cancel: () => void } | null = null
 let currentSessionId: string | null = null
 let lastSoundTime = 0
 let lastEventPriority = 0
+let lastPlayedSound = 'none'
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
@@ -69,7 +72,7 @@ export const register: Register = on => {
   })
 
   on('turn.start', async ($, e, next) => {
-    if (await isSessionActive($, e)) {
+    if (await isSessionActive($, e, 'reasoning')) {
       await fire($, 'reasoning')
       schedulePonder($, e)
     }
@@ -107,6 +110,13 @@ export const register: Register = on => {
         } else {
           void fire($, 'terminal_command')
         }
+      } else if (
+        ['WebSearch', 'search_web', 'web_search', 'BraveSearch', 'search', 'fetch'].includes(toolName) ||
+        toolName.toLowerCase().includes('search') ||
+        toolName.startsWith('mcp__brave_search__') ||
+        toolName.startsWith('mcp__google_search__')
+      ) {
+        void fire($, 'web_search')
       } else if (toolName.startsWith('mcp__') || toolName.includes('__')) {
         void fire($, 'mcp_tool_call')
       } else if (toolName === 'Skill' || toolName === 'invoke_skill' || toolName.toLowerCase().includes('skill')) {
@@ -171,6 +181,16 @@ export const register: Register = on => {
           text: `🔊 Status: Active & listening (Session: ${currentSessionId ? currentSessionId.slice(0, 12) : 'active'})`,
         }
       }
+      case 'log': {
+        const logs = readTelemetryLogs(12)
+        return {
+          text: `📋 Claudetones Telemetry & Concurrency Audit Log:\n\n${logs}`,
+        }
+      }
+      case 'clear-log': {
+        clearTelemetryLogs()
+        return { text: '🗑️ Claudetones telemetry log cleared.' }
+      }
       case 'help': {
         return { text: CLAUDETONES_USAGE }
       }
@@ -222,10 +242,25 @@ async function isPaused($: EngineInterface): Promise<boolean> {
   }
 }
 
-async function isSessionActive($: EngineInterface, e?: any): Promise<boolean> {
-  if (!isCurrentSession(e)) return false
-  if (await isPaused($)) return false
-  if (await isMuted($)) return false
+async function isSessionActive($: EngineInterface, e?: any, eventName?: EventKey): Promise<boolean> {
+  if (!isCurrentSession(e)) {
+    if (eventName) {
+      recordTelemetry(eventName, 'SKIPPED_COLLISION', 'none', 0, 0, 'Event from background/inactive session ignored')
+    }
+    return false
+  }
+  if (await isPaused($)) {
+    if (eventName) {
+      recordTelemetry(eventName, 'SKIPPED_PAUSED', 'none', 0, 0, 'Playback paused by user')
+    }
+    return false
+  }
+  if (await isMuted($)) {
+    if (eventName) {
+      recordTelemetry(eventName, 'SKIPPED_MUTED', 'none', 0, 0, 'Playback muted by user')
+    }
+    return false
+  }
   return true
 }
 
@@ -233,24 +268,51 @@ async function fire($: EngineInterface, event: EventKey, bypassThrottle = false)
   const now = Date.now()
   const priority = EVENT_PRIORITY[event] ?? 10
   const elapsed = now - lastSoundTime
+  const file = pickClip(event) || 'sounds/ring.wav'
 
   // Parallel collision guard:
   // When multiple events fire simultaneously (e.g. 5 parallel tool calls in one turn):
   // 1. Equal or lower priority events within the 250ms window are dropped to prevent cacophony.
-  // 2. Higher priority events (e.g. 'error', 'done', 'permission_request') supersede immediately.
+  // 2. Higher priority events (e.g. 'error', 'done', 'permission_request') supersede and stop previous sound.
   if (!bypassThrottle && elapsed < DEBOUNCE_MS) {
     if (priority <= lastEventPriority) {
+      recordTelemetry(
+        event,
+        'SKIPPED_COLLISION',
+        file,
+        priority,
+        elapsed,
+        `Parallel event within ${DEBOUNCE_MS}ms dropped (prio ${priority} <= ${lastEventPriority})`
+      )
       return
+    } else {
+      recordTelemetry(
+        event,
+        'SUPERSEDED_STOPPED',
+        file,
+        priority,
+        elapsed,
+        `Preempted & stopped previous [${lastPlayedSound}] (prio ${priority} > ${lastEventPriority})`
+      )
     }
+  } else {
+    recordTelemetry(
+      event,
+      'PLAYED',
+      file,
+      priority,
+      elapsed,
+      'Dispatched to CoreAudio / ALSA'
+    )
   }
 
   lastSoundTime = now
   lastEventPriority = priority
+  lastPlayedSound = file
 
-  const file = pickClip(event)
-  if (file) void $.audio.play({ asset: file, gain: gainFor(event) }).catch(() => {})
+  void $.audio.play({ asset: file, gain: gainFor(event) }).catch(() => {})
 }
 
 async function fireIfActive($: EngineInterface, e: any, event: EventKey): Promise<void> {
-  if (await isSessionActive($, e)) await fire($, event)
+  if (await isSessionActive($, e, event)) await fire($, event)
 }

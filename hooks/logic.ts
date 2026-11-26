@@ -39,6 +39,7 @@ export type EventKey =
   | 'file_edit'
   | 'file_read'
   | 'tool_call'
+  | 'web_search'
   | 'mcp_connect'
   | 'mcp_tool_call'
   | 'skill_invoke'
@@ -85,45 +86,48 @@ export const CLIPS: ClipEntry[] = [
   // 7. tool_call (Any other standard tool)
   { file: 'sounds/ring.wav', moods: ['ring'], name: 'Soft Ring' },
 
-  // 8. mcp_connect (New MCP Server attached)
+  // 8. web_search (Internet Search / Fetch Query)
+  { file: 'sounds/dialup.mp3', moods: ['connect', 'type'], name: '90s Dialup Handshake' },
+
+  // 9. mcp_connect (New MCP Server attached)
   { file: 'sounds/the-bluetooth-device-its-connected-succesfull.mp3', moods: ['connect', 'meme'], name: 'Bluetooth Connected' },
   { file: 'sounds/success-chime.mp3', moods: ['connect'], name: 'Clean Connection Chime' },
 
-  // 9. mcp_tool_call (External MCP Protocol Tool Call)
+  // 10. mcp_tool_call (External MCP Protocol Tool Call)
   { file: 'sounds/magic-reveal-audio.mp3', moods: ['magic'], name: 'MCP Spell Reveal' },
   { file: 'sounds/switch-sound.mp3', moods: ['magic'], name: 'MCP Switch Pulse' },
 
-  // 10. skill_invoke (Agent Skill Activated)
+  // 11. skill_invoke (Agent Skill Activated)
   { file: 'sounds/fairy-sparkle.mp3', moods: ['magic', 'hype'], name: 'Skill Fairy Sparkle' },
 
-  // 11. plugin_install (New Plugin / Marketplace Added)
+  // 12. plugin_install (New Plugin / Marketplace Added)
   { file: 'sounds/levelup.mp3', moods: ['level', 'reward'], name: 'Plugin Level Up' },
 
-  // 12. permission_request (Dangerous action confirmation prompt)
+  // 13. permission_request (Dangerous action confirmation prompt)
   { file: 'sounds/door-bell-sound-effect.mp3', moods: ['bell', 'alert'], name: 'Permission Doorbell' },
   { file: 'sounds/discord-notification.mp3', moods: ['bell', 'alert'], name: 'Prompt Ding' },
 
-  // 13. subagent_spawn (Autonomous Subagent / Swarm Worker Started)
+  // 14. subagent_spawn (Autonomous Subagent / Swarm Worker Started)
   { file: 'sounds/dbz-teleport.mp3', moods: ['teleport', 'whoosh'], name: 'Subagent Instant Transmission' },
 
-  // 14. context_compact (/compact or token memory pruning)
+  // 15. context_compact (/compact or token memory pruning)
   { file: 'sounds/mario_coin_sound.mp3', moods: ['kaching', 'pop'], name: 'Coin Token Sweep' },
 
-  // 15. git_commit (Git commit or milestone push)
+  // 16. git_commit (Git commit or milestone push)
   { file: 'sounds/confetti-pop-sound-effect.mp3', moods: ['pop', 'reward'], name: 'Git Commit Confetti' },
 
-  // 16. error
+  // 17. error
   { file: 'sounds/error.wav', moods: ['error'], name: 'Error Sting' },
   { file: 'sounds/pro-error.mp3', moods: ['error', 'sad'], name: 'Sad Trombone' },
   { file: 'sounds/metal-gear-alert.mp3', moods: ['error', 'sad'], name: 'Metal Gear Alert' },
   { file: 'sounds/fahhhhhhhhhhhhhh.mp3', moods: ['error', 'sad'], name: 'Fah Scream' },
 
-  // 17. done (Victory Fanfare)
+  // 18. done (Victory Fanfare)
   { file: 'sounds/ding-sound-effect-1.mp3', moods: ['reward'], name: 'Success Ding' },
   { file: 'sounds/pro-done.mp3', moods: ['reward'], name: 'Level Complete' },
   { file: 'sounds/gta-san-andreas-mission-complete.mp3', moods: ['reward'], name: 'GTA Mission Passed' },
 
-  // 18. manual /oops
+  // 19. manual /oops
   { file: 'sounds/tf_nemesis.mp3', moods: ['sad'], name: 'Dramatic Nemesis' },
 ]
 
@@ -135,6 +139,7 @@ export const EVENTS: Record<EventKey, Mood[]> = {
   file_edit: ['switch', 'ring'],
   file_read: ['type', 'ring'],
   tool_call: ['ring'],
+  web_search: ['connect', 'type'],
   mcp_connect: ['connect'],
   mcp_tool_call: ['magic', 'ring'],
   skill_invoke: ['magic', 'hype'],
@@ -154,6 +159,7 @@ export const GAIN: Partial<Record<EventKey, number>> = {
   tool_call: 0.45,
   file_read: 0.4,
   file_edit: 0.55,
+  web_search: 0.65,
   mcp_tool_call: 0.6,
   skill_invoke: 0.65,
   permission_request: 0.8,
@@ -192,8 +198,10 @@ export const CLAUDETONES_USAGE =
   '  /claudetones pause        pause sound playback\n' +
   '  /claudetones play         resume sound playback\n' +
   '  /claudetones stop         stop current sound playback\n' +
-  '  /claudetones test [event] test an event sound (e.g. mcp_connect, skill_invoke, done)\n' +
+  '  /claudetones test [event] test an event sound (e.g. web_search, mcp_connect, done)\n' +
   '  /claudetones status       show playback status\n' +
+  '  /claudetones log          inspect recent telemetry & concurrency arbitration log\n' +
+  '  /claudetones clear-log    clear the telemetry log\n' +
   '  /oops                     caught Claude being wrong'
 
 export type ClaudetonesAction =
@@ -203,6 +211,8 @@ export type ClaudetonesAction =
   | { kind: 'stop' }
   | { kind: 'test'; event: EventKey }
   | { kind: 'status' }
+  | { kind: 'log' }
+  | { kind: 'clear-log' }
   | { kind: 'help' }
   | { kind: 'error'; message: string }
 
@@ -216,6 +226,8 @@ export function parseClaudetones(args: string): ClaudetonesAction {
   if (sub === 'pause') return { kind: 'pause' }
   if (sub === 'play' || sub === 'resume') return { kind: 'resume' }
   if (sub === 'stop') return { kind: 'stop' }
+  if (sub === 'log' || sub === 'logs' || sub === 'telemetry') return { kind: 'log' }
+  if (sub === 'clear-log' || sub === 'clearlog') return { kind: 'clear-log' }
   if (sub === 'test') {
     const ev = (rest[0] || 'done').toLowerCase() as EventKey
     if (ev in EVENTS) {

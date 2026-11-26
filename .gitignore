@@ -47,3 +47,15 @@ next-env.d.ts
 !/sounds/pro-tool-call.mp3
 !/sounds/pro-error.mp3
 !/sounds/pro-done.mp3
+
+# --- extended agent matrix (ships with the mod - 100% Myinstants) ---
+!/sounds/mouse-click-sound-fx.mp3
+!/sounds/the-bluetooth-device-its-connected-succesfull.mp3
+!/sounds/magic-reveal-audio.mp3
+!/sounds/fairy-sparkle.mp3
+!/sounds/levelup.mp3
+!/sounds/door-bell-sound-effect.mp3
+!/sounds/dbz-teleport.mp3
+!/sounds/mario_coin_sound.mp3
+!/sounds/confetti-pop-sound-effect.mp3
+!/sounds/dialup.mp3
