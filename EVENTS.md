@@ -19,8 +19,9 @@ All audio clips are sourced **100% exclusively from [Myinstants](https://www.myi
 | 5 | `file_edit` | `tool.call {Edit/Write}`| Code mutation & patch | `switch`, `ring`| `pro-tool-call.mp3`, `switch-sound.mp3` |
 | 6 | `file_read` | `tool.call {View/Glob}` | File inspection & reading | `type`, `ring`| `mouse-click-sound-fx.mp3` |
 | 7 | `tool_call` | `tool.call {other}` | Standard tool invocation | `ring` | `ring.wav` |
-| 8 | `error` | `tool.call -> isError`| Execution error or failure | `error`, `sad` | `error.wav`, `metal-gear-alert.mp3` |
-| 9 | `done` | `turn.complete` | Reply finished & verified | `reward` | `ding-sound-effect-1.mp3`, `gta-san-andreas-mission-complete.mp3` |
+| 8 | `web_search` | `tool.call {WebSearch/fetch}` | Live internet search | `connect`, `type` | `dialup.mp3` |
+| 9 | `error` | `tool.call -> isError`| Execution error or failure | `error`, `sad` | `error.wav`, `metal-gear-alert.mp3` |
+| 10 | `done` | `turn.complete` | Reply finished & verified | `reward` | `ding-sound-effect-1.mp3`, `gta-san-andreas-mission-complete.mp3` |
 
 ---
 
@@ -50,4 +51,6 @@ All audio clips are sourced **100% exclusively from [Myinstants](https://www.myi
 | `/claudetones stop` | Stop active sound |
 | `/claudetones test [event]` | Audition any event sound (e.g. `mcp_connect`, `skill_invoke`, `subagent_spawn`) |
 | `/claudetones status` | Show active session and playback state |
+| `/claudetones log` | Show running telemetry, parallel collision drops, and preemption |
+| `/claudetones clear-log` | Clear the local telemetry log |
 | `/oops` | Play the hallucination buster sound |

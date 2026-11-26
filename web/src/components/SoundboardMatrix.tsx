@@ -319,6 +319,16 @@ const PACKS: Record<PackId, PackDefinition> = {
         soundType: 'subagent',
         audioSrc: '/sounds/dbz-teleport.mp3',
       },
+      {
+        id: 'web_search',
+        trigger: 'tool.call: WebSearch',
+        category: 'Live Internet Fetch',
+        title: '7. Web Search & Query',
+        description: 'Authentic 90s internet dialup handshake sound on live web search.',
+        fileName: 'dialup.mp3',
+        soundType: 'web_search',
+        audioSrc: '/sounds/dialup.mp3',
+      },
     ],
     victory: {
       title: '7. Git Milestone & Task Complete',

@@ -21,6 +21,7 @@ export type SoundType =
   | 'subagent'
   | 'compact'
   | 'git'
+  | 'web_search'
 
 export const SOUND_FILE_MAP: Record<SoundType, string> = {
   boot: '/sounds/launch.wav',
@@ -38,6 +39,7 @@ export const SOUND_FILE_MAP: Record<SoundType, string> = {
   subagent: '/sounds/dbz-teleport.mp3',
   compact: '/sounds/mario_coin_sound.mp3',
   git: '/sounds/confetti-pop-sound-effect.mp3',
+  web_search: '/sounds/dialup.mp3',
 }
 
 export type PlaybackState = {

@@ -43,9 +43,23 @@ const COMMANDS: CommandRow[] = [
   {
     command: '/claudetones test',
     params: '[event]',
-    description: 'Auditions an individual event cue (e.g. test done, test error).',
+    description: 'Auditions an individual event cue (e.g. test done, test error, test web_search).',
     actionLabel: 'Test',
     soundType: 'click',
+  },
+  {
+    command: '/claudetones log',
+    params: '[none]',
+    description: 'Displays real-time telemetry log: events, played sounds, dropped collisions, and preemptions.',
+    actionLabel: 'Log',
+    soundType: 'tick',
+  },
+  {
+    command: '/claudetones clear-log',
+    params: '[none]',
+    description: 'Clears ~/.claude/claudetones_telemetry.log on disk.',
+    actionLabel: 'Clear',
+    soundType: 'pip',
   },
   {
     command: '/oops',
