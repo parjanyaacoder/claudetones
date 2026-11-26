@@ -352,7 +352,7 @@ export default function SoundboardMatrix() {
                 <button
                   type="button"
                   onClick={() => handleTogglePlay(evt)}
-                  className={`px-3.5 py-1.5 rounded-lg font-label-sm text-label-sm transition-all flex items-center gap-1.5 cursor-pointer font-medium ${
+                  className={`px-3.5 py-1.5 rounded-lg font-label-sm text-label-sm transition-all flex items-center gap-2 cursor-pointer font-medium ${
                     isThisPlaying
                       ? 'bg-primary-container text-on-primary-container shadow-md ring-2 ring-primary-container/50'
                       : isThisPaused
@@ -362,9 +362,16 @@ export default function SoundboardMatrix() {
                       : 'bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-tertiary-fixed'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[16px]">
-                    {isThisPlaying ? 'pause' : 'play_arrow'}
-                  </span>
+                  {isThisPlaying ? (
+                    <span className="inline-flex items-end gap-0.5 h-3.5 w-3.5" aria-hidden="true">
+                      <span className="w-0.5 bg-current rounded-full animate-eq-1" />
+                      <span className="w-0.5 bg-current rounded-full animate-eq-2" />
+                      <span className="w-0.5 bg-current rounded-full animate-eq-3" />
+                      <span className="w-0.5 bg-current rounded-full animate-eq-4" />
+                    </span>
+                  ) : (
+                    <span className="material-symbols-outlined text-[16px]">play_arrow</span>
+                  )}
                   <span>{isThisPlaying ? 'Pause' : isThisPaused ? 'Resume' : 'Play'}</span>
                 </button>
               </div>
@@ -401,15 +408,22 @@ export default function SoundboardMatrix() {
               <button
                 type="button"
                 onClick={handleToggleVictory}
-                className={`px-5 py-2.5 rounded-xl font-label-md text-label-md transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-md font-semibold ${
+                className={`px-5 py-2.5 rounded-xl font-label-md text-label-md transition-all flex items-center gap-2.5 shrink-0 cursor-pointer shadow-md font-semibold ${
                   isVictoryPlaying
                     ? 'bg-primary text-on-primary ring-2 ring-primary/60'
                     : 'bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary'
                 }`}
               >
-                <span className="material-symbols-outlined text-[18px]">
-                  {isVictoryPlaying ? 'pause_circle' : 'celebration'}
-                </span>
+                {isVictoryPlaying ? (
+                  <span className="inline-flex items-end gap-0.5 h-4 w-4" aria-hidden="true">
+                    <span className="w-0.5 bg-current rounded-full animate-eq-1" />
+                    <span className="w-0.5 bg-current rounded-full animate-eq-2" />
+                    <span className="w-0.5 bg-current rounded-full animate-eq-3" />
+                    <span className="w-0.5 bg-current rounded-full animate-eq-4" />
+                  </span>
+                ) : (
+                  <span className="material-symbols-outlined text-[18px]">celebration</span>
+                )}
                 <span>
                   {isVictoryPlaying ? 'Pause Fanfare' : isVictoryPaused ? 'Resume Fanfare' : 'Play Victory Fanfare'}
                 </span>

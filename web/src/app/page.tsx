@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import RotatingWord from '@/components/RotatingWord'
+import SoundMarquee from '@/components/SoundMarquee'
 import DesktopSimulation from '@/components/DesktopSimulation'
 import SoundboardMatrix from '@/components/SoundboardMatrix'
 import SoundPackStudio from '@/components/SoundPackStudio'
@@ -100,14 +101,26 @@ export default function Home() {
         </div>
       </header>
 
-      {/* AMBIENT GLOW BACKGROUND DECORATIONS */}
+      {/* AMBIENT GLOW & GRID BACKGROUND (Inspired by Magic UI / Aceternity) */}
       <div className="relative w-full overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[850px] h-[480px] bg-primary-container/10 blur-[140px] pointer-events-none rounded-full"></div>
-        <div className="absolute top-[30rem] -left-32 w-[420px] h-[420px] bg-outline-variant/10 blur-[120px] pointer-events-none rounded-full"></div>
-        <div className="absolute top-[60rem] -right-32 w-[480px] h-[480px] bg-primary/5 blur-[130px] pointer-events-none rounded-full"></div>
+        {/* Subtle Architectural Grid Pattern with Radial Gradient Mask */}
+        <div className="absolute inset-0 bg-grid-pattern [mask-image:radial-gradient(ellipse_80%_60%_at_50%_15%,#000_30%,transparent_80%)] opacity-70 pointer-events-none"></div>
+
+        {/* Ambient Warm Spotlights */}
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-primary-container/15 blur-[150px] pointer-events-none rounded-full"></div>
+        <div className="absolute top-[35rem] -left-32 w-[440px] h-[440px] bg-outline-variant/10 blur-[130px] pointer-events-none rounded-full"></div>
+        <div className="absolute top-[65rem] -right-32 w-[500px] h-[500px] bg-primary/10 blur-[140px] pointer-events-none rounded-full"></div>
 
         {/* ================= SCREEN 1: CLEAN LANDING SCREEN ================= */}
         <section className="relative min-h-[calc(100vh-4rem)] flex flex-col justify-center items-center text-center px-6 lg:px-12 py-12">
+          {/* Release Tag Pill */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/30 text-tertiary-fixed text-xs font-mono mb-6 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-[#61C554] animate-pulse"></span>
+            <span>v1.0 Plugin Release</span>
+            <span className="text-outline">•</span>
+            <span className="text-primary-container font-semibold">100% Free &amp; Open Source</span>
+          </div>
+
           {/* Headline with Silky Smooth Word Transition */}
           <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight max-w-4xl leading-tight mb-6">
             Give your Claude Code sounds on every <RotatingWord />
@@ -119,34 +132,40 @@ export default function Home() {
             screen.
           </p>
 
-          {/* Terminal Command Snippet Box */}
-          <div className="w-full max-w-xl bg-surface-container-lowest rounded-xl p-2 pl-4 flex items-center justify-between border border-outline-variant/30 shadow-xl mb-8">
-            <div className="flex items-center gap-3 font-code text-code text-on-surface overflow-hidden">
-              <span className="text-primary-container select-none">$</span>
-              <span className="truncate font-medium text-tertiary-fixed">claude plugin install claudetones</span>
+          {/* Terminal Command Snippet Box with Shiny Border (Aceternity / Magic UI style) */}
+          <div className="relative group w-full max-w-xl mb-8">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-container/40 via-outline-variant/30 to-primary-container/20 rounded-2xl blur-[2px] group-hover:blur-[6px] group-hover:from-primary-container group-hover:to-primary-container/60 transition-all duration-300 opacity-60 group-hover:opacity-100"></div>
+            <div className="relative bg-[#141210] rounded-xl p-2.5 pl-4 flex items-center justify-between border border-outline-variant/30 shadow-2xl">
+              <div className="flex items-center gap-3 font-code text-xs sm:text-sm text-on-surface overflow-hidden">
+                <span className="text-primary-container select-none font-bold">$</span>
+                <span className="truncate font-medium text-tertiary-fixed">claude plugin install claudetones</span>
+              </div>
+              <button
+                onClick={copyCliCommand}
+                className="shrink-0 px-3.5 py-1.5 rounded-lg bg-surface-container-high text-tertiary-fixed hover:bg-surface-bright font-label-sm text-xs font-mono transition-all duration-150 flex items-center gap-1.5 cursor-pointer border border-outline-variant/20 hover:border-primary-container/40"
+              >
+                <span className="material-symbols-outlined text-[14px] text-primary-container">
+                  {copied ? 'check' : 'content_copy'}
+                </span>
+                <span>{copied ? 'Copied!' : 'Copy'}</span>
+              </button>
             </div>
-            <button
-              onClick={copyCliCommand}
-              className="shrink-0 px-3 py-1.5 rounded-lg bg-surface-container-high text-tertiary-fixed hover:bg-surface-bright font-label-sm text-label-sm transition-all duration-150 flex items-center gap-1.5 cursor-pointer"
-            >
-              {copied ? 'Copied!' : 'Copy'}
-            </button>
           </div>
 
           {/* Action CTAs */}
           <div className="flex flex-wrap items-center justify-center gap-4">
             <a
               href="#claude-desktop-demo"
-              className="px-6 py-3 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all duration-200 shadow-md flex items-center gap-2 select-none"
+              className="px-6 py-3 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all duration-200 shadow-lg hover:shadow-primary-container/25 flex items-center gap-2 select-none font-medium cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px]">play_circle</span>
               <span>Audition Live Demo</span>
             </a>
             <a
               href="#soundboard-matrix"
-              className="px-4 py-3 rounded-lg bg-transparent text-tertiary hover:text-tertiary-fixed font-label-md text-label-md transition-colors flex items-center gap-1.5"
+              className="px-5 py-3 rounded-xl bg-surface-container-high/80 hover:bg-surface-bright text-tertiary hover:text-on-surface font-label-md text-label-md transition-all flex items-center gap-2 border border-outline-variant/30 hover:border-outline-variant/60 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px]">library_music</span>
+              <span className="material-symbols-outlined text-[18px] text-primary-container">library_music</span>
               <span>View Sound Library</span>
             </a>
           </div>
@@ -159,6 +178,9 @@ export default function Home() {
             </a>
           </div>
         </section>
+
+        {/* ================= TRENDING MYINSTANTS AUDIO MARQUEE (MAGIC UI STYLE) ================= */}
+        <SoundMarquee />
 
         {/* ================= SCREEN 2: HEADING & INTERACTIVE SIMULATION ================= */}
         <DesktopSimulation />

@@ -163,6 +163,99 @@ html, body {
   line-height: 1;
 }
 
+/* UI Library Patterns (Magic UI & Aceternity inspired) */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+}
+
+.bg-dot-pattern {
+  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Live Equalizer Animation (Origin UI inspired) */
+@keyframes eq-1 {
+  0%, 100% { height: 4px; }
+  50% { height: 13px; }
+}
+@keyframes eq-2 {
+  0%, 100% { height: 12px; }
+  50% { height: 5px; }
+}
+@keyframes eq-3 {
+  0%, 100% { height: 5px; }
+  50% { height: 14px; }
+}
+@keyframes eq-4 {
+  0%, 100% { height: 14px; }
+  50% { height: 6px; }
+}
+
+.animate-eq-1 { animation: eq-1 0.7s ease-in-out infinite; }
+.animate-eq-2 { animation: eq-2 0.55s ease-in-out infinite 0.1s; }
+.animate-eq-3 { animation: eq-3 0.8s ease-in-out infinite 0.2s; }
+.animate-eq-4 { animation: eq-4 0.65s ease-in-out infinite 0.15s; }
+
+/* Magic UI Infinite Marquee */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Magic UI Border Beam Animation */
+@keyframes border-beam {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.border-beam-glow {
+  position: relative;
+}
+
+.border-beam-glow::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(217, 119, 87, 0.6) 25%,
+    rgba(255, 181, 158, 0.9) 50%,
+    rgba(217, 119, 87, 0.6) 75%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  background-size: 200% 100%;
+  animation: border-beam-slide 4s linear infinite;
+}
+
+@keyframes border-beam-slide {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 ::-webkit-scrollbar {
   display: none;
 }
