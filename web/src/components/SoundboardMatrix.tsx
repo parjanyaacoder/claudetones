@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { audioEngine, useAudioState, type SoundType } from '@/lib/audio'
 
 type LifecycleEvent = {
@@ -9,86 +9,266 @@ type LifecycleEvent = {
   category: string
   title: string
   description: string
-  spec: string
   fileName: string
   soundType: SoundType
   audioSrc: string
 }
 
-const EVENTS: LifecycleEvent[] = [
-  {
-    id: 'boot',
-    trigger: 'session.start',
-    category: 'Ascending Chime',
-    title: '1. Warm Boot Chime',
-    description: 'Ascending welcome chime on session start.',
-    spec: 'sounds/launch.wav',
-    fileName: 'launch.wav',
-    soundType: 'boot',
-    audioSrc: '/sounds/launch.wav',
+type PackId = 'minimal' | 'arcade' | 'nostalgia'
+
+type PackDefinition = {
+  id: PackId
+  label: string
+  badge: string
+  description: string
+  events: LifecycleEvent[]
+  victory: {
+    title: string
+    description: string
+    fileName: string
+    audioSrc: string
+  }
+}
+
+const PACKS: Record<PackId, PackDefinition> = {
+  minimal: {
+    id: 'minimal',
+    label: 'Minimal Atelier',
+    badge: 'Tactile Micro-tones',
+    description: 'Soft-clipped micro-tones designed for cognitive comfort during long coding sessions.',
+    events: [
+      {
+        id: 'boot',
+        trigger: 'session.start',
+        category: 'Ascending Chime',
+        title: '1. Warm Boot Chime',
+        description: 'Ascending welcome chime on session start.',
+        fileName: 'launch.wav',
+        soundType: 'boot',
+        audioSrc: '/sounds/launch.wav',
+      },
+      {
+        id: 'tick',
+        trigger: 'turn.start',
+        category: 'Synapse Blip',
+        title: '2. Reasoning Start',
+        description: 'High-frequency tick as prompt dispatches.',
+        fileName: 'ring.wav',
+        soundType: 'tick',
+        audioSrc: '/sounds/ring.wav',
+      },
+      {
+        id: 'ponder',
+        trigger: 'turn.start > 8s',
+        category: 'Subtle Metronome',
+        title: '3. Deep Pondering',
+        description: 'Subtle rhythmic pulse during extended reasoning.',
+        fileName: 'timer.mp3',
+        soundType: 'ponder',
+        audioSrc: '/sounds/timer.mp3',
+      },
+      {
+        id: 'click',
+        trigger: 'tool.call: Bash',
+        category: 'Mechanical Solenoid',
+        title: '4. Shell Execution',
+        description: 'Tactile switch click on bash commands.',
+        fileName: 'keyboard-click.mp3',
+        soundType: 'click',
+        audioSrc: '/sounds/keyboard-click.mp3',
+      },
+      {
+        id: 'pip',
+        trigger: 'tool.call: Edit',
+        category: 'Marimba Pluck',
+        title: '5. File Modification',
+        description: 'Crisp waterdrop pip on file write/patch.',
+        fileName: 'pro-tool-call.mp3',
+        soundType: 'pip',
+        audioSrc: '/sounds/pro-tool-call.mp3',
+      },
+      {
+        id: 'error',
+        trigger: 'isError: true',
+        category: 'Dissonant Sting',
+        title: '6. Command Failed',
+        description: 'Dissonant minor second alert on exit error.',
+        fileName: 'error.wav',
+        soundType: 'error',
+        audioSrc: '/sounds/error.wav',
+      },
+    ],
+    victory: {
+      title: '7. Task Complete • Success Ding',
+      description: 'Satisfying victory task chime on completion.',
+      fileName: 'ding-sound-effect-1.mp3',
+      audioSrc: '/sounds/ding-sound-effect-1.mp3',
+    },
   },
-  {
-    id: 'tick',
-    trigger: 'turn.start',
-    category: 'Synapse Blip',
-    title: '2. Reasoning Start',
-    description: 'High-frequency tick as prompt dispatches.',
-    spec: 'sounds/ring.wav',
-    fileName: 'ring.wav',
-    soundType: 'tick',
-    audioSrc: '/sounds/ring.wav',
+  arcade: {
+    id: 'arcade',
+    label: 'Arcade Synthesizer',
+    badge: 'Retro 16-Bit Wave',
+    description: 'Chiptune chords, melodic arpeggios, and expressive electronic synthesizer feedback.',
+    events: [
+      {
+        id: 'boot',
+        trigger: 'session.start',
+        category: 'Synth Power-Up',
+        title: '1. Power-Up Chime',
+        description: 'Polyphonic synthesizer swell on connection.',
+        fileName: 'pro-session-start.mp3',
+        soundType: 'boot',
+        audioSrc: '/sounds/pro-session-start.mp3',
+      },
+      {
+        id: 'tick',
+        trigger: 'turn.start',
+        category: 'Crystal Ambient',
+        title: '2. Thinking Spark',
+        description: 'Shimmering ambient bell as Claude ponders.',
+        fileName: 'pro-reasoning.mp3',
+        soundType: 'tick',
+        audioSrc: '/sounds/pro-reasoning.mp3',
+      },
+      {
+        id: 'ponder',
+        trigger: 'turn.start > 8s',
+        category: 'Fast Countdown',
+        title: '3. Extended Clock',
+        description: 'Electronic metronome ticker on heavy turns.',
+        fileName: 'pro-long-reasoning.mp3',
+        soundType: 'ponder',
+        audioSrc: '/sounds/pro-long-reasoning.mp3',
+      },
+      {
+        id: 'click',
+        trigger: 'tool.call: Bash',
+        category: 'Sci-Fi Ping',
+        title: '4. Tactical Shell',
+        description: 'Laser-guided confirm ping on terminal runs.',
+        fileName: 'pro-terminal-command.mp3',
+        soundType: 'click',
+        audioSrc: '/sounds/pro-terminal-command.mp3',
+      },
+      {
+        id: 'pip',
+        trigger: 'tool.call: Edit',
+        category: 'Alert Pulse',
+        title: '5. Mutation Solenoid',
+        description: 'Punchy feedback on code mutations and diffs.',
+        fileName: 'ring.wav',
+        soundType: 'pip',
+        audioSrc: '/sounds/ring.wav',
+      },
+      {
+        id: 'error',
+        trigger: 'isError: true',
+        category: 'Sad Trombone',
+        title: '6. Womp Womp',
+        description: 'Classic comedic fail trombone on error exit.',
+        fileName: 'pro-error.mp3',
+        soundType: 'error',
+        audioSrc: '/sounds/pro-error.mp3',
+      },
+    ],
+    victory: {
+      title: '7. Level Complete • Victory Fanfare',
+      description: 'Triumphant 16-bit arcade fanfare when all tests pass.',
+      fileName: 'pro-done.mp3',
+      audioSrc: '/sounds/pro-done.mp3',
+    },
   },
-  {
-    id: 'ponder',
-    trigger: 'turn.start > 8s',
-    category: 'Subtle Metronome',
-    title: '3. Deep Pondering',
-    description: 'Subtle rhythmic pulse during extended reasoning.',
-    spec: 'sounds/timer.mp3',
-    fileName: 'timer.mp3',
-    soundType: 'ponder',
-    audioSrc: '/sounds/timer.mp3',
+  nostalgia: {
+    id: 'nostalgia',
+    label: 'Nostalgia & Memes',
+    badge: 'Iconic Pop Culture',
+    description: 'Legendary operating system and gaming sound cues that every developer instantly recognizes.',
+    events: [
+      {
+        id: 'boot',
+        trigger: 'session.start',
+        category: 'Windows XP',
+        title: '1. XP Boot Chime',
+        description: 'The golden startup symphony of Windows XP.',
+        fileName: 'windows-xp-startup.mp3',
+        soundType: 'boot',
+        audioSrc: '/sounds/windows-xp-startup.mp3',
+      },
+      {
+        id: 'tick',
+        trigger: 'turn.start',
+        category: 'Minecraft C418',
+        title: '2. C418 Think',
+        description: 'Serene blocky contemplation from the Minecraft OST.',
+        fileName: 'c418-stranger-think.mp3',
+        soundType: 'tick',
+        audioSrc: '/sounds/c418-stranger-think.mp3',
+      },
+      {
+        id: 'ponder',
+        trigger: 'turn.start > 8s',
+        category: 'Jeopardy Theme',
+        title: '3. Jeopardy Countdown',
+        description: 'Tense game-show countdown during deep reasoning.',
+        fileName: 'jeopardy-themelq.mp3',
+        soundType: 'ponder',
+        audioSrc: '/sounds/jeopardy-themelq.mp3',
+      },
+      {
+        id: 'click',
+        trigger: 'tool.call: Bash',
+        category: 'Counter-Strike',
+        title: "4. OK, Let's Go!",
+        description: 'Classic voice radio cue when launching commands.',
+        fileName: 'counter-strike-ok-lets-go.mp3',
+        soundType: 'click',
+        audioSrc: '/sounds/counter-strike-ok-lets-go.mp3',
+      },
+      {
+        id: 'pip',
+        trigger: 'tool.call: Edit',
+        category: 'Metal Gear',
+        title: '5. MGS Alert Ping',
+        description: 'Iconic exclamation sound on code modification.',
+        fileName: 'metal-gear-alert.mp3',
+        soundType: 'pip',
+        audioSrc: '/sounds/metal-gear-alert.mp3',
+      },
+      {
+        id: 'error',
+        trigger: 'isError: true',
+        category: 'Dramatic Sting',
+        title: '6. TF2 Nemesis',
+        description: 'Team Fortress 2 nemesis brass on build failure.',
+        fileName: 'tf_nemesis.mp3',
+        soundType: 'error',
+        audioSrc: '/sounds/tf_nemesis.mp3',
+      },
+    ],
+    victory: {
+      title: '7. GTA Mission Passed • Respect +',
+      description: 'San Andreas mission passed melody on complete.',
+      fileName: 'gta-san-andreas-mission-complete.mp3',
+      audioSrc: '/sounds/gta-san-andreas-mission-complete.mp3',
+    },
   },
-  {
-    id: 'click',
-    trigger: 'tool.call: Bash',
-    category: 'Mechanical Solenoid',
-    title: '4. Shell Execution',
-    description: 'Tactile switch click on bash commands.',
-    spec: 'sounds/keyboard-click.mp3',
-    fileName: 'keyboard-click.mp3',
-    soundType: 'click',
-    audioSrc: '/sounds/keyboard-click.mp3',
-  },
-  {
-    id: 'pip',
-    trigger: 'tool.call: Edit',
-    category: 'Marimba Pluck',
-    title: '5. File Modification',
-    description: 'Crisp waterdrop pip on file write/patch.',
-    spec: 'sounds/pro-tool-call.mp3',
-    fileName: 'pro-tool-call.mp3',
-    soundType: 'pip',
-    audioSrc: '/sounds/pro-tool-call.mp3',
-  },
-  {
-    id: 'error',
-    trigger: 'isError: true',
-    category: 'Dissonant Sting',
-    title: '6. Command Failed',
-    description: 'Dissonant minor second alert on exit error.',
-    spec: 'sounds/error.wav',
-    fileName: 'error.wav',
-    soundType: 'error',
-    audioSrc: '/sounds/error.wav',
-  },
-]
+}
 
 export default function SoundboardMatrix() {
+  const [selectedPack, setSelectedPack] = useState<PackId>('minimal')
   const { activeId, isPlaying, isPaused } = useAudioState()
 
+  const pack = PACKS[selectedPack]
+
   const handleTogglePlay = (evt: LifecycleEvent) => {
-    audioEngine.toggle(`matrix-${evt.id}`, evt.soundType, evt.audioSrc)
+    const playKey = `${selectedPack}-${evt.id}`
+    audioEngine.toggle(playKey, evt.soundType, evt.audioSrc)
+  }
+
+  const handleToggleVictory = () => {
+    const playKey = `${selectedPack}-victory`
+    audioEngine.toggle(playKey, 'fanfare', pack.victory.audioSrc)
   }
 
   return (
@@ -96,22 +276,46 @@ export default function SoundboardMatrix() {
       className="min-h-[calc(100vh-4rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-10"
       id="soundboard-matrix"
     >
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10">
+      {/* Header and Pack Selector Pills */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">
         <div>
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary-container block mb-1.5">
-            Micro-Acoustic Palette
+            Micro-Acoustic Palette Library
           </span>
           <h2 className="font-headline-lg text-headline-lg text-on-surface">The 7 Lifecycle Sonic Events</h2>
+          <p className="font-body-md text-body-md text-tertiary max-w-md mt-1 leading-relaxed">
+            {pack.description}
+          </p>
         </div>
-        <p className="font-body-md text-body-md text-tertiary max-w-md mt-2 md:mt-0 leading-relaxed">
-          Soft-clipped micro-tones designed for cognitive comfort during long coding sessions. Exclusive single playback.
-        </p>
+
+        {/* Pack Selector Tabs */}
+        <div className="inline-flex p-1 rounded-xl bg-surface-container-low border border-outline-variant/30 shadow-md gap-1 shrink-0 self-start md:self-auto">
+          {(Object.keys(PACKS) as PackId[]).map((pid) => {
+            const p = PACKS[pid]
+            const isSelected = selectedPack === pid
+            return (
+              <button
+                key={pid}
+                type="button"
+                onClick={() => setSelectedPack(pid)}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 cursor-pointer ${
+                  isSelected
+                    ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
+                    : 'text-tertiary hover:text-on-surface hover:bg-surface-container'
+                }`}
+              >
+                {p.label}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Grid Cards (3 Columns) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {EVENTS.map((evt) => {
-          const isThisActive = activeId === `matrix-${evt.id}`
+        {pack.events.map((evt) => {
+          const playKey = `${selectedPack}-${evt.id}`
+          const isThisActive = activeId === playKey
           const isThisPlaying = isThisActive && isPlaying
           const isThisPaused = isThisActive && isPaused
           const isError = evt.id === 'error'
@@ -143,7 +347,7 @@ export default function SoundboardMatrix() {
               <div className="flex items-center justify-between pt-3.5 border-t border-outline-variant/15">
                 <div className="font-label-sm text-label-sm text-outline font-code flex items-center gap-1">
                   <span className="material-symbols-outlined text-[13px] text-primary-container">music_note</span>
-                  <span>{evt.fileName}</span>
+                  <span className="max-w-[150px] truncate">{evt.fileName}</span>
                 </div>
                 <button
                   type="button"
@@ -170,9 +374,10 @@ export default function SoundboardMatrix() {
 
         {/* 7. turn.complete (Featured Full-width span on 3 cols) */}
         {(() => {
-          const isFanfareActive = activeId === 'matrix-fanfare'
-          const isFanfarePlaying = isFanfareActive && isPlaying
-          const isFanfarePaused = isFanfareActive && isPaused
+          const victoryKey = `${selectedPack}-victory`
+          const isVictoryActive = activeId === victoryKey
+          const isVictoryPlaying = isVictoryActive && isPlaying
+          const isVictoryPaused = isVictoryActive && isPaused
 
           return (
             <div className="lg:col-span-3 bg-surface-container p-5 sm:p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-5 border border-primary-container/30 shadow-md">
@@ -182,33 +387,31 @@ export default function SoundboardMatrix() {
                     turn.complete
                   </span>
                   <span className="font-label-sm text-label-sm text-primary-container font-semibold uppercase">
-                    Grand Victory Milestone
+                    {pack.badge} • Victory Milestone
                   </span>
                 </div>
                 <h3 className="font-headline-sm text-headline-sm text-tertiary-fixed">
-                  7. Task Complete • ding-sound-effect-1.mp3
+                  {pack.victory.title}
                 </h3>
                 <p className="font-body-sm text-body-sm text-on-surface-variant">
-                  Satisfying victory task chime on completion with interactive play/pause controls.
+                  {pack.victory.description}
                 </p>
               </div>
 
               <button
                 type="button"
-                onClick={() => {
-                  audioEngine.toggle('matrix-fanfare', 'fanfare', '/sounds/ding-sound-effect-1.mp3')
-                }}
+                onClick={handleToggleVictory}
                 className={`px-5 py-2.5 rounded-xl font-label-md text-label-md transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-md font-semibold ${
-                  isFanfarePlaying
+                  isVictoryPlaying
                     ? 'bg-primary text-on-primary ring-2 ring-primary/60'
                     : 'bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary'
                 }`}
               >
                 <span className="material-symbols-outlined text-[18px]">
-                  {isFanfarePlaying ? 'pause_circle' : 'celebration'}
+                  {isVictoryPlaying ? 'pause_circle' : 'celebration'}
                 </span>
                 <span>
-                  {isFanfarePlaying ? 'Pause Fanfare' : isFanfarePaused ? 'Resume Fanfare' : 'Play Victory Fanfare'}
+                  {isVictoryPlaying ? 'Pause Fanfare' : isVictoryPaused ? 'Resume Fanfare' : 'Play Victory Fanfare'}
                 </span>
               </button>
             </div>

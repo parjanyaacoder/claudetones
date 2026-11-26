@@ -88,6 +88,45 @@ const ALL_7_EVENTS: EventItem[] = [
   },
 ]
 
+const PRESET_PACKS = {
+  minimal: {
+    name: 'minimal-atelier',
+    sounds: {
+      session_start: { name: 'launch.wav', src: '/sounds/launch.wav' },
+      reasoning: { name: 'ring.wav', src: '/sounds/ring.wav' },
+      long_reasoning: { name: 'timer.mp3', src: '/sounds/timer.mp3' },
+      terminal_command: { name: 'keyboard-click.mp3', src: '/sounds/keyboard-click.mp3' },
+      tool_call: { name: 'pro-tool-call.mp3', src: '/sounds/pro-tool-call.mp3' },
+      error: { name: 'error.wav', src: '/sounds/error.wav' },
+      done: { name: 'ding-sound-effect-1.mp3', src: '/sounds/ding-sound-effect-1.mp3' },
+    },
+  },
+  arcade: {
+    name: 'arcade-synth',
+    sounds: {
+      session_start: { name: 'pro-session-start.mp3', src: '/sounds/pro-session-start.mp3' },
+      reasoning: { name: 'pro-reasoning.mp3', src: '/sounds/pro-reasoning.mp3' },
+      long_reasoning: { name: 'pro-long-reasoning.mp3', src: '/sounds/pro-long-reasoning.mp3' },
+      terminal_command: { name: 'pro-terminal-command.mp3', src: '/sounds/pro-terminal-command.mp3' },
+      tool_call: { name: 'ring.wav', src: '/sounds/ring.wav' },
+      error: { name: 'pro-error.mp3', src: '/sounds/pro-error.mp3' },
+      done: { name: 'pro-done.mp3', src: '/sounds/pro-done.mp3' },
+    },
+  },
+  nostalgia: {
+    name: 'nostalgia-vault',
+    sounds: {
+      session_start: { name: 'windows-xp-startup.mp3', src: '/sounds/windows-xp-startup.mp3' },
+      reasoning: { name: 'c418-stranger-think.mp3', src: '/sounds/c418-stranger-think.mp3' },
+      long_reasoning: { name: 'jeopardy-themelq.mp3', src: '/sounds/jeopardy-themelq.mp3' },
+      terminal_command: { name: 'counter-strike-ok-lets-go.mp3', src: '/sounds/counter-strike-ok-lets-go.mp3' },
+      tool_call: { name: 'metal-gear-alert.mp3', src: '/sounds/metal-gear-alert.mp3' },
+      error: { name: 'tf_nemesis.mp3', src: '/sounds/tf_nemesis.mp3' },
+      done: { name: 'gta-san-andreas-mission-complete.mp3', src: '/sounds/gta-san-andreas-mission-complete.mp3' },
+    },
+  },
+}
+
 type EventCustomState = {
   enabled: boolean
   file: File | null
@@ -159,6 +198,25 @@ export default function SoundPackStudio() {
           fileName: defaultName,
         },
       }
+    })
+  }
+
+  // Load full preset template (Minimal, Arcade, or Nostalgia)
+  const loadPresetPack = (presetKey: 'minimal' | 'arcade' | 'nostalgia') => {
+    const preset = PRESET_PACKS[presetKey]
+    setPackName(preset.name)
+    setEventStates((prev) => {
+      const updated = { ...prev }
+      ALL_7_EVENTS.forEach((evt) => {
+        const sound = preset.sounds[evt.key as keyof typeof preset.sounds]
+        updated[evt.key] = {
+          enabled: true,
+          file: null,
+          previewUrl: sound.src,
+          fileName: sound.name,
+        }
+      })
+      return updated
     })
   }
 
@@ -342,6 +400,37 @@ export default function SoundPackStudio() {
                 Mute All
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Quick Presets Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-surface-container-low border border-outline-variant/20">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[15px] text-primary-container">auto_awesome</span>
+            <span className="text-xs font-mono text-tertiary-fixed font-semibold">Starter Presets:</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => loadPresetPack('minimal')}
+              className="px-3 py-1 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-mono text-tertiary-fixed border border-outline-variant/25 transition-all cursor-pointer hover:border-primary-container/40"
+            >
+              Minimal Atelier
+            </button>
+            <button
+              type="button"
+              onClick={() => loadPresetPack('arcade')}
+              className="px-3 py-1 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-mono text-tertiary-fixed border border-outline-variant/25 transition-all cursor-pointer hover:border-primary-container/40"
+            >
+              Arcade Synthesizer
+            </button>
+            <button
+              type="button"
+              onClick={() => loadPresetPack('nostalgia')}
+              className="px-3 py-1 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-mono text-tertiary-fixed border border-outline-variant/25 transition-all cursor-pointer hover:border-primary-container/40"
+            >
+              Nostalgia Vault
+            </button>
           </div>
         </div>
 

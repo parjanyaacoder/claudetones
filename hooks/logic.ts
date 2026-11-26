@@ -43,24 +43,31 @@ export const CLIPS: ClipEntry[] = [
   // session_start
   { file: 'sounds/launch.wav', moods: ['boot'], name: 'Launch Chime' },
   { file: 'sounds/pro-session-start.mp3', moods: ['boot'], name: 'Synth Power-Up' },
+  { file: 'sounds/windows-xp-startup.mp3', moods: ['boot'], name: 'Windows XP Startup' },
   // reasoning
   { file: 'sounds/ring.wav', moods: ['think', 'ring'], name: 'Soft Blip' },
   { file: 'sounds/pro-reasoning.mp3', moods: ['think'], name: 'Crystal Ambient' },
+  { file: 'sounds/c418-stranger-think.mp3', moods: ['think'], name: 'C418 Contemplation' },
   // long_reasoning (> 8s on one turn)
   { file: 'sounds/timer.mp3', moods: ['ponder'], name: 'Clock Tick' },
   { file: 'sounds/pro-long-reasoning.mp3', moods: ['ponder'], name: 'Fast Countdown' },
+  { file: 'sounds/jeopardy-themelq.mp3', moods: ['ponder'], name: 'Jeopardy Metronome' },
   // terminal_command (a Bash tool call)
   { file: 'sounds/keyboard-click.mp3', moods: ['type'], name: 'Keyboard Click' },
   { file: 'sounds/pro-terminal-command.mp3', moods: ['type'], name: 'Sci-Fi Confirm' },
+  { file: 'sounds/counter-strike-ok-lets-go.mp3', moods: ['type'], name: "CS: OK Let's Go" },
   // tool_call (any other tool)
   { file: 'sounds/ring.wav', moods: ['ring'], name: 'Soft Ring' },
   { file: 'sounds/pro-tool-call.mp3', moods: ['ring'], name: 'Alert Pulse' },
   // error
   { file: 'sounds/error.wav', moods: ['error'], name: 'Error Sting' },
   { file: 'sounds/pro-error.mp3', moods: ['error', 'sad'], name: 'Sad Trombone' },
+  { file: 'sounds/metal-gear-alert.mp3', moods: ['error', 'sad'], name: 'Metal Gear Alert' },
+  { file: 'sounds/fahhhhhhhhhhhhhh.mp3', moods: ['error', 'sad'], name: 'Fah Scream' },
   // done
   { file: 'sounds/ding-sound-effect-1.mp3', moods: ['reward'], name: 'Success Ding' },
   { file: 'sounds/pro-done.mp3', moods: ['reward'], name: 'Level Complete' },
+  { file: 'sounds/gta-san-andreas-mission-complete.mp3', moods: ['reward'], name: 'GTA Mission Passed' },
   // manual /oops (fires even while muted)
   { file: 'sounds/tf_nemesis.mp3', moods: ['sad'], name: 'Dramatic Nemesis' },
 ]
