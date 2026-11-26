@@ -13,16 +13,22 @@ import { GITHUB_URL } from '@/lib/catalog'
 export default function Home() {
   const [copied, setCopied] = useState(false)
   const [bottomCopied, setBottomCopied] = useState(false)
+  const [installMethod, setInstallMethod] = useState<'plugin' | 'curl'>('plugin')
   const [faqOpen, setFaqOpen] = useState<{ [key: number]: boolean }>({ 0: true })
 
+  const PLUGIN_ONE_LINER = 'claude plugin marketplace add parjanyaacoder/claudetones && claude plugin install claudetones'
+  const CURL_ONE_LINER = 'curl -fsSL https://claudetones.vercel.app/install.sh | bash'
+
+  const activeCommand = installMethod === 'plugin' ? PLUGIN_ONE_LINER : CURL_ONE_LINER
+
   const copyCliCommand = () => {
-    navigator.clipboard.writeText('claude plugin install claudetones')
+    navigator.clipboard.writeText(activeCommand)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
   const copyBottomCommand = () => {
-    navigator.clipboard.writeText('claude plugin install claudetones')
+    navigator.clipboard.writeText(PLUGIN_ONE_LINER)
     setBottomCopied(true)
     setTimeout(() => setBottomCopied(false), 2000)
   }
@@ -133,16 +139,47 @@ export default function Home() {
           </p>
 
           {/* Terminal Command Snippet Box with Shiny Border (Aceternity / Magic UI style) */}
-          <div className="relative group w-full max-w-xl mb-8">
+          <div className="relative group w-full max-w-2xl mb-8">
+            {/* Install Method Tabs */}
+            <div className="flex items-center justify-between px-2 mb-2">
+              <div className="inline-flex p-1 rounded-xl bg-surface-container-low border border-outline-variant/30 text-xs font-mono">
+                <button
+                  type="button"
+                  onClick={() => setInstallMethod('plugin')}
+                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                    installMethod === 'plugin'
+                      ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
+                      : 'text-tertiary hover:text-on-surface'
+                  }`}
+                >
+                  Claude Plugin CLI (Recommended)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInstallMethod('curl')}
+                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                    installMethod === 'curl'
+                      ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
+                      : 'text-tertiary hover:text-on-surface'
+                  }`}
+                >
+                  1-Line Shell Script
+                </button>
+              </div>
+
+              <span className="text-[11px] font-mono text-outline hidden sm:inline">Single-command execution</span>
+            </div>
+
             <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-container/40 via-outline-variant/30 to-primary-container/20 rounded-2xl blur-[2px] group-hover:blur-[6px] group-hover:from-primary-container group-hover:to-primary-container/60 transition-all duration-300 opacity-60 group-hover:opacity-100"></div>
-            <div className="relative bg-[#141210] rounded-xl p-2.5 pl-4 flex items-center justify-between border border-outline-variant/30 shadow-2xl">
-              <div className="flex items-center gap-3 font-code text-xs sm:text-sm text-on-surface overflow-hidden">
-                <span className="text-primary-container select-none font-bold">$</span>
-                <span className="truncate font-medium text-tertiary-fixed">claude plugin install claudetones</span>
+            <div className="relative bg-[#141210] rounded-xl p-3 pl-4 flex items-center justify-between border border-outline-variant/30 shadow-2xl gap-3">
+              <div className="flex items-center gap-3 font-code text-xs sm:text-sm text-on-surface overflow-hidden min-w-0">
+                <span className="text-primary-container select-none font-bold shrink-0">$</span>
+                <span className="truncate font-medium text-tertiary-fixed">{activeCommand}</span>
               </div>
               <button
+                type="button"
                 onClick={copyCliCommand}
-                className="shrink-0 px-3.5 py-1.5 rounded-lg bg-surface-container-high text-tertiary-fixed hover:bg-surface-bright font-label-sm text-xs font-mono transition-all duration-150 flex items-center gap-1.5 cursor-pointer border border-outline-variant/20 hover:border-primary-container/40"
+                className="shrink-0 px-3.5 py-2 rounded-lg bg-surface-container-high text-tertiary-fixed hover:bg-surface-bright font-label-sm text-xs font-mono transition-all duration-150 flex items-center gap-1.5 cursor-pointer border border-outline-variant/20 hover:border-primary-container/40"
               >
                 <span className="material-symbols-outlined text-[14px] text-primary-container">
                   {copied ? 'check' : 'content_copy'}
@@ -340,14 +377,15 @@ export default function Home() {
                 Install in seconds. Instant acoustic awareness for every Claude task.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
-              <div className="px-4 py-3 rounded-xl bg-surface-container-lowest font-code text-code text-tertiary-fixed flex items-center gap-3 border border-outline-variant/25">
-                <span className="text-primary-container">$</span>
-                <span>claude plugin install claudetones</span>
+            <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 max-w-full">
+              <div className="px-4 py-3 rounded-xl bg-surface-container-lowest font-code text-xs sm:text-sm text-tertiary-fixed flex items-center gap-3 border border-outline-variant/25 overflow-hidden max-w-md">
+                <span className="text-primary-container shrink-0 font-bold">$</span>
+                <span className="truncate">claude plugin marketplace add parjanyaacoder/claudetones && claude plugin install claudetones</span>
               </div>
               <button
+                type="button"
                 onClick={copyBottomCommand}
-                className="px-5 py-3 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all cursor-pointer font-medium"
+                className="px-5 py-3 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all cursor-pointer font-medium shrink-0"
               >
                 {bottomCopied ? 'Copied!' : 'Copy Command'}
               </button>

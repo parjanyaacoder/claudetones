@@ -21,11 +21,16 @@ A lightweight, zero-config plugin for **Claude Code** that plays subtle, context
 
 ## ⚡ Quick Install
 
-Run these two commands inside your terminal:
+Install in a single command using Claude Code's native plugin manager:
 
 ```bash
-claude plugin marketplace add parjanyaacoder/claudetones
-claude plugin install claudetones@claudetones
+claude plugin marketplace add parjanyaacoder/claudetones && claude plugin install claudetones
+```
+
+Alternatively, install via the 1-line bootstrap script:
+
+```bash
+curl -fsSL https://claudetones.vercel.app/install.sh | bash
 ```
 
 That's it. Next time you start `claude`, you'll hear the startup chime.
