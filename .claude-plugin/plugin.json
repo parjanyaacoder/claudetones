@@ -1,6 +1,6 @@
 {
   "name": "claudetones",
-  "version": "0.2.0",
-  "description": "Sound effects for Claude Code — 7 universal events (launch, thinking, shell, tools, errors, done), free + Pro packs, /claudetones config",
+  "version": "0.3.0",
+  "description": "Tactile acoustic feedback for Claude Code across Desktop & Terminal — 18 universal events, free + Pro packs, /claudetones config",
   "author": { "name": "Parjanya Shukla", "url": "https://github.com/parjanyaacoder" }
 }
