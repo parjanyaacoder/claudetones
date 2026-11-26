@@ -9,11 +9,8 @@ import {
   type EventKey,
 } from './logic'
 
-// popUpi, but for Claude Code. Each engine event maps to a claudetones EVENT key; the
-// pure selector (logic.ts) turns that into a random mood-matched clip, or nothing.
-// Seven universal events cover a whole session; /claudetones toggles mute/test;
-// /oops is a manual button that plays even muted. Every play is best-effort: a sound
-// glitch (or a surface with no player) must never disturb the tool or the turn.
+// claudetones for Claude Code: Expansive Acoustic Architecture
+// Covers Core Lifecycle, MCP Protocol, Agent Skills, Plugins, Subagents, and Memory.
 
 const LONG_REASONING_MS = 8000
 const PAUSE_KEY = 'paused'
@@ -21,12 +18,22 @@ const DEBOUNCE_MS = 250
 
 const EVENT_PRIORITY: Record<EventKey, number> = {
   oops: 100,
-  error: 90,
-  done: 80,
-  session_start: 70,
-  long_reasoning: 50,
-  reasoning: 40,
-  terminal_command: 20,
+  error: 95,
+  done: 90,
+  permission_request: 85,
+  plugin_install: 80,
+  mcp_connect: 75,
+  git_commit: 70,
+  session_start: 65,
+  subagent_spawn: 60,
+  skill_invoke: 55,
+  mcp_tool_call: 50,
+  context_compact: 45,
+  long_reasoning: 40,
+  reasoning: 35,
+  file_edit: 30,
+  terminal_command: 25,
+  file_read: 15,
   tool_call: 10,
 }
 
@@ -49,7 +56,15 @@ export const register: Register = on => {
       name: 'oops',
       description: 'Caught Claude being wrong — play the sad sound',
     })
-    await fireIfActive($, e, 'session_start')
+
+    // Detect if MCP servers are configured in the session
+    const mcpServers = (e as any)?.mcpServers || (e as any)?.mcp_servers
+    if (Array.isArray(mcpServers) && mcpServers.length > 0) {
+      await fireIfActive($, e, 'mcp_connect')
+    } else {
+      await fireIfActive($, e, 'session_start')
+    }
+
     return next(e)
   })
 
@@ -82,11 +97,43 @@ export const register: Register = on => {
 
   on('tool.call', async ($, e, next) => {
     const active = await isSessionActive($, e)
-    if (active) void fire($, e.tool === 'Bash' ? 'terminal_command' : 'tool_call')
+    if (active) {
+      const toolName = String(e.tool || '')
+      const inputStr = JSON.stringify((e as any).input || '')
+
+      if (toolName === 'Bash') {
+        if (inputStr.includes('git commit') || inputStr.includes('git push')) {
+          void fire($, 'git_commit')
+        } else {
+          void fire($, 'terminal_command')
+        }
+      } else if (toolName.startsWith('mcp__') || toolName.includes('__')) {
+        void fire($, 'mcp_tool_call')
+      } else if (toolName === 'Skill' || toolName === 'invoke_skill' || toolName.toLowerCase().includes('skill')) {
+        void fire($, 'skill_invoke')
+      } else if (toolName === 'invoke_subagent' || toolName === 'Agent' || toolName === 'swarm') {
+        void fire($, 'subagent_spawn')
+      } else if (['Edit', 'MultiEdit', 'Write', 'NotebookEditCell'].includes(toolName)) {
+        void fire($, 'file_edit')
+      } else if (['View', 'Glob', 'Grep', 'Read'].includes(toolName)) {
+        void fire($, 'file_read')
+      } else {
+        void fire($, 'tool_call')
+      }
+    }
+
     const r = await next(e)
     if (active && r.isError === true) void fire($, 'error')
     return r
   }).catch(($, e, next) => next(e)) // fail open: a sound must never break a tool call
+
+  // Intercept permission requests or interactive user prompts
+  try {
+    (on as any)('permission.request', async ($: EngineInterface, e: any, next: any) => {
+      await fireIfActive($, e, 'permission_request')
+      return next ? next(e) : e
+    })
+  } catch {}
 
   on('command.run', { command: 'claudetones' }, async ($, e) => {
     const action = parseClaudetones(e.args ?? '')
@@ -190,7 +237,7 @@ async function fire($: EngineInterface, event: EventKey, bypassThrottle = false)
   // Parallel collision guard:
   // When multiple events fire simultaneously (e.g. 5 parallel tool calls in one turn):
   // 1. Equal or lower priority events within the 250ms window are dropped to prevent cacophony.
-  // 2. Higher priority events (e.g. 'error' or 'done') supersede and play immediately.
+  // 2. Higher priority events (e.g. 'error', 'done', 'permission_request') supersede immediately.
   if (!bypassThrottle && elapsed < DEBOUNCE_MS) {
     if (priority <= lastEventPriority) {
       return

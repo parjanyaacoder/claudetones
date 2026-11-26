@@ -93,6 +93,46 @@ const MARQUEE_SOUNDS: MarqueeSound[] = [
     type: 'tick',
     tag: 'Minimal',
   },
+  {
+    id: 'mq-bluetooth',
+    name: 'Bluetooth Connected',
+    event: 'mcp.connect',
+    src: '/sounds/the-bluetooth-device-its-connected-succesfull.mp3',
+    type: 'mcp_connect',
+    tag: 'MCP',
+  },
+  {
+    id: 'mq-sparkle',
+    name: 'Skill Fairy Sparkle',
+    event: 'skill.invoke',
+    src: '/sounds/fairy-sparkle.mp3',
+    type: 'skill',
+    tag: 'Skills',
+  },
+  {
+    id: 'mq-levelup',
+    name: 'Plugin Level Up',
+    event: 'plugin.install',
+    src: '/sounds/levelup.mp3',
+    type: 'plugin',
+    tag: 'Plugins',
+  },
+  {
+    id: 'mq-teleport',
+    name: 'Subagent Teleport',
+    event: 'subagent.spawn',
+    src: '/sounds/dbz-teleport.mp3',
+    type: 'subagent',
+    tag: 'Agents',
+  },
+  {
+    id: 'mq-doorbell',
+    name: 'Permission Doorbell',
+    event: 'permission.request',
+    src: '/sounds/door-bell-sound-effect.mp3',
+    type: 'permission',
+    tag: 'Prompts',
+  },
 ]
 
 export default function SoundMarquee() {

@@ -5,7 +5,22 @@
 
 import { useState, useEffect } from 'react'
 
-export type SoundType = 'boot' | 'tick' | 'ponder' | 'click' | 'pip' | 'error' | 'fanfare'
+export type SoundType =
+  | 'boot'
+  | 'tick'
+  | 'ponder'
+  | 'click'
+  | 'pip'
+  | 'error'
+  | 'fanfare'
+  | 'mcp_connect'
+  | 'mcp_tool'
+  | 'skill'
+  | 'plugin'
+  | 'permission'
+  | 'subagent'
+  | 'compact'
+  | 'git'
 
 export const SOUND_FILE_MAP: Record<SoundType, string> = {
   boot: '/sounds/launch.wav',
@@ -15,6 +30,14 @@ export const SOUND_FILE_MAP: Record<SoundType, string> = {
   pip: '/sounds/pro-tool-call.mp3',
   error: '/sounds/error.wav',
   fanfare: '/sounds/ding-sound-effect-1.mp3',
+  mcp_connect: '/sounds/the-bluetooth-device-its-connected-succesfull.mp3',
+  mcp_tool: '/sounds/magic-reveal-audio.mp3',
+  skill: '/sounds/fairy-sparkle.mp3',
+  plugin: '/sounds/levelup.mp3',
+  permission: '/sounds/door-bell-sound-effect.mp3',
+  subagent: '/sounds/dbz-teleport.mp3',
+  compact: '/sounds/mario_coin_sound.mp3',
+  git: '/sounds/confetti-pop-sound-effect.mp3',
 }
 
 export type PlaybackState = {

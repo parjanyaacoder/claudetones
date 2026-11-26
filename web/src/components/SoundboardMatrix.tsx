@@ -14,7 +14,7 @@ type LifecycleEvent = {
   audioSrc: string
 }
 
-type PackId = 'minimal' | 'arcade' | 'nostalgia'
+type PackId = 'minimal' | 'arcade' | 'nostalgia' | 'agent'
 
 type PackDefinition = {
   id: PackId
@@ -251,6 +251,80 @@ const PACKS: Record<PackId, PackDefinition> = {
       description: 'San Andreas mission passed melody on complete.',
       fileName: 'gta-san-andreas-mission-complete.mp3',
       audioSrc: '/sounds/gta-san-andreas-mission-complete.mp3',
+    },
+  },
+  agent: {
+    id: 'agent',
+    label: 'Agent & MCP Matrix',
+    badge: 'Modern Agentic Cues',
+    description: 'Specialized tactile audio engineered for MCP servers, agent skills, subagent workers, and memory compaction.',
+    events: [
+      {
+        id: 'mcp_connect',
+        trigger: 'mcp.connect',
+        category: 'MCP Protocol',
+        title: '1. MCP Server Attached',
+        description: 'Iconic Bluetooth device connected confirmation.',
+        fileName: 'the-bluetooth-device-its-connected-succesfull.mp3',
+        soundType: 'mcp_connect',
+        audioSrc: '/sounds/the-bluetooth-device-its-connected-succesfull.mp3',
+      },
+      {
+        id: 'mcp_tool',
+        trigger: 'mcp.tool_call',
+        category: 'External Tool',
+        title: '2. MCP Tool Execution',
+        description: 'Magic spell reveal tone when running an external MCP tool.',
+        fileName: 'magic-reveal-audio.mp3',
+        soundType: 'mcp_tool',
+        audioSrc: '/sounds/magic-reveal-audio.mp3',
+      },
+      {
+        id: 'skill',
+        trigger: 'skill.invoke',
+        category: 'Skill Engine',
+        title: '3. Agent Skill Invoked',
+        description: 'Fairy sparkle as specialized skill routines fire.',
+        fileName: 'fairy-sparkle.mp3',
+        soundType: 'skill',
+        audioSrc: '/sounds/fairy-sparkle.mp3',
+      },
+      {
+        id: 'plugin',
+        trigger: 'plugin.install',
+        category: 'Marketplace',
+        title: '4. Plugin & Marketplace Add',
+        description: 'Retro Level-Up sound on installing plugins and marketplaces.',
+        fileName: 'levelup.mp3',
+        soundType: 'plugin',
+        audioSrc: '/sounds/levelup.mp3',
+      },
+      {
+        id: 'permission',
+        trigger: 'permission.request',
+        category: 'User Attention',
+        title: '5. Permission Required',
+        description: 'Doorbell notification when Claude asks for confirmation.',
+        fileName: 'door-bell-sound-effect.mp3',
+        soundType: 'permission',
+        audioSrc: '/sounds/door-bell-sound-effect.mp3',
+      },
+      {
+        id: 'subagent',
+        trigger: 'subagent.spawn',
+        category: 'Swarm & Subagent',
+        title: '6. Subagent Teleport',
+        description: 'Instant transmission teleport when worker agent spawns.',
+        fileName: 'dbz-teleport.mp3',
+        soundType: 'subagent',
+        audioSrc: '/sounds/dbz-teleport.mp3',
+      },
+    ],
+    victory: {
+      title: '7. Git Milestone & Task Complete',
+      description: 'Confetti pop celebration on git commit and verified task.',
+      fileName: 'confetti-pop-sound-effect.mp3',
+      audioSrc: '/sounds/confetti-pop-sound-effect.mp3',
     },
   },
 }

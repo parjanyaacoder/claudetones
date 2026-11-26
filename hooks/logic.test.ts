@@ -14,7 +14,7 @@ import {
 const MOODS: Mood[] = [
   'boot', 'shutdown', 'ring', 'hype', 'reward', 'sad', 'error', 'think', 'ponder',
   'alert', 'destructive', 'whoosh', 'type', 'connect', 'kaching', 'scratch', 'pop',
-  'meme',
+  'meme', 'magic', 'level', 'teleport', 'bell', 'switch',
 ]
 
 const EVENT_KEYS = Object.keys(EVENTS) as EventKey[]
@@ -34,11 +34,10 @@ test('every event accepts only known moods', $ => {
   }
 })
 
-test('every one of the 7 universal events resolves to an audio clip', $ => {
-  const universal: EventKey[] = [
-    'session_start', 'reasoning', 'long_reasoning', 'terminal_command', 'tool_call', 'error', 'done',
-  ]
-  for (const ev of universal) expect(pickClip(ev)).not.toBe(null)
+test('every expanded event resolves to an audio clip', $ => {
+  for (const ev of EVENT_KEYS) {
+    expect(pickClip(ev)).not.toBe(null)
+  }
 })
 
 test('pickClip returns null when no clip matches any accepted mood', $ => {
@@ -72,6 +71,8 @@ test('parseClaudetones: handles toggle, test, status, and help commands', $ => {
   expect(parseClaudetones('stop')).toEqual({ kind: 'stop' })
   expect(parseClaudetones('test done')).toEqual({ kind: 'test', event: 'done' })
   expect(parseClaudetones('test error')).toEqual({ kind: 'test', event: 'error' })
+  expect(parseClaudetones('test mcp_connect')).toEqual({ kind: 'test', event: 'mcp_connect' })
+  expect(parseClaudetones('test skill_invoke')).toEqual({ kind: 'test', event: 'skill_invoke' })
   expect(parseClaudetones('test unknown').kind).toBe('error')
   expect(parseClaudetones('status')).toEqual({ kind: 'status' })
   expect(parseClaudetones('help')).toEqual({ kind: 'help' })

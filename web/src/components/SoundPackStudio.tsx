@@ -125,6 +125,18 @@ const PRESET_PACKS = {
       done: { name: 'gta-san-andreas-mission-complete.mp3', src: '/sounds/gta-san-andreas-mission-complete.mp3' },
     },
   },
+  agent: {
+    name: 'agentic-mcp',
+    sounds: {
+      session_start: { name: 'the-bluetooth-device-its-connected-succesfull.mp3', src: '/sounds/the-bluetooth-device-its-connected-succesfull.mp3' },
+      reasoning: { name: 'fairy-sparkle.mp3', src: '/sounds/fairy-sparkle.mp3' },
+      long_reasoning: { name: 'timer.mp3', src: '/sounds/timer.mp3' },
+      terminal_command: { name: 'switch-sound.mp3', src: '/sounds/switch-sound.mp3' },
+      tool_call: { name: 'magic-reveal-audio.mp3', src: '/sounds/magic-reveal-audio.mp3' },
+      error: { name: 'door-bell-sound-effect.mp3', src: '/sounds/door-bell-sound-effect.mp3' },
+      done: { name: 'confetti-pop-sound-effect.mp3', src: '/sounds/confetti-pop-sound-effect.mp3' },
+    },
+  },
 }
 
 type EventCustomState = {
@@ -201,8 +213,8 @@ export default function SoundPackStudio() {
     })
   }
 
-  // Load full preset template (Minimal, Arcade, or Nostalgia)
-  const loadPresetPack = (presetKey: 'minimal' | 'arcade' | 'nostalgia') => {
+  // Load full preset template (Minimal, Arcade, Nostalgia, or Agentic)
+  const loadPresetPack = (presetKey: 'minimal' | 'arcade' | 'nostalgia' | 'agent') => {
     const preset = PRESET_PACKS[presetKey]
     setPackName(preset.name)
     setEventStates((prev) => {
@@ -430,6 +442,13 @@ export default function SoundPackStudio() {
               className="px-3 py-1 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-mono text-tertiary-fixed border border-outline-variant/25 transition-all cursor-pointer hover:border-primary-container/40"
             >
               Nostalgia Vault
+            </button>
+            <button
+              type="button"
+              onClick={() => loadPresetPack('agent')}
+              className="px-3 py-1 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-mono text-primary-container font-semibold border border-primary-container/30 transition-all cursor-pointer hover:border-primary-container/60 shadow-sm"
+            >
+              Agent &amp; MCP
             </button>
           </div>
         </div>
