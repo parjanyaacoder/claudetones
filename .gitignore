@@ -28,34 +28,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# The sounds/ library holds ~1,800 clips we draw packs from — way too big for git.
 # Track only the clips the 7 universal events actually use: 1 free + 1 paid each.
-/sounds/*
-# --- free tier (ships with the mod) ---
-!/sounds/launch.wav
-!/sounds/ring.wav
-!/sounds/timer.mp3
-!/sounds/keyboard-click.mp3
-!/sounds/error.wav
-!/sounds/ding-sound-effect-1.mp3
-!/sounds/tf_nemesis.mp3
-# --- paid tier (Pro pack - CC0 / Royalty-Free) ---
-!/sounds/pro-session-start.mp3
-!/sounds/pro-reasoning.mp3
-!/sounds/pro-long-reasoning.mp3
-!/sounds/pro-terminal-command.mp3
-!/sounds/pro-tool-call.mp3
-!/sounds/pro-error.mp3
-!/sounds/pro-done.mp3
-
-# --- extended agent matrix (ships with the mod - 100% Myinstants) ---
-!/sounds/mouse-click-sound-fx.mp3
-!/sounds/the-bluetooth-device-its-connected-succesfull.mp3
-!/sounds/magic-reveal-audio.mp3
-!/sounds/fairy-sparkle.mp3
-!/sounds/levelup.mp3
-!/sounds/door-bell-sound-effect.mp3
-!/sounds/dbz-teleport.mp3
-!/sounds/mario_coin_sound.mp3
-!/sounds/confetti-pop-sound-effect.mp3
-!/sounds/dialup.mp3

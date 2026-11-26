@@ -19,13 +19,20 @@ const DEBOUNCE_MS = 250
 
 const EVENT_PRIORITY: Record<EventKey, number> = {
   oops: 100,
+  dangerous_command: 97,
   error: 95,
   done: 90,
+  security_alert: 88,
   permission_request: 85,
+  turn_abort: 82,
   plugin_install: 80,
   mcp_connect: 75,
+  test_fail: 74,
+  test_pass: 72,
   git_commit: 70,
+  git_push: 68,
   session_start: 65,
+  package_install: 62,
   subagent_spawn: 60,
   skill_invoke: 55,
   web_search: 52,
@@ -87,6 +94,7 @@ export const register: Register = on => {
 
   on('turn.abort', async ($, e, next) => {
     cancelPonder()
+    await fireIfActive($, e, 'turn_abort')
     return next(e)
   }).catch(($, e, next) => next(e)) // fail open: a sound must never block an interrupt
 
@@ -103,9 +111,31 @@ export const register: Register = on => {
     if (active) {
       const toolName = String(e.tool || '')
       const inputStr = JSON.stringify((e as any).input || '')
+      const cmd = inputStr.toLowerCase()
 
       if (toolName === 'Bash') {
-        if (inputStr.includes('git commit') || inputStr.includes('git push')) {
+        if (
+          cmd.includes('rm -rf') ||
+          cmd.includes('drop table') ||
+          cmd.includes('git push --force') ||
+          cmd.includes('git push -f') ||
+          cmd.includes('kill -9') ||
+          cmd.includes('mkfs')
+        ) {
+          void fire($, 'dangerous_command')
+        } else if (
+          cmd.includes('npm install') ||
+          cmd.includes('npm i ') ||
+          cmd.includes('yarn add') ||
+          cmd.includes('pip install') ||
+          cmd.includes('cargo add') ||
+          cmd.includes('brew install') ||
+          cmd.includes('pnpm add')
+        ) {
+          void fire($, 'package_install')
+        } else if (cmd.includes('git push')) {
+          void fire($, 'git_push')
+        } else if (cmd.includes('git commit')) {
           void fire($, 'git_commit')
         } else {
           void fire($, 'terminal_command')
@@ -124,16 +154,38 @@ export const register: Register = on => {
       } else if (toolName === 'invoke_subagent' || toolName === 'Agent' || toolName === 'swarm') {
         void fire($, 'subagent_spawn')
       } else if (['Edit', 'MultiEdit', 'Write', 'NotebookEditCell'].includes(toolName)) {
-        void fire($, 'file_edit')
+        if (inputStr.includes('.env') || inputStr.includes('credentials') || inputStr.includes('id_rsa')) {
+          void fire($, 'security_alert')
+        } else {
+          void fire($, 'file_edit')
+        }
       } else if (['View', 'Glob', 'Grep', 'Read'].includes(toolName)) {
-        void fire($, 'file_read')
+        if (inputStr.includes('.env') || inputStr.includes('credentials') || inputStr.includes('id_rsa')) {
+          void fire($, 'security_alert')
+        } else {
+          void fire($, 'file_read')
+        }
       } else {
         void fire($, 'tool_call')
       }
     }
 
     const r = await next(e)
-    if (active && r.isError === true) void fire($, 'error')
+    if (active) {
+      const toolName = String(e.tool || '')
+      const cmd = JSON.stringify((e as any).input || '').toLowerCase()
+      if (r.isError === true) {
+        if (cmd.includes('test') || cmd.includes('pytest') || cmd.includes('vitest')) {
+          void fire($, 'test_fail')
+        } else {
+          void fire($, 'error')
+        }
+      } else if (toolName === 'Bash') {
+        if (cmd.includes('npm test') || cmd.includes('pytest') || cmd.includes('cargo test') || cmd.includes('vitest')) {
+          void fire($, 'test_pass')
+        }
+      }
+    }
     return r
   }).catch(($, e, next) => next(e)) // fail open: a sound must never break a tool call
 

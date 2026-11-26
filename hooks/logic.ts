@@ -48,6 +48,13 @@ export type EventKey =
   | 'subagent_spawn'
   | 'context_compact'
   | 'git_commit'
+  | 'git_push'
+  | 'package_install'
+  | 'test_pass'
+  | 'test_fail'
+  | 'dangerous_command'
+  | 'security_alert'
+  | 'turn_abort'
   | 'error'
   | 'done'
   | 'oops'
@@ -116,7 +123,28 @@ export const CLIPS: ClipEntry[] = [
   // 16. git_commit (Git commit or milestone push)
   { file: 'sounds/confetti-pop-sound-effect.mp3', moods: ['pop', 'reward'], name: 'Git Commit Confetti' },
 
-  // 17. error
+  // 17. git_push
+  { file: 'sounds/punch-sound-effect-meme.mp3', moods: ['hype', 'whoosh'], name: 'Git Push Punch' },
+
+  // 18. package_install
+  { file: 'sounds/subway-surfers-coin-collect.mp3', moods: ['kaching', 'level'], name: 'Package Install Chime' },
+
+  // 19. test_pass
+  { file: 'sounds/roblox-old-winning-sound-effect.mp3', moods: ['reward'], name: 'Roblox Victory Pass' },
+
+  // 20. test_fail
+  { file: 'sounds/the-price-is-right-losing-horn.mp3', moods: ['sad', 'error'], name: 'Price is Right Fail Horn' },
+
+  // 21. dangerous_command
+  { file: 'sounds/nuclear-alarm-siren.mp3', moods: ['destructive', 'alert'], name: 'Nuclear Alarm Siren' },
+
+  // 22. security_alert
+  { file: 'sounds/metal-gear-alert.mp3', moods: ['alert', 'destructive'], name: 'Metal Gear Secret Alert' },
+
+  // 23. turn_abort
+  { file: 'sounds/braking-car-sound-effect-drift-brake.mp3', moods: ['scratch', 'sad'], name: 'Drift Car Screech' },
+
+  // 24. error
   { file: 'sounds/error.wav', moods: ['error'], name: 'Error Sting' },
   { file: 'sounds/pro-error.mp3', moods: ['error', 'sad'], name: 'Sad Trombone' },
   { file: 'sounds/metal-gear-alert.mp3', moods: ['error', 'sad'], name: 'Metal Gear Alert' },
@@ -148,6 +176,13 @@ export const EVENTS: Record<EventKey, Mood[]> = {
   subagent_spawn: ['teleport', 'whoosh'],
   context_compact: ['kaching', 'pop'],
   git_commit: ['pop', 'reward'],
+  git_push: ['hype', 'whoosh'],
+  package_install: ['kaching', 'level'],
+  test_pass: ['reward'],
+  test_fail: ['sad', 'error'],
+  dangerous_command: ['destructive', 'alert'],
+  security_alert: ['alert', 'destructive'],
+  turn_abort: ['scratch', 'sad'],
   error: ['error', 'sad'],
   done: ['reward'],
   oops: ['sad'],
