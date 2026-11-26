@@ -111,12 +111,18 @@ export function pickClip(event: EventKey, options: PickOptions = {}): string | n
 export const CLAUDETONES_USAGE =
   'claudetones commands:\n' +
   '  /claudetones              toggle mute\n' +
+  '  /claudetones pause        pause sound playback\n' +
+  '  /claudetones play         resume sound playback\n' +
+  '  /claudetones stop         stop current sound playback\n' +
   '  /claudetones test [event] test an event sound (e.g. done, error)\n' +
-  '  /claudetones status       show mute status\n' +
+  '  /claudetones status       show playback status\n' +
   '  /oops                     caught Claude being wrong'
 
 export type ClaudetonesAction =
   | { kind: 'toggle' }
+  | { kind: 'pause' }
+  | { kind: 'resume' }
+  | { kind: 'stop' }
   | { kind: 'test'; event: EventKey }
   | { kind: 'status' }
   | { kind: 'help' }
@@ -129,6 +135,9 @@ export function parseClaudetones(args: string): ClaudetonesAction {
 
   const [head = '', ...rest] = trimmed.split(/\s+/)
   const sub = head.toLowerCase()
+  if (sub === 'pause') return { kind: 'pause' }
+  if (sub === 'play' || sub === 'resume') return { kind: 'resume' }
+  if (sub === 'stop') return { kind: 'stop' }
   if (sub === 'test') {
     const ev = (rest[0] || 'done').toLowerCase() as EventKey
     if (ev in EVENTS) {

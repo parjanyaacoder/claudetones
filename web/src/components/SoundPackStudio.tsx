@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react'
 import JSZip from 'jszip'
-import { playAcousticCue, type SoundType } from '@/lib/audio'
+import { audioEngine, useAudioState, type SoundType } from '@/lib/audio'
 
 type EventItem = {
   key: string
@@ -96,6 +96,7 @@ type EventCustomState = {
 }
 
 export default function SoundPackStudio() {
+  const { activeId, isPlaying, isPaused } = useAudioState()
   const [packName, setPackName] = useState('arcade-flow')
   const [authorName, setAuthorName] = useState('community-dev')
   const [eventStates, setEventStates] = useState<Record<string, EventCustomState>>(() => {
@@ -111,7 +112,6 @@ export default function SoundPackStudio() {
     return initial
   })
 
-  const [activePlayKey, setActivePlayKey] = useState<string | null>(null)
   const [isExporting, setIsExporting] = useState(false)
   const [copiedCli, setCopiedCli] = useState(false)
   const [publishSuccess, setPublishSuccess] = useState(false)
@@ -162,23 +162,12 @@ export default function SoundPackStudio() {
     })
   }
 
-  // Play sound
-  const handlePlaySound = (evt: EventItem) => {
+  // Play or pause sound with exclusive playback
+  const handleToggleSound = (evt: EventItem) => {
     const state = eventStates[evt.key]
     if (!state.enabled) return
-
-    setActivePlayKey(evt.key)
-    if (state.previewUrl) {
-      const audio = new Audio(state.previewUrl)
-      audio.volume = 0.6
-      audio.play().catch(() => {})
-    } else {
-      playAcousticCue(evt.soundType, evt.defaultAudioSrc)
-    }
-
-    setTimeout(() => {
-      setActivePlayKey((curr) => (curr === evt.key ? null : curr))
-    }, 1200)
+    const src = state.previewUrl || evt.defaultAudioSrc
+    audioEngine.toggle(`pack-${evt.key}`, evt.soundType, src)
   }
 
   // Bulk enable / disable
@@ -366,7 +355,6 @@ export default function SoundPackStudio() {
           <div className="divide-y divide-outline-variant/15 rounded-2xl bg-surface-container border border-outline-variant/20 overflow-hidden">
             {ALL_7_EVENTS.map((evt) => {
               const state = eventStates[evt.key]
-              const isPlaying = activePlayKey === evt.key
               const isCustom = Boolean(state.file)
 
               return (
@@ -463,24 +451,34 @@ export default function SoundPackStudio() {
                       <span>Upload Sound</span>
                     </button>
 
-                    {/* Play / Preview Sound Button */}
-                    <button
-                      type="button"
-                      disabled={!state.enabled}
-                      onClick={() => handlePlaySound(evt)}
-                      className={`px-3 py-1.5 rounded-lg font-label-sm text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
-                        !state.enabled
-                          ? 'opacity-40 cursor-not-allowed bg-surface-container-highest text-outline'
-                          : isPlaying
-                          ? 'bg-primary-container text-on-primary-container shadow-md'
-                          : 'bg-surface-container-highest hover:bg-primary-container hover:text-on-primary-container text-tertiary-fixed'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-[15px]">
-                        {isPlaying ? 'volume_up' : 'play_arrow'}
-                      </span>
-                      <span>{isPlaying ? 'Playing' : 'Play'}</span>
-                    </button>
+                    {/* Play / Pause / Resume Sound Button */}
+                    {(() => {
+                      const isThisActive = activeId === `pack-${evt.key}`
+                      const isThisPlaying = isThisActive && isPlaying
+                      const isThisPaused = isThisActive && isPaused
+
+                      return (
+                        <button
+                          type="button"
+                          disabled={!state.enabled}
+                          onClick={() => handleToggleSound(evt)}
+                          className={`px-3 py-1.5 rounded-lg font-label-sm text-xs transition-all flex items-center gap-1.5 cursor-pointer font-medium ${
+                            !state.enabled
+                              ? 'opacity-40 cursor-not-allowed bg-surface-container-highest text-outline'
+                              : isThisPlaying
+                              ? 'bg-primary-container text-on-primary-container shadow-md ring-2 ring-primary-container/40'
+                              : isThisPaused
+                              ? 'bg-surface-container-high text-primary-container border border-primary-container/40'
+                              : 'bg-surface-container-highest hover:bg-primary-container hover:text-on-primary-container text-tertiary-fixed'
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-[15px]">
+                            {isThisPlaying ? 'pause' : 'play_arrow'}
+                          </span>
+                          <span>{isThisPlaying ? 'Pause' : isThisPaused ? 'Resume' : 'Play'}</span>
+                        </button>
+                      )
+                    })()}
                   </div>
                 </div>
               )

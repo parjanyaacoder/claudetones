@@ -1,64 +1,68 @@
 'use client'
 
-import React, { useState } from 'react'
-import { playAcousticCue } from '@/lib/audio'
+import React from 'react'
+import { audioEngine, useAudioState } from '@/lib/audio'
 
 type CommandRow = {
   command: string
   params: string
   description: string
   actionLabel: string
-  soundType?: 'boot' | 'tick' | 'click' | 'pip'
+  soundType?: 'boot' | 'tick' | 'click' | 'pip' | 'error' | 'fanfare'
 }
 
 const COMMANDS: CommandRow[] = [
   {
-    command: '/claudetones',
-    params: '[status]',
-    description: 'Displays active soundpack, audio driver, master volume, and latency status in terminal.',
-    actionLabel: 'Run',
+    command: '/claudetones pause',
+    params: '[none]',
+    description: 'Pauses sound playback across all lifecycle events immediately.',
+    actionLabel: 'Pause',
+    soundType: 'pip',
+  },
+  {
+    command: '/claudetones play',
+    params: '[none]',
+    description: 'Resumes acoustic cue playback for the active session.',
+    actionLabel: 'Resume',
+    soundType: 'boot',
+  },
+  {
+    command: '/claudetones stop',
+    params: '[none]',
+    description: 'Immediately halts current sound and cancels any pending ponder tones.',
+    actionLabel: 'Stop',
+    soundType: 'error',
+  },
+  {
+    command: '/claudetones status',
+    params: '[none]',
+    description: 'Displays current playback state (Active, Paused, Muted) and active session.',
+    actionLabel: 'Status',
     soundType: 'tick',
   },
   {
     command: '/claudetones test',
-    params: '[event-name]',
-    description: 'Auditions an individual event cue (e.g. test bash, test complete).',
-    actionLabel: 'Run',
+    params: '[event]',
+    description: 'Auditions an individual event cue (e.g. test done, test error).',
+    actionLabel: 'Test',
     soundType: 'click',
   },
   {
-    command: '/claudetones volume',
-    params: '[0 - 100]',
-    description: 'Adjusts output gain without modifying your host system master audio volume.',
-    actionLabel: 'Run',
-    soundType: 'pip',
-  },
-  {
-    command: '/claudetones mute',
+    command: '/oops',
     params: '[none]',
-    description: 'Temporarily silences all acoustic cues for distraction-free silent mode. Toggle with /unmute.',
-    actionLabel: 'Mute',
-  },
-  {
-    command: '/claudetones pack',
-    params: '[pack-name]',
-    description: 'Hot-swaps active pack (e.g. pack retro-8bit, pack mechanical) on the fly.',
-    actionLabel: 'Run',
-    soundType: 'boot',
+    description: 'Plays the dramatic sad sound even when claudetones is muted.',
+    actionLabel: 'Oops',
+    soundType: 'error',
   },
 ]
 
 export default function SlashCommands() {
-  const [activeIdx, setActiveIdx] = useState<number | null>(null)
+  const { activeId, isPlaying } = useAudioState()
 
   const handleTest = (row: CommandRow, idx: number) => {
-    setActiveIdx(idx)
     if (row.soundType) {
-      playAcousticCue(row.soundType)
+      audioEngine.toggle(`cmd-${idx}`, row.soundType)
     }
-    setTimeout(() => {
-      setActiveIdx((curr) => (curr === idx ? null : curr))
-    }, 500)
   }
 
   return (
@@ -87,7 +91,7 @@ export default function SlashCommands() {
             </thead>
             <tbody className="divide-y divide-surface-container">
               {COMMANDS.map((cmd, idx) => {
-                const isActive = activeIdx === idx
+                const isThisPlaying = activeId === `cmd-${idx}` && isPlaying
                 return (
                   <tr key={cmd.command} className="hover:bg-surface-container/40 transition-colors">
                     <td className="py-4 px-6 font-code text-code text-primary-container font-medium">
@@ -97,14 +101,15 @@ export default function SlashCommands() {
                     <td className="py-4 px-6 text-on-surface-variant">{cmd.description}</td>
                     <td className="py-4 px-6 text-right">
                       <button
+                        type="button"
                         onClick={() => handleTest(cmd, idx)}
-                        className={`px-2.5 py-1 rounded font-label-sm text-label-sm transition-all cursor-pointer ${
-                          isActive
-                            ? 'bg-primary-container text-on-primary-container'
+                        className={`px-3 py-1 rounded-lg font-label-sm text-xs transition-all cursor-pointer font-medium ${
+                          isThisPlaying
+                            ? 'bg-primary-container text-on-primary-container shadow-sm ring-1 ring-primary-container'
                             : 'bg-surface-container text-tertiary-fixed hover:bg-surface-container-high'
                         }`}
                       >
-                        {cmd.actionLabel}
+                        {isThisPlaying ? 'Playing' : cmd.actionLabel}
                       </button>
                     </td>
                   </tr>

@@ -66,6 +66,10 @@ test('gain is in range and constant tool calls are quieter than one-off stabs', 
 test('parseClaudetones: handles toggle, test, status, and help commands', $ => {
   expect(parseClaudetones('')).toEqual({ kind: 'toggle' })
   expect(parseClaudetones('   ')).toEqual({ kind: 'toggle' })
+  expect(parseClaudetones('pause')).toEqual({ kind: 'pause' })
+  expect(parseClaudetones('play')).toEqual({ kind: 'resume' })
+  expect(parseClaudetones('resume')).toEqual({ kind: 'resume' })
+  expect(parseClaudetones('stop')).toEqual({ kind: 'stop' })
   expect(parseClaudetones('test done')).toEqual({ kind: 'test', event: 'done' })
   expect(parseClaudetones('test error')).toEqual({ kind: 'test', event: 'error' })
   expect(parseClaudetones('test unknown').kind).toBe('error')

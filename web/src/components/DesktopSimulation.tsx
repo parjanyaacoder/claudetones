@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { playAcousticCue, type SoundType } from '@/lib/audio'
+import { audioEngine, useAudioState, type SoundType } from '@/lib/audio'
 
 type Stage = {
   id: number
@@ -71,6 +71,7 @@ const STAGES: Stage[] = [
 ]
 
 export default function DesktopSimulation() {
+  const { activeId, isPlaying, isPaused } = useAudioState()
   const [currentStage, setCurrentStage] = useState(0)
   const [isAutoLooping, setIsAutoLooping] = useState(true)
   const [view, setView] = useState<'desktop' | 'terminal'>('desktop')
@@ -80,7 +81,7 @@ export default function DesktopSimulation() {
     setCurrentStage((prev) => {
       const next = (prev + 1) % STAGES.length
       if (sound) {
-        playAcousticCue(STAGES[next].soundType)
+        audioEngine.play(`sim-stage-${next}`, STAGES[next].soundType)
       }
       return next
     })
@@ -88,12 +89,12 @@ export default function DesktopSimulation() {
 
   const jumpToStage = (idx: number) => {
     setCurrentStage(idx)
-    playAcousticCue(STAGES[idx].soundType)
+    audioEngine.play(`sim-stage-${idx}`, STAGES[idx].soundType)
   }
 
   const replayTurn = () => {
     setCurrentStage(0)
-    playAcousticCue('boot')
+    audioEngine.play('sim-stage-0', 'boot')
   }
 
   const toggleAutoLoop = () => {
@@ -249,16 +250,54 @@ export default function DesktopSimulation() {
             </div>
           </div>
 
-          {/* Active Audio Cue Card at Bottom */}
-          <div className="p-3 rounded-xl bg-surface-container border border-outline-variant/20 flex items-center justify-between text-xs font-mono">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[15px] text-primary-container">headphones</span>
-              <span className="text-outline text-[11px]">Audio Dispatch:</span>
-            </div>
-            <span className="text-primary-container font-semibold text-[11px]">
-              {stage.soundCue}
-            </span>
-          </div>
+          {/* Active Audio Cue Card at Bottom with Interactive Play/Pause & Stop Controls */}
+          {(() => {
+            const isStageActive = activeId === `sim-stage-${currentStage}`
+            const isStagePlaying = isStageActive && isPlaying
+            const isStagePaused = isStageActive && isPaused
+
+            return (
+              <div className="p-3 rounded-xl bg-surface-container border border-outline-variant/20 flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center gap-2 truncate">
+                  <span className="material-symbols-outlined text-[15px] text-primary-container">headphones</span>
+                  <span className="text-outline text-[11px] hidden sm:inline">Audio:</span>
+                  <span className="text-primary-container font-semibold text-[11px] truncate">
+                    {stage.soundCue}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      audioEngine.toggle(`sim-stage-${currentStage}`, stage.soundType)
+                    }}
+                    className={`p-1.5 rounded-lg text-[11px] transition-all flex items-center gap-1 cursor-pointer font-medium ${
+                      isStagePlaying
+                        ? 'bg-primary-container text-on-primary-container shadow-sm'
+                        : isStagePaused
+                        ? 'bg-surface-container-high text-primary-container border border-primary-container/40'
+                        : 'bg-surface-container-high text-tertiary-fixed hover:bg-surface-bright'
+                    }`}
+                    title={isStagePlaying ? 'Pause Audio' : isStagePaused ? 'Resume Audio' : 'Play Stage Audio'}
+                  >
+                    <span className="material-symbols-outlined text-[14px]">
+                      {isStagePlaying ? 'pause' : 'play_arrow'}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      audioEngine.stopAll()
+                    }}
+                    className="p-1.5 rounded-lg bg-surface-container-high text-outline hover:text-error hover:bg-surface-bright transition-colors cursor-pointer"
+                    title="Stop Audio"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">stop</span>
+                  </button>
+                </div>
+              </div>
+            )
+          })()}
         </div>
 
         {/* ================= SQUARE-PROPORTIONED WINDOW COMPONENT ================= */}
