@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useRef } from 'react'
+import React, { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import JSZip from 'jszip'
 import {
@@ -13,6 +13,9 @@ import {
 import { GITHUB_URL } from '@/lib/catalog'
 
 export default function StudioPage() {
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   // Navigation & Step state: 1 = Select Sounds, 2 = Map to Events, 3 = Export & Publish
   const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1)
   const [activeTab, setActiveTab] = useState<'studio' | 'soundboard' | 'community' | 'docs'>('studio')
@@ -197,21 +200,15 @@ export default function StudioPage() {
       <header className="sticky top-0 z-50 w-full border-b border-[#25221F] bg-[#161413]/95 backdrop-blur-md select-none">
         <div className="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Left Logo + CLI/GUI Toggle */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <Link href="/" className="flex items-center gap-2 group">
-              <span className="text-primary-container font-mono font-bold text-sm sm:text-base tracking-tighter">
-                +&#40;&#41;
-              </span>
-              <span className="font-serif text-lg sm:text-xl font-medium tracking-tight text-on-surface">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
+              <div className="w-8 h-8 rounded-lg bg-primary-container/20 border border-primary-container/40 flex items-center justify-center text-primary-container group-hover:scale-105 transition-transform">
+                <span className="material-symbols-outlined text-[19px]">graphic_eq</span>
+              </div>
+              <span className="font-serif text-xl tracking-tight font-medium text-on-surface">
                 claudetones
               </span>
             </Link>
-
-            <div className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full bg-[#1F1C1A] border border-[#332E2A] text-[10px] font-mono text-outline">
-              <span className="text-primary-container font-semibold">CLI</span>
-              <span className="mx-1 text-[#4A4540]">/</span>
-              <span>GUI</span>
-            </div>
           </div>
 
           {/* Center Tabs */}
@@ -491,7 +488,7 @@ export default function StudioPage() {
             </div>
 
             {/* 3-Column Sound Cards Grid Exactly Matching Stitch Screenshot */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pb-20">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pb-28">
               {filteredTones.map((tone) => {
                 const isSelected = selectedIds.has(tone.id)
                 const isPlaying = playingToneId === tone.id

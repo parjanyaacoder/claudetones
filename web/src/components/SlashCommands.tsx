@@ -80,7 +80,7 @@ export default function SlashCommands() {
   }
 
   return (
-    <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16" id="slash-commands">
+    <section className="max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-20 scroll-mt-16" id="slash-commands">
       <div className="mb-10">
         <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary-container block mb-2">
           CLI Command Palette
