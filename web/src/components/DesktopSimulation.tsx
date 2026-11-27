@@ -76,6 +76,34 @@ export default function DesktopSimulation() {
   const [isAutoLooping, setIsAutoLooping] = useState(true)
   const [view, setView] = useState<'desktop' | 'terminal'>('desktop')
   const autoLoopRef = useRef<NodeJS.Timeout | null>(null)
+  const desktopChatRef = useRef<HTMLDivElement | null>(null)
+  const terminalScrollRef = useRef<HTMLDivElement | null>(null)
+
+  // Auto-scroll simulation containers so active steps & progress are always 100% visible
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (desktopChatRef.current) {
+        desktopChatRef.current.scrollTo({
+          top: desktopChatRef.current.scrollHeight,
+          behavior: 'smooth',
+        })
+      }
+      if (terminalScrollRef.current) {
+        terminalScrollRef.current.scrollTo({
+          top: terminalScrollRef.current.scrollHeight,
+          behavior: 'smooth',
+        })
+      }
+    }, 60)
+    return () => clearTimeout(timer)
+  }, [currentStage, view])
+
+  const getShortCue = (cue: string) => {
+    return cue
+      .replace('ding-sound-effect-1.mp3', 'fanfare.mp3')
+      .replace('keyboard-click.mp3', 'click.mp3')
+      .replace('pro-tool-call.mp3', 'tool-call.mp3')
+  }
 
   const advanceStage = (sound = true) => {
     setCurrentStage((prev) => {
@@ -118,7 +146,7 @@ export default function DesktopSimulation() {
 
   return (
     <section
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 overflow-hidden scroll-mt-16"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 sm:pb-14 overflow-hidden scroll-mt-20"
       id="claude-desktop-demo"
     >
       {/* Title & Compact Header */}
@@ -162,9 +190,9 @@ export default function DesktopSimulation() {
       </div>
 
       {/* Main Showcase Layout: Vertical Stages Stepper (Left) + Balanced Window (Right) */}
-      <div className="flex flex-col lg:flex-row gap-6 items-stretch justify-center max-w-6xl mx-auto w-full">
+      <div className="flex flex-col lg:flex-row gap-5 lg:gap-6 items-stretch justify-center max-w-6xl mx-auto w-full">
         {/* ================= VERTICAL STAGES STEPPER ================= */}
-        <div className="w-full lg:w-72 shrink-0 bg-surface-container-low rounded-2xl p-4 border border-outline-variant/20 shadow-xl flex flex-col justify-between h-auto min-h-[380px] lg:h-[560px]">
+        <div className="w-full lg:w-80 shrink-0 bg-surface-container-low rounded-2xl p-3.5 sm:p-4 border border-outline-variant/20 shadow-xl flex flex-col justify-between h-auto min-h-[380px] lg:h-[580px]">
           <div>
             {/* Header with Auto-play & Replay Controls */}
             <div className="flex items-center justify-between pb-3 border-b border-outline-variant/15">
@@ -240,8 +268,11 @@ export default function DesktopSimulation() {
                     </div>
 
                     <div className="flex items-center gap-1 shrink-0">
-                      <span className="text-[10px] font-mono text-primary-container px-1.5 py-0.5 rounded bg-primary-container/10">
-                        {s.soundCue}
+                      <span
+                        className="text-[10px] font-mono text-primary-container px-1.5 py-0.5 rounded bg-primary-container/10 shrink-0"
+                        title={s.soundCue}
+                      >
+                        {getShortCue(s.soundCue)}
                       </span>
                       {isActive && (
                         <span className="material-symbols-outlined text-[13px] text-primary-container animate-pulse">
@@ -308,7 +339,7 @@ export default function DesktopSimulation() {
         {/* ================= CLAUDE CODE DESKTOP WINDOW (EXACT REPLICA) ================= */}
         <div className="w-full flex-1 min-w-0">
           {view === 'desktop' && (
-            <div className="relative w-full rounded-2xl bg-[#131316] border border-[#27272a] shadow-2xl overflow-hidden transition-all duration-300 h-[480px] sm:h-[520px] lg:h-[560px] flex flex-col justify-between border-beam-glow">
+            <div className="relative w-full rounded-2xl bg-[#131316] border border-[#27272a] shadow-2xl overflow-hidden transition-all duration-300 h-[500px] sm:h-[540px] lg:h-[580px] flex flex-col justify-between border-beam-glow">
               {/* Dynamic Acoustic Ripple Overlay on Sound Cue */}
               <div className="absolute inset-0 pointer-events-none z-30 transition-opacity duration-300 flex items-center justify-center overflow-hidden audio-ripple-target opacity-0">
                 <div className="w-64 h-64 rounded-full border-2 border-primary-container/60 bg-primary-container/10 blur-[2px] animate-ripple"></div>
@@ -450,11 +481,11 @@ export default function DesktopSimulation() {
                 </aside>
 
                 {/* Right Chat & Task Flow (Spacious, exact to Image 1) */}
-                <main className="flex-1 flex flex-col justify-between bg-[#131316] p-6 sm:p-7 overflow-hidden min-w-0">
-                  <div className="space-y-4 overflow-y-auto pr-1">
+                <main className="flex-1 flex flex-col justify-between bg-[#131316] p-3.5 sm:p-4 md:p-5 overflow-hidden min-w-0">
+                  <div ref={desktopChatRef} className="space-y-2.5 sm:space-y-3 overflow-y-auto pr-1 no-scrollbar">
                     {/* User Prompt Bubble (Deep Royal Blue pill in Image 1) */}
                     <div className="flex justify-end">
-                      <div className="bg-[#1d4ed8] text-white px-5 py-3 rounded-2xl text-[13px] font-normal shadow-md max-w-[80%] leading-relaxed">
+                      <div className="bg-[#1d4ed8] text-white px-4 py-2 sm:px-4.5 sm:py-2.5 rounded-xl text-[12px] sm:text-[13px] font-normal shadow-md max-w-[85%] leading-relaxed">
                         Fix the layout shift on the product grid
                       </div>
                     </div>
@@ -462,7 +493,7 @@ export default function DesktopSimulation() {
                     {/* Claude Explanation Card (Stage 1+) */}
                     {currentStage >= 1 && (
                       <div className="flex justify-start">
-                        <div className="bg-[#1f1f23] border border-[#2b2b31] text-[#e4e4e7] p-4 rounded-2xl text-[13px] leading-relaxed max-w-[92%] shadow-sm transition-all duration-300">
+                        <div className="bg-[#1f1f23] border border-[#2b2b31] text-[#e4e4e7] p-3 sm:p-3.5 rounded-xl text-[12px] sm:text-[12.5px] leading-relaxed max-w-[92%] shadow-sm transition-all duration-300">
                           The grid shifts because product images load without a width and height. I&apos;ll add dimensions in
                           ProductCard, then reserve space in the grid with an aspect-ratio fallback.
                         </div>
@@ -471,12 +502,12 @@ export default function DesktopSimulation() {
 
                     {/* Task Checklist Card (Exact replicate of Image 1) */}
                     {currentStage >= 2 && (
-                      <div className="rounded-2xl bg-[#19191d] border border-[#2d2d34] p-4 text-xs space-y-3 max-w-[92%] shadow-sm transition-all duration-300">
+                      <div className="rounded-xl bg-[#19191d] border border-[#2d2d34] p-3 sm:p-3.5 text-xs space-y-2.5 max-w-[92%] shadow-sm transition-all duration-300">
                         {/* Checklist items */}
-                        <div className="space-y-2.5 font-sans">
+                        <div className="space-y-1.5 font-sans text-[11px] sm:text-xs">
                           {/* Item 1 */}
-                          <div className="flex items-center gap-2.5 text-[#e4e4e7]">
-                            <span className="material-symbols-outlined text-[16px] text-[#61C554]">
+                          <div className="flex items-center gap-2 text-[#e4e4e7]">
+                            <span className="material-symbols-outlined text-[15px] text-[#61C554]">
                               {currentStage >= 3 ? 'check_circle' : 'radio_button_unchecked'}
                             </span>
                             <span className={currentStage >= 3 ? 'text-[#8e8e93]' : 'font-medium'}>
@@ -485,8 +516,8 @@ export default function DesktopSimulation() {
                           </div>
 
                           {/* Item 2 */}
-                          <div className="flex items-center gap-2.5 text-[#e4e4e7]">
-                            <span className="material-symbols-outlined text-[16px] text-primary-container">
+                          <div className="flex items-center gap-2 text-[#e4e4e7]">
+                            <span className="material-symbols-outlined text-[15px] text-primary-container">
                               {currentStage >= 4 ? 'check_circle' : currentStage === 3 ? 'pending' : 'radio_button_unchecked'}
                             </span>
                             <span className={currentStage >= 4 ? 'text-[#8e8e93]' : ''}>
@@ -495,24 +526,24 @@ export default function DesktopSimulation() {
                           </div>
 
                           {/* Item 3 */}
-                          <div className="flex items-center gap-2.5 text-[#a1a1aa]">
-                            <span className="text-[14px] text-[#71717a] font-mono leading-none select-none">
+                          <div className="flex items-center gap-2 text-[#a1a1aa]">
+                            <span className="text-[13px] text-[#71717a] font-mono leading-none select-none">
                               {currentStage >= 5 ? '✔' : '◌'}
                             </span>
                             <span>Reserve space with an aspect-ratio fallback</span>
                           </div>
 
                           {/* Item 4 */}
-                          <div className="flex items-center gap-2.5 text-[#a1a1aa]">
-                            <span className="text-[14px] text-[#71717a] font-mono leading-none select-none">
+                          <div className="flex items-center gap-2 text-[#a1a1aa]">
+                            <span className="text-[13px] text-[#71717a] font-mono leading-none select-none">
                               {currentStage >= 5 ? '✔' : '◌'}
                             </span>
                             <span>Check the product grid in the preview</span>
                           </div>
 
                           {/* Item 5 */}
-                          <div className="flex items-center gap-2.5 text-[#a1a1aa]">
-                            <span className="text-[14px] text-[#71717a] font-mono leading-none select-none">
+                          <div className="flex items-center gap-2 text-[#a1a1aa]">
+                            <span className="text-[13px] text-[#71717a] font-mono leading-none select-none">
                               {currentStage >= 5 ? '✔' : '◌'}
                             </span>
                             <span>Add a layout shift test, final run</span>
@@ -520,8 +551,8 @@ export default function DesktopSimulation() {
                         </div>
 
                         {/* Status Progress Indicator Pill - Image 1 */}
-                        <div className="pt-2.5 border-t border-[#2b2b31] flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2 text-primary-container font-mono text-[11px]">
+                        <div className="pt-2 border-t border-[#2b2b31] flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2 text-primary-container font-mono text-[10.5px] sm:text-[11px]">
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></span>
                             <span>
                               {currentStage === 2
@@ -540,10 +571,10 @@ export default function DesktopSimulation() {
                               {currentStage === 2
                                 ? 'timer.mp3'
                                 : currentStage === 3
-                                ? 'keyboard-click.mp3'
+                                ? 'click.mp3'
                                 : currentStage === 4
-                                ? 'pro-tool-call.mp3'
-                                : 'ding-sound-effect-1.mp3'}
+                                ? 'tool-call.mp3'
+                                : 'fanfare.mp3'}
                             </span>
                           </span>
                         </div>
@@ -552,8 +583,8 @@ export default function DesktopSimulation() {
                   </div>
 
                   {/* Bottom Input Composer and Status Bar - Replicating Image 1 */}
-                  <div className="space-y-2 pt-3">
-                    <div className="bg-[#1b1b1f] border border-[#2b2b31] rounded-2xl p-3.5 flex items-center justify-between text-xs shadow-inner">
+                  <div className="space-y-1.5 pt-2 shrink-0">
+                    <div className="bg-[#1b1b1f] border border-[#2b2b31] rounded-xl px-3 py-2 sm:py-2.5 flex items-center justify-between text-xs shadow-inner">
                       <div className="flex items-center gap-3 text-[#71717a]">
                         <button
                           type="button"
@@ -608,7 +639,7 @@ export default function DesktopSimulation() {
 
           {/* ================= TERMINAL CLI VIEW ================= */}
           {view === 'terminal' && (
-            <div className="relative w-full rounded-2xl bg-[#141210] border border-[#38332f] shadow-2xl overflow-hidden transition-all duration-300 h-[480px] sm:h-[520px] lg:h-[560px] flex flex-col justify-between border-beam-glow">
+            <div className="relative w-full rounded-2xl bg-[#141210] border border-[#38332f] shadow-2xl overflow-hidden transition-all duration-300 h-[500px] sm:h-[540px] lg:h-[580px] flex flex-col justify-between border-beam-glow">
               {/* Dynamic Acoustic Ripple Overlay on Sound Cue */}
               <div className="absolute inset-0 pointer-events-none z-30 transition-opacity duration-300 flex items-center justify-center overflow-hidden audio-ripple-target opacity-0">
                 <div className="w-64 h-64 rounded-full border-2 border-primary-container/60 bg-primary-container/10 blur-[2px] animate-ripple"></div>
@@ -636,13 +667,13 @@ export default function DesktopSimulation() {
               </div>
 
               {/* Terminal Viewport */}
-              <div className="flex-1 p-5 bg-[#110f0e] font-code text-xs text-on-surface overflow-hidden flex flex-col justify-between">
-                <div className="space-y-3">
+              <div className="flex-1 p-3.5 sm:p-4 bg-[#110f0e] font-code text-xs text-on-surface overflow-hidden flex flex-col justify-between min-h-0">
+                <div ref={terminalScrollRef} className="flex-1 min-h-0 overflow-y-auto space-y-2 sm:space-y-2.5 pr-1 no-scrollbar">
                   {/* Session Info */}
-                  <div className="flex items-center justify-between pb-2.5 border-b border-[#26221f] text-tertiary">
+                  <div className="flex items-center justify-between pb-2 border-b border-[#26221f] text-tertiary">
                     <div className="flex items-center gap-2">
-                      <span className="text-primary-container font-mono text-xs font-bold">[CLAUDE CODE]</span>
-                      <span className="text-tertiary-fixed text-xs font-semibold">Desktop Research Preview</span>
+                      <span className="text-primary-container font-mono text-[11px] sm:text-xs font-bold">[CLAUDE CODE]</span>
+                      <span className="text-tertiary-fixed text-[11px] sm:text-xs font-semibold">Desktop Research Preview</span>
                       <span className="text-outline text-xs hidden sm:inline">• Opus 5.5 Thinking Mode</span>
                     </div>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary-container/20 text-primary-container font-medium border border-primary-container/30 flex items-center gap-1">
@@ -652,7 +683,7 @@ export default function DesktopSimulation() {
                   </div>
 
                   {/* Developer Terminal Prompt Input */}
-                  <div className="flex items-start gap-2 text-on-surface text-xs font-medium">
+                  <div className="flex items-start gap-2 text-on-surface text-[11px] sm:text-xs font-medium">
                     <span className="text-primary-container font-bold select-none">&gt;</span>
                     <span className="text-on-surface leading-snug">
                       Fix the layout shift on the product grid
@@ -661,15 +692,15 @@ export default function DesktopSimulation() {
 
                   {/* Stage 1: Reasoning Plan */}
                   {currentStage >= 1 && (
-                    <div className="rounded-lg bg-[#181615] p-3 border border-outline-variant/20 transition-all duration-300">
-                      <div className="flex items-center justify-between text-xs text-tertiary-fixed mb-1.5">
+                    <div className="rounded-lg bg-[#181615] p-2.5 border border-outline-variant/20 transition-all duration-300">
+                      <div className="flex items-center justify-between text-xs text-tertiary-fixed mb-1">
                         <div className="flex items-center gap-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
-                          <span className="font-semibold">Reasoning &amp; Plan Synthesis:</span>
+                          <span className="font-semibold text-[11px] sm:text-xs">Reasoning &amp; Plan Synthesis:</span>
                         </div>
                         <span className="text-[10px] font-mono text-outline">turn.start • ring.wav</span>
                       </div>
-                      <p className="text-xs text-on-surface-variant leading-relaxed">
+                      <p className="text-[11px] text-on-surface-variant leading-relaxed">
                         The grid shifts because product images load without explicit dimensions. Adding aspect-ratio fallbacks.
                       </p>
                     </div>
@@ -677,15 +708,15 @@ export default function DesktopSimulation() {
 
                   {/* Stage 2: Deep Pondering */}
                   {currentStage >= 2 && (
-                    <div className="rounded-lg bg-[#191512] p-3 border border-primary-container/30 transition-all duration-300">
+                    <div className="rounded-lg bg-[#191512] p-2.5 border border-primary-container/30 transition-all duration-300">
                       <div className="flex items-center justify-between text-xs mb-1">
                         <div className="flex items-center gap-2 text-primary-container">
-                          <span className="material-symbols-outlined text-[14px] animate-spin">hourglass_top</span>
-                          <span className="font-semibold">Deep Architecture Reasoning (14.2s)</span>
+                          <span className="material-symbols-outlined text-[13px] animate-spin">hourglass_top</span>
+                          <span className="font-semibold text-[11px] sm:text-xs">Deep Architecture Reasoning (14.2s)</span>
                         </div>
                         <span className="text-[10px] font-mono text-primary-container">timer.mp3</span>
                       </div>
-                      <div className="text-[11px] text-tertiary font-mono">
+                      <div className="text-[10px] sm:text-[11px] text-tertiary font-mono">
                         Computing CSS grid layout constraints &amp; cumulative layout shift index...
                       </div>
                     </div>
@@ -693,12 +724,12 @@ export default function DesktopSimulation() {
 
                   {/* Stage 3: Bash Tool Call */}
                   {currentStage >= 3 && (
-                    <div className="rounded-lg bg-[#0e0d0c] p-2.5 border border-outline-variant/30 space-y-1 transition-all duration-300">
-                      <div className="flex items-center justify-between text-[11px] text-tertiary-fixed font-mono">
+                    <div className="rounded-lg bg-[#0e0d0c] p-2 border border-outline-variant/30 space-y-0.5 transition-all duration-300">
+                      <div className="flex items-center justify-between text-[10.5px] text-tertiary-fixed font-mono">
                         <span className="text-[#61C554]">$ cargo test --lib -- --nocapture</span>
-                        <span className="text-outline text-[10px]">keyboard-click.mp3</span>
+                        <span className="text-outline text-[10px]">click.mp3</span>
                       </div>
-                      <div className="text-[10px] text-outline font-mono pl-2">
+                      <div className="text-[9.5px] sm:text-[10px] text-outline font-mono pl-2">
                         test tests::test_grid_shift ... ok (0.002s)
                       </div>
                     </div>
@@ -707,19 +738,19 @@ export default function DesktopSimulation() {
                   {/* Stage 4: File Edit */}
                   {currentStage >= 4 && (
                     <div className="rounded-lg bg-[#151210] border border-outline-variant/30 overflow-hidden transition-all duration-300">
-                      <div className="px-3 py-1.5 bg-[#1f1b18] border-b border-outline-variant/20 flex items-center justify-between">
+                      <div className="px-2.5 py-1 bg-[#1f1b18] border-b border-outline-variant/20 flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#61C554]"></span>
-                          <span className="text-tertiary-fixed text-xs font-semibold">● Edit Tool:</span>
-                          <code className="text-tertiary-fixed font-mono text-xs">src/ProductCard.tsx</code>
+                          <span className="text-tertiary-fixed text-[11px] font-semibold">● Edit Tool:</span>
+                          <code className="text-tertiary-fixed font-mono text-[11px]">src/ProductCard.tsx</code>
                           <span className="text-[9px] text-[#61C554] bg-[#61C554]/10 px-1 rounded font-mono">+18 -4</span>
                         </div>
                         <span className="text-[9px] font-mono text-primary flex items-center gap-1">
                           <span className="material-symbols-outlined text-[10px]">water_drop</span>
-                          <span>pro-tool-call.mp3</span>
+                          <span>tool-call.mp3</span>
                         </span>
                       </div>
-                      <div className="p-2 bg-[#0e0d0c] font-mono text-[10px] leading-relaxed space-y-0.5">
+                      <div className="p-1.5 bg-[#0e0d0c] font-mono text-[9.5px] leading-tight space-y-0.5">
                         <div className="text-error bg-error-container/10 px-1">- &lt;img src=&#123;url&#125; className=&quot;w-full&quot; /&gt;</div>
                         <div className="text-[#61C554] bg-[#61C554]/10 px-1">+ &lt;Image src=&#123;url&#125; width=&#123;400&#125; height=&#123;300&#125; className=&quot;aspect-[4/3]&quot; /&gt;</div>
                       </div>
@@ -728,15 +759,15 @@ export default function DesktopSimulation() {
 
                   {/* Stage 5: Finished Summary */}
                   {currentStage === 5 && (
-                    <div className="rounded-lg bg-[#1c1714] p-3 border border-primary-container/40 transition-all duration-300">
+                    <div className="rounded-lg bg-[#1c1714] p-2.5 border border-primary-container/40 transition-all duration-300">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-[16px] text-primary-container">check_circle</span>
-                          <span className="text-tertiary-fixed font-semibold text-xs">Verification complete. Latency 0.12ms.</span>
+                          <span className="material-symbols-outlined text-[15px] text-primary-container">check_circle</span>
+                          <span className="text-tertiary-fixed font-semibold text-[11px] sm:text-xs">Verification complete. Latency 0.12ms.</span>
                         </div>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary-container/20 text-primary-container font-semibold border border-primary-container/40 flex items-center gap-1">
-                          <span className="material-symbols-outlined text-[12px]">celebration</span>
-                          <span>ding-sound-effect-1.mp3</span>
+                        <span className="text-[9.5px] font-mono px-2 py-0.5 rounded-full bg-primary-container/20 text-primary-container font-semibold border border-primary-container/40 flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[11px]">celebration</span>
+                          <span>fanfare.mp3</span>
                         </span>
                       </div>
                     </div>
@@ -744,7 +775,7 @@ export default function DesktopSimulation() {
                 </div>
 
                 {/* Bottom Telemetry Dock */}
-                <div className="pt-2 border-t border-[#26221f] flex flex-col gap-1.5 select-none shrink-0">
+                <div className="pt-2 mt-2 border-t border-[#26221f] flex flex-col gap-1.5 select-none shrink-0">
                   <div className="w-full bg-[#171412] rounded-lg p-2.5 border border-outline-variant/30 flex items-center justify-between gap-2 shadow-inner">
                     <div className="flex items-center gap-2 text-xs text-tertiary-fixed font-mono overflow-hidden w-full">
                       <span className="text-primary-container font-bold">?</span>
