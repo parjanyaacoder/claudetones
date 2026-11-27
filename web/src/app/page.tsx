@@ -5,7 +5,6 @@ import Link from 'next/link'
 import RotatingWord from '@/components/RotatingWord'
 import DesktopSimulation from '@/components/DesktopSimulation'
 import SoundboardMatrix from '@/components/SoundboardMatrix'
-import SoundPackStudio from '@/components/SoundPackStudio'
 import SlashCommands from '@/components/SlashCommands'
 import { GITHUB_URL } from '@/lib/catalog'
 
@@ -60,12 +59,13 @@ export default function Home() {
               >
                 Soundboard
               </a>
-              <a
-                href="#byos-section"
-                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
+              <Link
+                href="/studio"
+                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm flex items-center gap-1.5"
               >
-                Pack Studio
-              </a>
+                <span>Pack Studio</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-primary-container/20 text-primary-container font-semibold">New</span>
+              </Link>
               <a
                 href="#slash-commands"
                 className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
@@ -113,9 +113,9 @@ export default function Home() {
         <div className="absolute top-[65rem] -right-32 w-[500px] h-[500px] bg-primary/10 blur-[140px] pointer-events-none rounded-full"></div>
 
         {/* ================= SCREEN 1: CLEAN LANDING SCREEN ================= */}
-        <section className="relative min-h-[calc(100vh-4rem)] flex flex-col justify-center items-center text-center px-6 lg:px-12 py-12">
+        <section className="relative h-[calc(100dvh-4rem)] min-h-[540px] max-h-[820px] flex flex-col justify-center items-center text-center px-4 sm:px-6 py-4 overflow-hidden">
           {/* Release Tag Pill */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/30 text-tertiary-fixed text-xs font-mono mb-6 shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/30 text-tertiary-fixed text-xs font-mono mb-3.5 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-[#61C554] animate-pulse"></span>
             <span>v1.0 Plugin Release</span>
             <span className="text-outline">•</span>
@@ -123,18 +123,18 @@ export default function Home() {
           </div>
 
           {/* Headline with Zero-Jitter Single-Line Typewriter (Aceternity UI style) */}
-          <h1 className="font-headline-lg text-[1.35rem] xs:text-[1.6rem] sm:text-[2rem] md:text-[2.4rem] lg:text-[2.8rem] xl:text-[3.1rem] text-on-surface tracking-tight leading-tight mb-6 whitespace-nowrap w-full text-center">
+          <h1 className="font-headline-lg text-[1.35rem] xs:text-[1.6rem] sm:text-[2rem] md:text-[2.4rem] lg:text-[2.8rem] xl:text-[3.1rem] text-on-surface tracking-tight leading-tight mb-3.5 whitespace-nowrap w-full text-center">
             Give your Claude Code sounds on every <RotatingWord />
           </h1>
 
           {/* Subtitle */}
-          <p className="font-body-lg text-body-lg text-tertiary max-w-2xl text-center leading-relaxed mb-8">
+          <p className="font-body-md text-body-md text-tertiary max-w-2xl text-center leading-relaxed mb-4">
             Acoustic feedback for Claude Code. Know when it thinks, edits, runs bash, or finishes — without watching your
             screen.
           </p>
 
           {/* Terminal Command Snippet Box */}
-          <div className="relative group w-full max-w-2xl mb-8">
+          <div className="relative group w-full max-w-2xl mb-5">
             <div className="absolute -inset-0.5 bg-primary-container/20 rounded-xl blur-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             <div className="relative bg-[#141210] rounded-xl p-3 pl-4 flex items-center justify-between border border-[#2E2B28] group-hover:border-primary-container/40 shadow-xl transition-all duration-200 gap-3">
               <div className="flex items-center gap-3 font-code text-xs sm:text-sm text-on-surface overflow-hidden min-w-0">
@@ -189,8 +189,7 @@ export default function Home() {
         {/* ================= SCREEN 3: DEDICATED SOUNDBOARD MATRIX ================= */}
         <SoundboardMatrix />
 
-        {/* ================= SCREEN 4: BYOS PACK STUDIO & CREATOR ================= */}
-        <SoundPackStudio />
+        {/* Studio moved to dedicated /studio page */}
 
         {/* QUICK METRICS STRIP */}
         <section className="max-w-5xl mx-auto px-6 py-8">
@@ -379,7 +378,7 @@ export default function Home() {
               <a href="#soundboard-matrix" className="hover:text-on-surface transition-colors">
                 Soundboard
               </a>
-              <a href="#byos-section" className="hover:text-on-surface transition-colors">
+              <a href="/studio" className="hover:text-on-surface transition-colors">
                 Pack Studio
               </a>
               <a href="#slash-commands" className="hover:text-on-surface transition-colors">
