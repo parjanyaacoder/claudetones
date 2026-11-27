@@ -357,7 +357,7 @@ export default function SoundboardMatrix() {
 
   return (
     <section
-      className="max-w-7xl mx-auto px-6 lg:px-12 pt-4 pb-16"
+      className="max-w-7xl mx-auto px-6 lg:px-12 pt-4 pb-16 scroll-mt-24"
       id="soundboard-matrix"
     >
       {/* Header and Pack Selector Pills */}

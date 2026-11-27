@@ -259,3 +259,8 @@ html, body {
 ::-webkit-scrollbar {
   display: none;
 }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
