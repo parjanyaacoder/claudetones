@@ -1,500 +1,896 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import JSZip from 'jszip'
+import {
+  STUDIO_TONES,
+  AGENT_EVENTS,
+  studioSynth,
+  type StudioTone,
+  type ToneCategory,
+  type AgentEvent,
+} from '@/lib/studio-tones'
 import { GITHUB_URL } from '@/lib/catalog'
 
-type GlowColor = {
-  name: string
-  border: string
-  glow: string
-  bg: string
-  text: string
-}
-
-const GLOW_PALETTE: GlowColor[] = [
-  { name: 'cyan', border: '#06b6d4', glow: 'rgba(6, 182, 212, 0.75)', bg: 'rgba(6, 182, 212, 0.16)', text: '#67e8f9' },
-  { name: 'violet', border: '#a855f7', glow: 'rgba(168, 85, 247, 0.75)', bg: 'rgba(168, 85, 247, 0.16)', text: '#c084fc' },
-  { name: 'pink', border: '#ec4899', glow: 'rgba(236, 72, 153, 0.75)', bg: 'rgba(236, 72, 153, 0.16)', text: '#f472b6' },
-  { name: 'emerald', border: '#10b981', glow: 'rgba(16, 185, 129, 0.75)', bg: 'rgba(16, 185, 129, 0.16)', text: '#34d399' },
-  { name: 'orange', border: '#f97316', glow: 'rgba(249, 115, 22, 0.75)', bg: 'rgba(249, 115, 22, 0.16)', text: '#fb923c' },
-  { name: 'amber', border: '#eab308', glow: 'rgba(234, 179, 8, 0.75)', bg: 'rgba(234, 179, 8, 0.16)', text: '#facc15' },
-  { name: 'blue', border: '#3b82f6', glow: 'rgba(59, 130, 246, 0.75)', bg: 'rgba(59, 130, 246, 0.16)', text: '#60a5fa' },
-  { name: 'rose', border: '#f43f5e', glow: 'rgba(244, 63, 94, 0.75)', bg: 'rgba(244, 63, 94, 0.16)', text: '#fb7185' },
-]
-
-type SoundBubble = {
-  id: string
-  name: string
-  tag: string
-  audioSrc: string
-  // Position as percentage on canvas
-  x: number
-  y: number
-  size: number // diameter in px (delicate, refined)
-  floatDelay: string // animation delay
-  isCustom?: boolean
-}
-
-// Delicate, airy glass bubbles spaced gently around the canvas periphery
-const INITIAL_BUBBLES: SoundBubble[] = [
-  // Top peripheral tier
-  { id: 'b1', name: 'launch.wav', tag: 'Boot', audioSrc: '/sounds/launch.wav', x: 6, y: 12, size: 66, floatDelay: '0s' },
-  { id: 'b2', name: 'dialup.mp3', tag: 'Search', audioSrc: '/sounds/dialup.mp3', x: 21, y: 9, size: 60, floatDelay: '1.2s' },
-  { id: 'b3', name: 'bluetooth.mp3', tag: 'MCP', audioSrc: '/sounds/the-bluetooth-device-its-connected-succesfull.mp3', x: 37, y: 11, size: 68, floatDelay: '2.4s' },
-  { id: 'b4', name: 'levelup.mp3', tag: 'Plugin', audioSrc: '/sounds/levelup.mp3', x: 53, y: 8, size: 62, floatDelay: '0.8s' },
-  { id: 'b5', name: 'dbz-teleport.mp3', tag: 'Agent', audioSrc: '/sounds/dbz-teleport.mp3', x: 69, y: 10, size: 66, floatDelay: '1.9s' },
-  { id: 'b6', name: 'ring.wav', tag: 'Thinking', audioSrc: '/sounds/ring.wav', x: 84, y: 8, size: 58, floatDelay: '0.4s' },
-  { id: 'b7', name: 'fahhh.mp3', tag: 'Shock', audioSrc: '/sounds/fahhhhhhhhhhhhhh.mp3', x: 94, y: 13, size: 64, floatDelay: '1.7s' },
-
-  // Far left periphery
-  { id: 'b8', name: 'confetti.mp3', tag: 'Commit', audioSrc: '/sounds/confetti-pop-sound-effect.mp3', x: 4, y: 35, size: 64, floatDelay: '2.8s' },
-  { id: 'b9', name: 'keyboard.mp3', tag: 'Bash', audioSrc: '/sounds/keyboard-click.mp3', x: 12, y: 48, size: 68, floatDelay: '2.5s' },
-  { id: 'b10', name: 'mario-coin.mp3', tag: 'Compact', audioSrc: '/sounds/mario_coin_sound.mp3', x: 5, y: 64, size: 60, floatDelay: '0.9s' },
-  { id: 'b11', name: 'fahhh.mp3', tag: 'Error', audioSrc: '/sounds/fahhhhhhhhhhhhhh.mp3', x: 13, y: 76, size: 64, floatDelay: '1.4s' },
-
-  // Far right periphery
-  { id: 'b12', name: 'magic-spell.mp3', tag: 'Tool', audioSrc: '/sounds/magic-reveal-audio.mp3', x: 95, y: 34, size: 64, floatDelay: '0.6s' },
-  { id: 'b13', name: 'fairy-sparkle.mp3', tag: 'Skill', audioSrc: '/sounds/fairy-sparkle.mp3', x: 87, y: 48, size: 68, floatDelay: '2.1s' },
-  { id: 'b14', name: 'metal-gear.mp3', tag: 'Alert', audioSrc: '/sounds/metal-gear-alert.mp3', x: 95, y: 63, size: 60, floatDelay: '1.4s' },
-  { id: 'b15', name: 'doorbell.mp3', tag: 'Prompt', audioSrc: '/sounds/door-bell-sound-effect.mp3', x: 88, y: 75, size: 66, floatDelay: '0.3s' },
-
-  // Bottom peripheral tier
-  { id: 'b16', name: 'victory-ding.mp3', tag: 'Complete', audioSrc: '/sounds/ding-sound-effect-1.mp3', x: 6, y: 90, size: 66, floatDelay: '1.8s' },
-  { id: 'b17', name: 'gta-passed.mp3', tag: 'Reward', audioSrc: '/sounds/gta-san-andreas-mission-complete.mp3', x: 22, y: 92, size: 60, floatDelay: '0.7s' },
-  { id: 'b18', name: 'timer.mp3', tag: 'Ponder', audioSrc: '/sounds/timer.mp3', x: 38, y: 93, size: 68, floatDelay: '2.3s' },
-  { id: 'b19', name: 'windows-xp.mp3', tag: 'Classic', audioSrc: '/sounds/windows-xp-startup.mp3', x: 54, y: 93, size: 62, floatDelay: '1.1s' },
-  { id: 'b20', name: 'cs-go.mp3', tag: 'Hype', audioSrc: '/sounds/counter-strike-ok-lets-go.mp3', x: 70, y: 92, size: 66, floatDelay: '2.6s' },
-  { id: 'b21', name: 'pro-tool.mp3', tag: 'Mutate', audioSrc: '/sounds/pro-tool-call.mp3', x: 86, y: 90, size: 60, floatDelay: '1.5s' },
-]
-
 export default function StudioPage() {
-  const [bubbles, setBubbles] = useState<SoundBubble[]>(INITIAL_BUBBLES)
-  const [activeBubbleId, setActiveBubbleId] = useState<string | null>(null)
-  const [activeColor, setActiveColor] = useState<GlowColor | null>(null)
+  // Navigation & Step state: 1 = Select Sounds, 2 = Map to Events, 3 = Export & Publish
+  const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1)
+  const [activeTab, setActiveTab] = useState<'studio' | 'soundboard' | 'community' | 'docs'>('studio')
+  const [engineStatus, setEngineStatus] = useState<string>('sine_440_synth')
+  const [playingToneId, setPlayingToneId] = useState<string | null>(null)
+
+  // Catalog filtering & selection
+  const [category, setCategory] = useState<ToneCategory>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+    new Set(STUDIO_TONES.slice(0, 26).map((t) => t.id))
+  )
+
+  // Event Mapping State: map eventId -> toneId
+  const [eventMapping, setEventMapping] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {}
+    AGENT_EVENTS.forEach((ev, idx) => {
+      initial[ev.id] = STUDIO_TONES[idx % STUDIO_TONES.length]?.id || 'tone-1'
+    })
+    return initial
+  })
+
+  // Export State
+  const [packName, setPackName] = useState('arcade-flow')
+  const [authorName, setAuthorName] = useState('community-dev')
   const [isExporting, setIsExporting] = useState(false)
-  const [packName, setPackName] = useState('custom-claudetones')
-  const [isPackDrawerOpen, setIsPackDrawerOpen] = useState(false)
+  const [showCliModal, setShowCliModal] = useState(false)
+  const [copiedCli, setCopiedCli] = useState(false)
 
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  // Catalog Section ref for smooth scroll
+  const catalogSectionRef = useRef<HTMLDivElement | null>(null)
 
-  // Handle bubble play / pause / glow
-  const handleBubbleClick = (bubble: SoundBubble) => {
-    if (activeBubbleId === bubble.id) {
-      // Toggle off / pause
-      if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current.currentTime = 0
-      }
-      setActiveBubbleId(null)
-      setActiveColor(null)
+  // Filtered tones based on category and search
+  const filteredTones = useMemo(() => {
+    return STUDIO_TONES.filter((tone) => {
+      const matchesCategory = category === 'all' || tone.category === category
+      const q = searchQuery.toLowerCase().trim()
+      const matchesSearch =
+        !q ||
+        tone.name.toLowerCase().includes(q) ||
+        tone.subtitle.toLowerCase().includes(q) ||
+        tone.tag.toLowerCase().includes(q)
+      return matchesCategory && matchesSearch
+    })
+  }, [category, searchQuery])
+
+  // Play / audition tone with Web Audio Synthesizer
+  const handlePlayTone = (tone: StudioTone) => {
+    if (playingToneId === tone.id) {
+      studioSynth.stop()
+      setPlayingToneId(null)
+      setEngineStatus('sine_440_synth')
       return
     }
 
-    // Pick a random vibrant neon glow color
-    const randomColor = GLOW_PALETTE[Math.floor(Math.random() * GLOW_PALETTE.length)]
-    setActiveColor(randomColor)
-    setActiveBubbleId(bubble.id)
+    setPlayingToneId(tone.id)
+    setEngineStatus(`${tone.name} • ${tone.frequency}Hz`)
 
-    if (audioRef.current) {
-      audioRef.current.pause()
-    }
-
-    const sound = new Audio(bubble.audioSrc)
-    audioRef.current = sound
-    sound.volume = 0.85
-
-    sound.play().catch((err) => {
-      console.warn('Audio playback failed:', err)
-      setActiveBubbleId(null)
-      setActiveColor(null)
+    studioSynth.playTone(tone, () => {
+      setPlayingToneId(null)
+      setEngineStatus('sine_440_synth')
     })
-
-    sound.onended = () => {
-      setActiveBubbleId(null)
-      setActiveColor(null)
-    }
   }
 
-  // Handle drag and drop files to spawn new bubbles
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('audio/'))
-    if (!files.length) return
-
-    spawnBubblesFromFiles(files, e.clientX, e.clientY)
-  }
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith('audio/'))
-    if (!files.length) return
-    spawnBubblesFromFiles(files)
-  }
-
-  const spawnBubblesFromFiles = (files: File[], clickX?: number, clickY?: number) => {
-    const newBubbles: SoundBubble[] = files.map((file, idx) => {
-      const url = URL.createObjectURL(file)
-      // Delicate size around 60-70px
-      const size = Math.floor(Math.random() * 12) + 60
-
-      let x: number
-      let y: number
-
-      if (clickX && clickY) {
-        x = Math.max(8, Math.min(92, Math.round((clickX / window.innerWidth) * 100) + (idx * 5 - 10)))
-        y = Math.max(12, Math.min(88, Math.round((clickY / window.innerHeight) * 100) + (idx * 5 - 10)))
+  // Toggle selection for a tone card
+  const toggleSelectTone = (toneId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(toneId)) {
+        next.delete(toneId)
       } else {
-        // Spawn randomly along the safe peripheral zone
-        x = Math.random() > 0.5 ? Math.floor(Math.random() * 20) + 6 : Math.floor(Math.random() * 20) + 74
-        y = Math.floor(Math.random() * 70) + 15
+        next.add(toneId)
       }
-
-      return {
-        id: `custom-${Date.now()}-${idx}`,
-        name: file.name,
-        tag: 'Custom',
-        audioSrc: url,
-        x,
-        y,
-        size,
-        floatDelay: `${(idx * 0.4).toFixed(1)}s`,
-        isCustom: true,
-      }
+      return next
     })
-
-    setBubbles((prev) => [...prev, ...newBubbles])
   }
 
-  // Export custom soundpack zip
-  const handleExportZip = async () => {
+  // Randomize 26 Presets
+  const handleRandomize26 = () => {
+    const shuffled = [...STUDIO_TONES].sort(() => 0.5 - Math.random())
+    const picked26 = shuffled.slice(0, 26).map((t) => t.id)
+    setSelectedIds(new Set(picked26))
+
+    // Update event mapping automatically
+    const newMapping: Record<string, string> = {}
+    AGENT_EVENTS.forEach((ev, idx) => {
+      newMapping[ev.id] = picked26[idx % picked26.length]
+    })
+    setEventMapping(newMapping)
+
+    // Audition the first sound for feedback
+    const firstTone = STUDIO_TONES.find((t) => t.id === picked26[0])
+    if (firstTone) {
+      handlePlayTone(firstTone)
+    }
+  }
+
+  // Clear all selections
+  const handleClearAll = () => {
+    setSelectedIds(new Set())
+  }
+
+  // Smooth scroll to catalog
+  const scrollToCatalog = () => {
+    catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  // Handle Export Soundpack Zip
+  const handleExportSoundpack = async () => {
     setIsExporting(true)
     try {
       const zip = new JSZip()
       const soundsFolder = zip.folder('sounds')
 
-      const manifestEvents: Record<string, string> = {}
+      const eventsManifest: Record<string, string> = {}
 
-      for (let i = 0; i < bubbles.length; i++) {
-        const b = bubbles[i]
-        const cleanName = b.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+      for (const ev of AGENT_EVENTS) {
+        const toneId = eventMapping[ev.id]
+        const tone = STUDIO_TONES.find((t) => t.id === toneId) || STUDIO_TONES[0]
+        const filename = `${ev.key.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp3`
+        eventsManifest[ev.key] = filename
 
-        try {
-          const res = await fetch(b.audioSrc)
-          const blob = await res.blob()
-          soundsFolder?.file(cleanName, blob)
-          manifestEvents[`event_${i + 1}_${b.tag.toLowerCase()}`] = cleanName
-        } catch {
-          // If remote fetch fails, skip
+        if (tone.audioSrc) {
+          try {
+            const res = await fetch(tone.audioSrc)
+            const blob = await res.blob()
+            soundsFolder?.file(filename, blob)
+          } catch {
+            soundsFolder?.file(filename, `// Claudetones synthetic tone: ${tone.name} (${tone.frequency}Hz)`)
+          }
+        } else {
+          soundsFolder?.file(filename, `// Claudetones synthetic tone: ${tone.name} (${tone.frequency}Hz)`)
         }
       }
 
-      // Add pack manifest
       const manifest = {
-        name: packName || 'custom-pack',
+        name: packName || 'custom-soundpack',
         version: '1.0.0',
-        author: 'claudetones-community',
-        description: 'Custom sound pack created in Claudetones Studio',
-        events: manifestEvents,
+        author: authorName || 'claudetones-dev',
+        description: 'Bespoke acoustic soundpack composed in Claudetones Studio',
+        events: eventsManifest,
       }
 
       zip.file('pack.json', JSON.stringify(manifest, null, 2))
+      zip.file(
+        'README.md',
+        `# ${packName}\n\nCreated with Claudetones Soundpack Studio.\n\n## Installation\n\`\`\`bash\nclaude plugin soundpack install ./${packName}.zip\n\`\`\`\n`
+      )
 
       const zipBlob = await zip.generateAsync({ type: 'blob' })
       const downloadUrl = URL.createObjectURL(zipBlob)
       const a = document.createElement('a')
       a.href = downloadUrl
-      a.download = `${packName || 'custom-pack'}.zip`
+      a.download = `${packName || 'soundpack'}.zip`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(downloadUrl)
     } catch (err) {
       console.error('Export error:', err)
-      alert('Failed to package sound pack. Please try again.')
+      alert('Failed to package soundpack. Please try again.')
     } finally {
       setIsExporting(false)
-      setIsPackDrawerOpen(false)
     }
   }
 
-  return (
-    <div
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={handleDrop}
-      className="relative min-h-screen bg-[#0e0d0c] text-on-surface flex flex-col font-sans overflow-hidden selection:bg-primary-container selection:text-on-primary-container"
-    >
-      {/* Architectural Background Grid & Ambient Studio Lighting */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary-container/10 blur-[180px] pointer-events-none rounded-full" />
-      <div className="absolute -top-32 -left-32 w-[450px] h-[450px] bg-outline-variant/10 blur-[140px] pointer-events-none rounded-full" />
-      <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-primary/10 blur-[150px] pointer-events-none rounded-full" />
+  const cliInstallCommand = `claude plugin soundpack install https://claudetones.dev/packs/${packName || 'arcade-flow'}.zip`
 
-      {/* ================= HEADER NAVIGATION ================= */}
-      <header className="sticky top-0 z-50 w-full bg-[#141210]/90 backdrop-blur-md border-b border-[#2E2B28]">
-        <div className="h-16 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
-              <div className="w-8 h-8 rounded-lg bg-primary-container/20 border border-primary-container/40 flex items-center justify-center text-primary-container group-hover:scale-105 transition-transform">
-                <span className="material-symbols-outlined text-[19px]">graphic_eq</span>
-              </div>
-              <span className="font-serif text-xl tracking-tight font-medium text-on-surface">
-                claudetones
+  const copyCliCommand = () => {
+    navigator.clipboard.writeText(cliInstallCommand)
+    setCopiedCli(true)
+    setTimeout(() => setCopiedCli(false), 2000)
+  }
+
+  return (
+    <div className="relative min-h-screen bg-[#0a0908] text-on-surface flex flex-col font-sans selection:bg-primary-container selection:text-on-primary-container py-4 sm:py-6 px-2 sm:px-4 md:px-6">
+      {/* Background Architectural Grid Pattern */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary-container/10 blur-[160px] pointer-events-none rounded-full" />
+
+      {/* ================= STITCH MOCK DESKTOP FRAME ================= */}
+      <div className="relative z-10 w-full max-w-[1380px] mx-auto rounded-[24px] sm:rounded-[28px] border border-[#2E2B28] bg-[#121110] shadow-[0_25px_70px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col">
+        {/* ================= TOP NAVIGATION BAR ================= */}
+        <header className="h-16 px-4 sm:px-6 border-b border-[#25221F] bg-[#161413] flex items-center justify-between select-none">
+          {/* Left Logo + CLI/GUI Toggle */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Link href="/" className="flex items-center gap-2 group">
+              <span className="text-primary-container font-mono font-bold text-sm sm:text-base tracking-tighter">
+                +&#40;&#41;
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-primary-container/20 text-primary-container font-semibold border border-primary-container/30">
-                Studio
+              <span className="font-serif text-lg sm:text-xl font-medium tracking-tight text-on-surface">
+                claudetones
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
-              <Link
-                href="/"
-                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
-              >
-                Home
-              </Link>
-              <Link
-                href="/#claude-desktop-demo"
-                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
-              >
-                Interactive App
-              </Link>
-              <Link
-                href="/#soundboard-matrix"
-                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
-              >
-                Soundboard
-              </Link>
-              <Link
-                href="/#slash-commands"
-                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
-              >
-                Slash Commands
-              </Link>
-            </nav>
+            <div className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full bg-[#1F1C1A] border border-[#332E2A] text-[10px] font-mono text-outline">
+              <span className="text-primary-container font-semibold">CLI</span>
+              <span className="mx-1 text-[#4A4540]">/</span>
+              <span>GUI</span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Center Tabs */}
+          <nav className="hidden md:flex items-center gap-1.5 text-xs font-mono">
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed text-xs font-mono transition-colors border border-outline-variant/30 cursor-pointer"
+              onClick={() => {
+                setActiveTab('studio')
+                setActiveStep(1)
+              }}
+              className={`px-3.5 py-1.5 rounded-lg transition-all ${
+                activeTab === 'studio'
+                  ? 'bg-[#26221F] text-primary-container font-semibold border border-primary-container/30 shadow-sm'
+                  : 'text-tertiary hover:text-on-surface hover:bg-[#1D1A18]'
+              }`}
             >
-              <span className="material-symbols-outlined text-[15px] text-primary-container">upload</span>
-              <span>Upload Sounds</span>
+              Soundpack Studio
             </button>
-
-            <button
-              type="button"
-              onClick={() => setIsPackDrawerOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-label-md text-xs hover:bg-primary transition-all duration-200 shadow-md font-medium cursor-pointer"
+            <Link
+              href="/#soundboard-matrix"
+              className="px-3.5 py-1.5 rounded-lg text-tertiary hover:text-on-surface hover:bg-[#1D1A18] transition-colors"
             >
-              <span className="material-symbols-outlined text-[15px]">download</span>
-              <span>Export Soundpack</span>
-            </button>
-
+              Soundboard Grid
+            </Link>
+            <Link
+              href="/#claude-desktop-demo"
+              className="px-3.5 py-1.5 rounded-lg text-tertiary hover:text-on-surface hover:bg-[#1D1A18] transition-colors"
+            >
+              Community Packs
+            </Link>
             <a
               href={GITHUB_URL}
               target="_blank"
               rel="noreferrer"
-              className="p-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed transition-colors border border-outline-variant/30"
-              title="GitHub Repository"
+              className="px-3.5 py-1.5 rounded-lg text-tertiary hover:text-on-surface hover:bg-[#1D1A18] transition-colors"
             >
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-              </svg>
+              Docs
             </a>
-          </div>
-        </div>
-      </header>
+          </nav>
 
-      {/* Hidden File Input for Bring Your Audio */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="audio/*"
-        multiple
-        onChange={handleFileUpload}
-        className="hidden"
-      />
-
-      {/* ================= CANVAS WITH CENTER HEADLINE & SCATTERED GLASS BUBBLES ================= */}
-      <main className="relative flex-1 w-full min-h-[calc(100vh-4rem)] flex flex-col justify-center items-center px-6 overflow-hidden">
-        {/* CENTER STAGE: SINGLE PROMINENT HEADLINE */}
-        <div className="relative z-20 max-w-4xl mx-auto text-center px-4 pointer-events-auto">
-          {/* Subtle Studio Pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-surface-container-high/60 border border-outline-variant/30 text-tertiary-fixed text-xs font-mono mb-5 shadow-sm backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse" />
-            <span>Interactive Soundpack Laboratory</span>
-            <span className="text-outline">•</span>
-            <span className="text-primary-container font-semibold">1,802 Sourced Clips</span>
-          </div>
-
-          {/* Exact User Requested Heading */}
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-on-surface tracking-tight leading-[1.18] mb-5">
-            Bring your audio and develop sound packs in the{' '}
-            <span className="italic text-primary-container font-serif">Claudetones Studio</span>.
-          </h1>
-
-          <p className="font-body-md text-body-md sm:text-body-lg text-tertiary max-w-xl mx-auto leading-relaxed mb-8">
-            Click any floating glass bubble to audition, pause, and light up in radiant color.
-            Drag &amp; drop your own files anywhere to spawn custom bubbles.
-          </p>
-
-          {/* Interactive Actions Bar */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-3.5 p-2 rounded-2xl bg-[#181615]/80 backdrop-blur-xl border border-outline-variant/25 shadow-2xl">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="px-5 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-label-md text-sm font-medium hover:bg-primary hover:text-on-primary transition-all flex items-center gap-2 cursor-pointer shadow-md"
-            >
-              <span className="material-symbols-outlined text-[18px]">add_circle</span>
-              <span>Add Custom Audio (+ Spawn Bubble)</span>
-            </button>
-
-            {activeBubbleId && (
-              <button
-                type="button"
-                onClick={() => {
-                  audioRef.current?.pause()
-                  setActiveBubbleId(null)
-                  setActiveColor(null)
-                }}
-                className="px-4 py-2.5 rounded-xl bg-surface-container text-tertiary-fixed hover:bg-surface-bright font-label-md text-sm font-mono border border-outline-variant/30 transition-all flex items-center gap-2 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[18px] text-[#EC6A5E]">stop_circle</span>
-                <span>Stop Playing</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* ================= SCATTERED GLASS EFFECT TRANSPARENT BUBBLES ================= */}
-        <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-          {bubbles.map((b) => {
-            const isPlaying = activeBubbleId === b.id
-
-            return (
-              <button
-                key={b.id}
-                type="button"
-                onClick={() => handleBubbleClick(b)}
-                style={{
-                  left: `${b.x}%`,
-                  top: `${b.y}%`,
-                  width: `${b.size}px`,
-                  height: `${b.size}px`,
-                  transform: 'translate(-50%, -50%)',
-                  animationDelay: b.floatDelay,
-                  borderColor: isPlaying && activeColor ? activeColor.border : undefined,
-                  boxShadow: isPlaying && activeColor
-                    ? `0 0 35px ${activeColor.glow}, inset 0 0 15px ${activeColor.glow}`
-                    : undefined,
-                  backgroundColor: isPlaying && activeColor
-                    ? activeColor.bg
-                    : undefined,
-                }}
-                className={`pointer-events-auto absolute rounded-full backdrop-blur-lg border transition-all duration-300 flex flex-col items-center justify-center p-1.5 select-none cursor-pointer group hover:scale-110 active:scale-95 ${
-                  isPlaying
-                    ? 'scale-115 z-30 ring-2 ring-white/20'
-                    : 'bg-white/[0.03] border-white/10 hover:border-white/30 hover:bg-white/[0.08] shadow-lg z-10'
-                }`}
-                title={`Audition ${b.name} (${b.tag})`}
-              >
-                {/* Active Pulsing Ring */}
-                {isPlaying && activeColor && (
-                  <span
-                    aria-hidden="true"
-                    style={{ borderColor: activeColor.border }}
-                    className="absolute -inset-1.5 rounded-full border-2 animate-ping opacity-60 pointer-events-none"
-                  />
-                )}
-
-                {/* Animated Equalizer or Play Icon */}
-                <div className="text-on-surface flex items-center justify-center">
-                  {isPlaying ? (
-                    <span className="inline-flex items-end gap-0.5 h-3 w-3" aria-hidden="true">
-                      <span className="w-0.5 bg-current rounded-full animate-eq-1" />
-                      <span className="w-0.5 bg-current rounded-full animate-eq-2" />
-                      <span className="w-0.5 bg-current rounded-full animate-eq-3" />
-                    </span>
-                  ) : (
-                    <span className="material-symbols-outlined text-[16px] text-primary-container group-hover:scale-110 transition-transform">
-                      play_circle
-                    </span>
-                  )}
-                </div>
-
-                {/* Sound Name (Compact & delicate) */}
-                <div
-                  style={{ color: isPlaying && activeColor ? activeColor.text : undefined }}
-                  className="font-code text-[9px] font-medium text-tertiary-fixed text-center leading-none truncate max-w-[90%] px-0.5 mt-0.5"
-                >
-                  {b.name}
-                </div>
-
-                {/* Event Category Micro-Tag */}
-                <span className="text-[7.5px] font-mono uppercase tracking-wider text-outline group-hover:text-on-surface transition-colors leading-none mt-0.5 scale-90">
-                  {b.tag}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-      </main>
-
-      {/* ================= EXPORT SOUNDPACK MODAL / DRAWER ================= */}
-      {isPackDrawerOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-[#141210] border border-[#2E2B28] rounded-2xl p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-[#2E2B28]">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary-container text-[20px]">package_2</span>
-                <h3 className="font-serif text-lg font-medium text-on-surface">Export Custom Soundpack</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsPackDrawerOpen(false)}
-                className="p-1 rounded-lg hover:bg-surface-container text-tertiary hover:text-on-surface transition-colors cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[18px]">close</span>
-              </button>
+          {/* Right Utilities */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Live Audio Engine Chip */}
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-[#1C1917] border border-[#2F2A26] text-[11px] font-mono text-tertiary">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#61C554] animate-pulse" />
+              <span className="text-[#8E8B85]">Engine:</span>
+              <span className="text-primary-container font-semibold truncate max-w-[130px]">
+                {engineStatus}
+              </span>
+              <span className="material-symbols-outlined text-[14px] text-primary-container">
+                graphic_eq
+              </span>
             </div>
 
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-mono text-tertiary mb-1.5">Pack Name</label>
-                <input
-                  type="text"
-                  value={packName}
-                  onChange={(e) => setPackName(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-surface-container-low border border-outline-variant/30 text-on-surface text-sm font-code focus:outline-none focus:border-primary-container"
-                  placeholder="my-custom-pack"
-                />
+            {/* Export CLI Soundpack Primary Button */}
+            <button
+              type="button"
+              onClick={() => setActiveStep(3)}
+              className="px-3.5 py-1.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[14px]">terminal</span>
+              <span className="hidden xs:inline">Export CLI Soundpack</span>
+            </button>
+
+            {/* Code button */}
+            <button
+              type="button"
+              onClick={() => setShowCliModal(true)}
+              className="p-1.5 rounded-lg bg-[#201D1A] hover:bg-[#2A2623] border border-[#332E2A] text-tertiary-fixed transition-colors cursor-pointer"
+              title="Inspect CLI Manifest"
+            >
+              <span className="material-symbols-outlined text-[16px]">code</span>
+            </button>
+
+            {/* User Avatar */}
+            <div className="w-7 h-7 rounded-full bg-primary-container/20 border border-primary-container/40 flex items-center justify-center text-primary-container text-xs font-mono font-bold">
+              C
+            </div>
+          </div>
+        </header>
+
+        {/* ================= SUB-HEADER COMPOSER STATUS BAR ================= */}
+        <div className="h-14 px-4 sm:px-6 border-b border-[#201D1B] bg-[#141211] flex items-center justify-between gap-2 overflow-x-auto select-none">
+          {/* Left: Composer version */}
+          <div className="flex items-center gap-2 text-xs font-mono shrink-0">
+            <span className="w-2 h-2 rounded-full bg-primary-container" />
+            <span className="font-semibold text-on-surface">Soundpack Composer</span>
+            <span className="text-[10px] text-outline">v1.4.2-dev</span>
+          </div>
+
+          {/* Center 3-Step Stepper Pills */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Step 1 */}
+            <button
+              type="button"
+              onClick={() => setActiveStep(1)}
+              className={`px-3 py-1 rounded-full text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeStep === 1
+                  ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
+                  : 'bg-[#1C1917] text-tertiary hover:text-on-surface border border-[#2D2825]'
+              }`}
+            >
+              <span>1</span>
+              <span>Select Sounds</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                  activeStep === 1 ? 'bg-black/25 text-white' : 'bg-primary-container/20 text-primary-container'
+                }`}
+              >
+                {selectedIds.size}/26
+              </span>
+            </button>
+
+            <span className="text-[#3A3530] text-xs">›</span>
+
+            {/* Step 2 */}
+            <button
+              type="button"
+              onClick={() => setActiveStep(2)}
+              className={`px-3 py-1 rounded-full text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeStep === 2
+                  ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
+                  : 'bg-[#1C1917] text-tertiary hover:text-on-surface border border-[#2D2825]'
+              }`}
+            >
+              <span>2</span>
+              <span>Map to Events</span>
+            </button>
+
+            <span className="text-[#3A3530] text-xs">›</span>
+
+            {/* Step 3 */}
+            <button
+              type="button"
+              onClick={() => setActiveStep(3)}
+              className={`px-3 py-1 rounded-full text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeStep === 3
+                  ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
+                  : 'bg-[#1C1917] text-tertiary hover:text-on-surface border border-[#2D2825]'
+              }`}
+            >
+              <span>3</span>
+              <span>Export &amp; Publish</span>
+            </button>
+          </div>
+
+          {/* Right: Randomize 26 Presets Button */}
+          <button
+            type="button"
+            onClick={handleRandomize26}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#201D1A] hover:bg-[#2B2724] border border-[#352F2B] text-tertiary-fixed text-xs font-mono transition-colors shrink-0 cursor-pointer"
+          >
+            <span>🎲</span>
+            <span>Random 26 Presets</span>
+          </button>
+        </div>
+
+        {/* ================= STEP 1: SOUND SELECTION VIEW ================= */}
+        {activeStep === 1 && (
+          <div className="flex flex-col">
+            {/* HERO SECTION */}
+            <section className="relative px-6 py-12 sm:py-16 text-center flex flex-col items-center justify-center border-b border-[#1E1C1A]">
+              {/* Palette Composer Pill */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#1B1816] border border-[#302B27] text-xs font-mono text-tertiary mb-6">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-container" />
+                <span>PALETTE COMPOSER</span>
+                <span className="text-outline">•</span>
+                <span className="text-primary-container font-semibold">1,802 Web Audio Synthetics</span>
               </div>
 
-              <p className="text-xs text-tertiary leading-relaxed">
-                Bundles all active sounds into an offline Claude Code plugin soundpack zip with audio files and manifest ready for immediate installation.
+              {/* Exact Headline from Stitch Screenshot */}
+              <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl text-on-surface tracking-tight leading-[1.1] mb-5">
+                Craft Your Claude Code<br />Soundpack
+              </h1>
+
+              {/* Exact Subtitle from Stitch Screenshot */}
+              <p className="font-body-md text-sm sm:text-base text-tertiary max-w-xl mx-auto leading-relaxed mb-8">
+                Compose bespoke acoustic textures for your terminal workflow. Select 26 tactile cues to map to your
+                agent lifecycle events and export directly to CLI.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={scrollToCatalog}
+                  className="px-5 py-2.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-2 transition-all shadow-md cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[16px]">graphic_eq</span>
+                  <span>Explore Soundboard</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleRandomize26}
+                  className="px-4 py-2.5 rounded-xl bg-[#1C1917] hover:bg-[#26221F] border border-[#332E2A] text-tertiary-fixed font-mono text-xs flex items-center gap-2 transition-all cursor-pointer"
+                >
+                  <span>🎲</span>
+                  <span>Random 26 Presets</span>
+                </button>
+              </div>
+
+              {/* Scroll down prompt */}
+              <div className="mt-12 flex flex-col items-center gap-1 text-[10px] font-mono tracking-widest uppercase text-outline">
+                <span>SCROLL TO EXPLORE SOUNDS</span>
+                <span className="material-symbols-outlined text-[14px] animate-bounce">keyboard_arrow_down</span>
+              </div>
+            </section>
+
+            {/* ================= SOUND CATALOG SECTION ================= */}
+            <section ref={catalogSectionRef} id="catalog-section" className="p-6 sm:p-8 space-y-6">
+              {/* Catalog Section Header with Search Bar */}
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary-container text-sm">✦</span>
+                    <h2 className="font-serif text-2xl font-medium text-on-surface">Sound Catalog</h2>
+                  </div>
+                  <p className="text-xs text-tertiary font-mono mt-0.5">Filter and audition individual tones</p>
+                </div>
+
+                {/* Timbre / Frequency Search Input */}
+                <div className="relative w-full md:w-72">
+                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-outline pointer-events-none">
+                    search
+                  </span>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search timbre, frequency, tag..."
+                    className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-[#181513] border border-[#2E2825] text-xs font-mono text-on-surface placeholder-outline focus:outline-none focus:border-primary-container transition-colors"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface text-xs font-mono"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Category Filter Pills Matching Stitch Screenshot */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 select-none text-xs font-mono">
+                {[
+                  { key: 'all', label: 'All Tones (1,802)' },
+                  { key: 'synths', label: 'Warm Synths' },
+                  { key: 'keys', label: 'Mechanical Keys' },
+                  { key: 'chimes', label: 'Ambient Chimes' },
+                  { key: 'telemetry', label: 'Sci-Fi Telemetry' },
+                  { key: 'lofi', label: 'Lo-Fi & 8-Bit' },
+                  { key: 'organic', label: 'Organic Drops' },
+                ].map((cat) => (
+                  <button
+                    key={cat.key}
+                    type="button"
+                    onClick={() => setCategory(cat.key as ToneCategory)}
+                    className={`px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all cursor-pointer ${
+                      category === cat.key
+                        ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
+                        : 'bg-[#181513] text-tertiary hover:text-on-surface hover:bg-[#221E1B] border border-[#292420]'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* 3-Column Sound Cards Grid Exactly Matching Stitch Screenshot */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {filteredTones.map((tone) => {
+                  const isSelected = selectedIds.has(tone.id)
+                  const isPlaying = playingToneId === tone.id
+
+                  return (
+                    <div
+                      key={tone.id}
+                      onClick={() => toggleSelectTone(tone.id)}
+                      className={`relative rounded-xl p-3.5 border transition-all duration-200 select-none cursor-pointer flex items-center justify-between gap-3 group ${
+                        isSelected
+                          ? 'bg-[#1C1815] border-primary-container shadow-[0_0_15px_rgba(249,115,22,0.12)]'
+                          : 'bg-[#161412] border-[#292421] hover:border-[#3D3732] hover:bg-[#1A1715]'
+                      }`}
+                    >
+                      {/* Left: Play Button + Animated Waveform Bars */}
+                      <div className="flex flex-col items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handlePlayTone(tone)
+                          }}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${
+                            isPlaying
+                              ? 'bg-primary-container text-on-primary-container scale-105'
+                              : 'bg-primary-container/20 text-primary-container hover:bg-primary-container hover:text-on-primary-container'
+                          }`}
+                          title="Audition Tone"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">
+                            {isPlaying ? 'pause' : 'play_arrow'}
+                          </span>
+                        </button>
+
+                        {/* Waveform Bars */}
+                        <div className="flex items-center gap-0.5 h-3">
+                          <span
+                            className={`w-0.5 rounded-full ${
+                              isPlaying
+                                ? 'h-3 bg-primary-container animate-pulse'
+                                : 'h-1.5 bg-[#403B36] group-hover:bg-[#605850]'
+                            }`}
+                          />
+                          <span
+                            className={`w-0.5 rounded-full ${
+                              isPlaying
+                                ? 'h-2 bg-primary-container animate-ping'
+                                : 'h-2.5 bg-[#403B36] group-hover:bg-[#605850]'
+                            }`}
+                          />
+                          <span
+                            className={`w-0.5 rounded-full ${
+                              isPlaying
+                                ? 'h-3.5 bg-primary-container animate-bounce'
+                                : 'h-1.5 bg-[#403B36] group-hover:bg-[#605850]'
+                            }`}
+                          />
+                          <span
+                            className={`w-0.5 rounded-full ${
+                              isPlaying
+                                ? 'h-2 bg-primary-container animate-pulse'
+                                : 'h-2 bg-[#403B36] group-hover:bg-[#605850]'
+                            }`}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Middle: Sound Name & Frequency Subtitle */}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-mono text-xs font-bold text-on-surface truncate group-hover:text-primary-container transition-colors">
+                          {tone.name}
+                        </div>
+                        <div className="text-[10px] font-mono text-outline truncate mt-0.5">
+                          {tone.subtitle}
+                        </div>
+                      </div>
+
+                      {/* Right: Checkmark Selection Circle + Category Tag */}
+                      <div className="flex flex-col items-end justify-between h-full py-0.5 shrink-0">
+                        {/* Selection Checkmark */}
+                        <div
+                          className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                            isSelected
+                              ? 'bg-primary-container text-on-primary-container font-bold shadow-sm'
+                              : 'border border-[#38332E] group-hover:border-[#524B45]'
+                          }`}
+                        >
+                          {isSelected && (
+                            <span className="material-symbols-outlined text-[14px]">check</span>
+                          )}
+                        </div>
+
+                        {/* Tag Badge */}
+                        <span className="text-[9px] font-mono tracking-wider px-1.5 py-0.2 rounded bg-[#201D1A] text-outline border border-[#302B26] uppercase mt-2">
+                          {tone.tag}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Status footer count matching Stitch screenshot */}
+              <div className="pt-4 flex items-center justify-center text-xs font-mono text-outline">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#61C554] mr-2" />
+                <span>
+                  Showing {filteredTones.length} of 1,802 synthetic cues • Scroll for more
+                </span>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* ================= STEP 2: EVENT MAPPING VIEW ================= */}
+        {activeStep === 2 && (
+          <div className="p-6 sm:p-8 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#25221F] gap-4">
+              <div>
+                <h2 className="font-serif text-2xl font-medium text-on-surface">Map to 26 Agent Lifecycle Events</h2>
+                <p className="text-xs text-tertiary font-mono mt-1">
+                  Fine-tune your acoustic mapping before exporting. Each event triggers automatically during Claude Code execution.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleRandomize26}
+                  className="px-3.5 py-1.5 rounded-lg bg-[#201D1A] hover:bg-[#2A2623] border border-[#332E2A] text-tertiary-fixed font-mono text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <span>Auto-Balance Timbres</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveStep(3)}
+                  className="px-4 py-1.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                >
+                  <span>Proceed to Export</span>
+                  <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 26 Events Table */}
+            <div className="space-y-2.5">
+              {AGENT_EVENTS.map((ev, idx) => {
+                const assignedToneId = eventMapping[ev.id] || STUDIO_TONES[0].id
+                const assignedTone = STUDIO_TONES.find((t) => t.id === assignedToneId) || STUDIO_TONES[0]
+                const isPlaying = playingToneId === assignedTone.id
+
+                return (
+                  <div
+                    key={ev.id}
+                    className="p-3 rounded-xl bg-[#171412] border border-[#272320] hover:border-[#38322D] flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors"
+                  >
+                    {/* Left: Event Details */}
+                    <div className="flex items-center gap-3 min-w-0 md:w-1/2">
+                      <span className="w-6 h-6 rounded-md bg-[#221F1C] border border-[#332E2A] text-[10px] font-mono text-primary-container flex items-center justify-center font-bold shrink-0">
+                        {idx + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-semibold text-on-surface">{ev.name}</span>
+                          <span className="text-[10px] font-mono text-primary-container px-1.5 py-0.2 rounded bg-primary-container/10">
+                            {ev.key}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-tertiary font-mono truncate">{ev.trigger}</div>
+                      </div>
+                    </div>
+
+                    {/* Right: Sound Selector + Mini Play button */}
+                    <div className="flex items-center gap-3 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handlePlayTone(assignedTone)}
+                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                          isPlaying
+                            ? 'bg-primary-container text-on-primary-container'
+                            : 'bg-[#221F1C] hover:bg-[#2E2925] text-primary-container border border-[#332E2A]'
+                        }`}
+                        title="Audition Mapped Sound"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">
+                          {isPlaying ? 'pause' : 'play_arrow'}
+                        </span>
+                      </button>
+
+                      {/* Dropdown Selector of Selected Sounds */}
+                      <select
+                        value={assignedToneId}
+                        onChange={(e) => {
+                          const newId = e.target.value
+                          setEventMapping((prev) => ({ ...prev, [ev.id]: newId }))
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-[#141210] border border-[#332E2A] text-xs font-mono text-on-surface focus:outline-none focus:border-primary-container cursor-pointer"
+                      >
+                        {Array.from(selectedIds).map((sId) => {
+                          const t = STUDIO_TONES.find((item) => item.id === sId)
+                          if (!t) return null
+                          return (
+                            <option key={t.id} value={t.id}>
+                              {t.name} ({t.tag} • {t.frequency}Hz)
+                            </option>
+                          )
+                        })}
+                      </select>
+
+                      <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded bg-[#201D1A] text-outline border border-[#302B26]">
+                        {assignedTone.tag}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ================= STEP 3: EXPORT & PUBLISH VIEW ================= */}
+        {activeStep === 3 && (
+          <div className="p-6 sm:p-10 max-w-3xl mx-auto space-y-8">
+            <div className="text-center">
+              <span className="w-10 h-10 rounded-2xl bg-primary-container/20 border border-primary-container/40 flex items-center justify-center text-primary-container mx-auto mb-3">
+                <span className="material-symbols-outlined text-[22px]">package_2</span>
+              </span>
+              <h2 className="font-serif text-3xl font-medium text-on-surface">Export &amp; Publish Soundpack</h2>
+              <p className="text-xs text-tertiary font-mono max-w-md mx-auto mt-1 leading-relaxed">
+                Packaged as a 100% offline, zero-latency plugin soundpack ready for Claude Code CLI.
               </p>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2E2B28]">
+            {/* Pack Metadata Form */}
+            <div className="bg-[#171412] border border-[#272320] rounded-2xl p-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-mono text-tertiary mb-1">Soundpack Name</label>
+                  <input
+                    type="text"
+                    value={packName}
+                    onChange={(e) => setPackName(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-xl bg-[#110F0E] border border-[#332E2A] text-xs font-mono text-on-surface focus:outline-none focus:border-primary-container"
+                    placeholder="arcade-flow"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono text-tertiary mb-1">Author / Maintainer</label>
+                  <input
+                    type="text"
+                    value={authorName}
+                    onChange={(e) => setAuthorName(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-xl bg-[#110F0E] border border-[#332E2A] text-xs font-mono text-on-surface focus:outline-none focus:border-primary-container"
+                    placeholder="community-dev"
+                  />
+                </div>
+              </div>
+
+              {/* CLI Command Box */}
+              <div>
+                <label className="block text-xs font-mono text-tertiary mb-1">CLI Installation One-Liner</label>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-[#0F0D0C] border border-[#2E2825] font-mono text-xs text-on-surface">
+                  <span className="truncate text-primary-container">{cliInstallCommand}</span>
+                  <button
+                    type="button"
+                    onClick={copyCliCommand}
+                    className="ml-2 px-2.5 py-1 rounded bg-[#1F1C1A] hover:bg-[#2B2724] text-xs text-tertiary-fixed transition-colors cursor-pointer shrink-0"
+                  >
+                    {copiedCli ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Status summary */}
+              <div className="pt-2 flex items-center justify-between text-xs font-mono text-outline border-t border-[#23201D]">
+                <span>26 of 26 events fully mapped</span>
+                <span className="text-[#61C554] flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[13px]">verified</span>
+                  <span>Manifest Valid</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-center gap-4">
               <button
                 type="button"
-                onClick={() => setIsPackDrawerOpen(false)}
-                className="px-4 py-2 rounded-xl text-tertiary hover:text-on-surface text-xs font-mono cursor-pointer"
+                onClick={() => setActiveStep(2)}
+                className="px-5 py-2.5 rounded-xl bg-[#1B1816] hover:bg-[#25211E] border border-[#302B27] text-tertiary-fixed font-mono text-xs cursor-pointer"
               >
-                Cancel
+                ← Back to Mapping
               </button>
+
               <button
                 type="button"
-                onClick={handleExportZip}
+                onClick={handleExportSoundpack}
                 disabled={isExporting}
-                className="px-5 py-2 rounded-xl bg-primary-container text-on-primary-container hover:bg-primary font-medium text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shadow-md"
+                className="px-6 py-2.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-2 transition-all shadow-md cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[16px]">download</span>
-                <span>{isExporting ? 'Packaging...' : 'Download .zip'}</span>
+                <span>{isExporting ? 'Packaging...' : 'Download Soundpack (.zip)'}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ================= BOTTOM STICKY FLOATING BAR ================= */}
+        <div className="sticky bottom-4 z-40 px-4 pointer-events-none mt-6 mb-2">
+          <div className="pointer-events-auto max-w-xl mx-auto rounded-2xl bg-[#181513]/95 border border-[#332E2A] p-2.5 sm:p-3 shadow-2xl backdrop-blur-xl flex items-center justify-between gap-3">
+            {/* Left: Selected count & Threshold Met badge */}
+            <div className="flex items-center gap-2.5 font-mono text-xs min-w-0">
+              <span className="material-symbols-outlined text-[18px] text-primary-container shrink-0">
+                queue_music
+              </span>
+              <div className="truncate">
+                <span className="font-bold text-on-surface">{selectedIds.size} / 26 Ready</span>
+                <span
+                  className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                    selectedIds.size === 26
+                      ? 'bg-[#61C554]/20 text-[#61C554] border border-[#61C554]/30'
+                      : 'bg-primary-container/20 text-primary-container border border-primary-container/30'
+                  }`}
+                >
+                  {selectedIds.size === 26 ? 'Threshold Met' : `${selectedIds.size < 26 ? 'Select' : 'Adjust'} to 26`}
+                </span>
+              </div>
+            </div>
+
+            {/* Right: Actions */}
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleClearAll}
+                className="px-2.5 py-1 rounded-lg text-outline hover:text-on-surface text-xs font-mono hover:bg-[#201D1A] transition-colors cursor-pointer"
+              >
+                Clear All
+              </button>
+
+              {activeStep === 1 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveStep(2)}
+                  className="px-4 py-1.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                >
+                  <span>Proceed to Event Mapping</span>
+                  <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </button>
+              )}
+
+              {activeStep === 2 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveStep(3)}
+                  className="px-4 py-1.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                >
+                  <span>Proceed to Export</span>
+                  <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </button>
+              )}
+
+              {activeStep === 3 && (
+                <button
+                  type="button"
+                  onClick={handleExportSoundpack}
+                  disabled={isExporting}
+                  className="px-4 py-1.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[14px]">download</span>
+                  <span>{isExporting ? 'Packaging...' : 'Download .zip'}</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ================= CLI INSPECT MODAL ================= */}
+      {showCliModal && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-[#141210] border border-[#2E2825] rounded-2xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#26211E]">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary-container text-[18px]">terminal</span>
+                <h3 className="font-mono text-sm font-semibold text-on-surface">CLI Manifest Inspector</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCliModal(false)}
+                className="text-outline hover:text-on-surface"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-3 bg-[#0C0B0A] rounded-xl border border-[#231F1C] font-mono text-[11px] text-on-surface-variant overflow-x-auto max-h-64 leading-relaxed">
+              <pre>{JSON.stringify({ name: packName, author: authorName, events: eventMapping }, null, 2)}</pre>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setShowCliModal(false)}
+                className="px-4 py-1.5 rounded-xl bg-primary-container text-on-primary-container font-mono text-xs font-semibold"
+              >
+                Done
               </button>
             </div>
           </div>
