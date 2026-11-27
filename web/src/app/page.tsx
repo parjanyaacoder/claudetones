@@ -23,7 +23,9 @@ export default function Home() {
     setTimeout(() => {
       const el = document.getElementById(id)
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth' })
+        const navHeight = 64
+        const top = el.getBoundingClientRect().top + window.scrollY - navHeight
+        window.scrollTo({ top, behavior: 'smooth' })
         window.history.pushState(null, '', `#${id}`)
       }
     }, 40)
@@ -36,7 +38,9 @@ export default function Home() {
       setTimeout(() => {
         const el = document.getElementById(id)
         if (el) {
-          el.scrollIntoView({ behavior: 'smooth' })
+          const navHeight = 64
+          const top = el.getBoundingClientRect().top + window.scrollY - navHeight
+          window.scrollTo({ top, behavior: 'smooth' })
         }
       }, 150)
     }

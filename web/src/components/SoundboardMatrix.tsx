@@ -357,19 +357,19 @@ export default function SoundboardMatrix() {
 
   return (
     <section
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-6 sm:pt-8 pb-16 sm:pb-20 scroll-mt-20"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-2 sm:pt-3 pb-12 sm:pb-14 scroll-mt-16"
       id="soundboard-matrix"
     >
       {/* Header and Pack Selector Pills */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 sm:mb-10 gap-5 sm:gap-6">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-4 sm:mb-6 gap-4 sm:gap-6">
         <div className="flex-1 min-w-0 pr-2 sm:pr-4">
-          <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary-container block mb-1.5">
+          <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary-container block mb-1">
             Micro-Acoustic Palette Library
           </span>
           <h2 className="font-headline-lg text-2xl sm:text-3xl lg:text-4xl text-on-surface tracking-tight">
             The 7 Lifecycle Sonic Events
           </h2>
-          <p className="font-body-md text-sm sm:text-base text-tertiary mt-1.5 leading-relaxed max-w-xl">
+          <p className="font-body-md text-sm sm:text-base text-tertiary mt-1 leading-relaxed max-w-xl">
             {pack.description}
           </p>
         </div>
@@ -400,7 +400,7 @@ export default function SoundboardMatrix() {
       </div>
 
       {/* Grid Cards (3 Columns) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
         {pack.events.map((evt) => {
           const playKey = `${selectedPack}-${evt.id}`
           const isThisActive = activeId === playKey
@@ -411,14 +411,14 @@ export default function SoundboardMatrix() {
           return (
             <div
               key={evt.id}
-              className={`p-5 sm:p-6 rounded-2xl flex flex-col justify-between transition-all group border shadow-sm ${
+              className={`p-4 sm:p-5 rounded-2xl flex flex-col justify-between transition-all group border shadow-sm ${
                 isThisActive
                   ? 'bg-surface-container ring-1 ring-primary-container/40 border-primary-container/30'
                   : 'bg-surface-container-low hover:bg-surface-container border-outline-variant/15'
               }`}
             >
               <div>
-                <div className="flex items-center justify-between mb-3.5">
+                <div className="flex items-center justify-between mb-2.5">
                   <span
                     className={`px-2 py-0.5 rounded font-label-sm text-label-sm font-code ${
                       isError ? 'bg-error-container text-error' : 'bg-surface-container text-tertiary'
@@ -428,11 +428,11 @@ export default function SoundboardMatrix() {
                   </span>
                   <span className="font-label-sm text-label-sm text-outline">{evt.category}</span>
                 </div>
-                <h3 className="font-headline-sm text-headline-sm text-tertiary-fixed mb-1.5">{evt.title}</h3>
-                <p className="font-body-sm text-body-sm text-on-surface-variant mb-5">{evt.description}</p>
+                <h3 className="font-headline-sm text-headline-sm text-tertiary-fixed mb-1">{evt.title}</h3>
+                <p className="font-body-sm text-body-sm text-on-surface-variant mb-3 sm:mb-4">{evt.description}</p>
               </div>
 
-              <div className="flex items-center justify-between pt-3.5 border-t border-outline-variant/15">
+              <div className="flex items-center justify-between pt-3 border-t border-outline-variant/15">
                 <div className="font-label-sm text-label-sm text-outline font-code flex items-center gap-1">
                   <span className="material-symbols-outlined text-[13px] text-primary-container">music_note</span>
                   <span className="max-w-[150px] truncate">{evt.fileName}</span>
@@ -475,9 +475,9 @@ export default function SoundboardMatrix() {
           const isVictoryPaused = isVictoryActive && isPaused
 
           return (
-            <div className="lg:col-span-3 bg-surface-container p-5 sm:p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-5 border border-primary-container/30 shadow-md">
+            <div className="lg:col-span-3 bg-surface-container p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-5 border border-primary-container/30 shadow-md">
               <div className="space-y-1 max-w-xl">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-0.5">
                   <span className="px-2 py-0.5 rounded font-label-sm text-label-sm bg-primary-container/20 text-primary-container font-code">
                     turn.complete
                   </span>

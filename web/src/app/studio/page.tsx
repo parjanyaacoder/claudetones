@@ -114,11 +114,13 @@ export default function StudioPage() {
     setSelectedIds(new Set())
   }
 
-  // Smooth scroll to catalog with header offset
+  // Smooth scroll to catalog with header offset flush with horizontal separator line
   const scrollToCatalog = () => {
     const el = document.getElementById("catalog-section")
     if (el) {
-      el.scrollIntoView({ behavior: "smooth" })
+      const navHeight = 64
+      const top = el.getBoundingClientRect().top + window.scrollY - navHeight
+      window.scrollTo({ top, behavior: "smooth" })
     }
   }
 
@@ -451,7 +453,7 @@ export default function StudioPage() {
           <section
             ref={catalogSectionRef}
             id="catalog-section"
-            className="w-full max-w-7xl mx-auto p-6 sm:p-8 space-y-6 scroll-mt-32"
+            className="w-full max-w-7xl mx-auto p-6 sm:p-8 space-y-6 scroll-mt-16"
           >
             {/* Catalog Section Header with Search Bar */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">

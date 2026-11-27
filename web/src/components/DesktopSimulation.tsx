@@ -146,7 +146,7 @@ export default function DesktopSimulation() {
 
   return (
     <section
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 sm:pb-14 overflow-hidden scroll-mt-20"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 sm:pb-14 overflow-hidden scroll-mt-16"
       id="claude-desktop-demo"
     >
       {/* Title & Compact Header */}
