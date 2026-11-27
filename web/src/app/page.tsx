@@ -122,8 +122,8 @@ export default function Home() {
             <span className="text-primary-container font-semibold">100% Free &amp; Open Source</span>
           </div>
 
-          {/* Headline with Silky Smooth Word Transition */}
-          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight max-w-4xl leading-tight mb-6">
+          {/* Headline with Zero-Jitter Single-Line Typewriter (Aceternity UI style) */}
+          <h1 className="font-headline-lg text-[1.35rem] xs:text-[1.6rem] sm:text-[2rem] md:text-[2.4rem] lg:text-[2.8rem] xl:text-[3.1rem] text-on-surface tracking-tight leading-tight mb-6 whitespace-nowrap w-full text-center">
             Give your Claude Code sounds on every <RotatingWord />
           </h1>
 

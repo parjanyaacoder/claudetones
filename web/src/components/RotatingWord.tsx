@@ -29,14 +29,14 @@ export default function RotatingWord() {
   useEffect(() => {
     const fullText = currentWord.text
 
-    // Typing speed: 75ms forward, 35ms backspacing
-    const typingSpeed = isDeleting ? 35 : 75
+    // Typing speed: 70ms forward, 35ms backspacing
+    const typingSpeed = isDeleting ? 35 : 70
 
     if (!isDeleting && displayText === fullText) {
       // Pause at full word before backspacing
       const pauseTimer = setTimeout(() => {
         setIsDeleting(true)
-      }, 1800)
+      }, 1900)
       return () => clearTimeout(pauseTimer)
     }
 
@@ -45,7 +45,7 @@ export default function RotatingWord() {
       const nextWordTimer = setTimeout(() => {
         setIsDeleting(false)
         setWordIndex((prev) => (prev + 1) % WORDS.length)
-      }, 250)
+      }, 200)
       return () => clearTimeout(nextWordTimer)
     }
 
@@ -59,11 +59,16 @@ export default function RotatingWord() {
   }, [displayText, isDeleting, currentWord])
 
   return (
-    <span className={`inline font-serif italic ${currentWord.color} transition-colors duration-200`}>
-      <span>{displayText}</span>
+    // Fixed-width left-aligned slot (Aceternity UI style):
+    // 1. Surrounding headline text stays 100% frozen in place (zero horizontal shift/jitter)
+    // 2. whitespace-nowrap prevents words and cursor from ever breaking onto a second line
+    <span className="inline-block text-left align-baseline whitespace-nowrap min-w-[7.6em] sm:min-w-[8.2em] md:min-w-[8.6em]">
+      <span className={`inline font-serif italic ${currentWord.color} transition-colors duration-200`}>
+        {displayText}
+      </span>
       <span
         aria-hidden="true"
-        className="inline-block w-[2px] h-[0.82em] ml-1 bg-current align-baseline animate-pulse font-normal not-italic opacity-80"
+        className="inline-block w-[2.5px] h-[0.82em] ml-0.5 bg-primary-container align-baseline animate-pulse font-normal not-italic rounded-full"
       />
     </span>
   )
