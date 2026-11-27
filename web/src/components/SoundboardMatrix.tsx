@@ -357,41 +357,45 @@ export default function SoundboardMatrix() {
 
   return (
     <section
-      className="max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-20 scroll-mt-16"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-6 sm:pt-8 pb-16 sm:pb-20 scroll-mt-20"
       id="soundboard-matrix"
     >
       {/* Header and Pack Selector Pills */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">
-        <div>
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 sm:mb-10 gap-5 sm:gap-6">
+        <div className="flex-1 min-w-0 pr-2 sm:pr-4">
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary-container block mb-1.5">
             Micro-Acoustic Palette Library
           </span>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">The 7 Lifecycle Sonic Events</h2>
-          <p className="font-body-md text-body-md text-tertiary max-w-md mt-1 leading-relaxed">
+          <h2 className="font-headline-lg text-2xl sm:text-3xl lg:text-4xl text-on-surface tracking-tight">
+            The 7 Lifecycle Sonic Events
+          </h2>
+          <p className="font-body-md text-sm sm:text-base text-tertiary mt-1.5 leading-relaxed max-w-xl">
             {pack.description}
           </p>
         </div>
 
-        {/* Pack Selector Tabs */}
-        <div className="inline-flex p-1 rounded-xl bg-surface-container-low border border-outline-variant/30 shadow-md gap-1 shrink-0 self-start md:self-auto">
-          {(Object.keys(PACKS) as PackId[]).map((pid) => {
-            const p = PACKS[pid]
-            const isSelected = selectedPack === pid
-            return (
-              <button
-                key={pid}
-                type="button"
-                onClick={() => setSelectedPack(pid)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 cursor-pointer ${
-                  isSelected
-                    ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
-                    : 'text-tertiary hover:text-on-surface hover:bg-surface-container'
-                }`}
-              >
-                {p.label}
-              </button>
-            )
-          })}
+        {/* Pack Selector Tabs with Smooth Horizontal Scroll on Mobile/Tablet */}
+        <div className="shrink-0 max-w-full overflow-x-auto no-scrollbar py-1">
+          <div className="inline-flex p-1 rounded-xl bg-surface-container-low border border-outline-variant/30 shadow-md gap-1 shrink-0">
+            {(Object.keys(PACKS) as PackId[]).map((pid) => {
+              const p = PACKS[pid]
+              const isSelected = selectedPack === pid
+              return (
+                <button
+                  key={pid}
+                  type="button"
+                  onClick={() => setSelectedPack(pid)}
+                  className={`px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 ${
+                    isSelected
+                      ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
+                      : 'text-tertiary hover:text-on-surface hover:bg-surface-container'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 

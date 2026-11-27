@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import RotatingWord from '@/components/RotatingWord'
 import DesktopSimulation from '@/components/DesktopSimulation'
@@ -15,6 +15,32 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const PLUGIN_ONE_LINER = 'claude plugin marketplace add parjanyaacoder/claudetones && claude plugin install claudetones'
+
+  // Handle smooth scroll to in-page anchors with precise offset and mobile drawer closing
+  const scrollToAnchor = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault()
+    setMobileMenuOpen(false)
+    setTimeout(() => {
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' })
+        window.history.pushState(null, '', `#${id}`)
+      }
+    }, 40)
+  }
+
+  // Handle incoming hash on page load / route transition
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const id = window.location.hash.replace('#', '')
+      setTimeout(() => {
+        const el = document.getElementById(id)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 150)
+    }
+  }, [])
 
   const copyCliCommand = () => {
     navigator.clipboard.writeText(PLUGIN_ONE_LINER)
@@ -50,13 +76,15 @@ export default function Home() {
             <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
               <a
                 href="#claude-desktop-demo"
-                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
+                onClick={(e) => scrollToAnchor(e, 'claude-desktop-demo')}
+                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm cursor-pointer"
               >
                 Interactive App
               </a>
               <a
                 href="#soundboard-matrix"
-                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
+                onClick={(e) => scrollToAnchor(e, 'soundboard-matrix')}
+                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm cursor-pointer"
               >
                 Soundboard
               </a>
@@ -69,7 +97,8 @@ export default function Home() {
               </Link>
               <a
                 href="#slash-commands"
-                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
+                onClick={(e) => scrollToAnchor(e, 'slash-commands')}
+                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm cursor-pointer"
               >
                 Slash Commands
               </a>
@@ -91,7 +120,7 @@ export default function Home() {
               href={GITHUB_URL}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed text-xs font-mono transition-colors border border-outline-variant/30"
+              className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed text-xs font-mono transition-colors border border-outline-variant/30 shrink-0"
             >
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                 <path
@@ -100,12 +129,13 @@ export default function Home() {
                   d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
                 />
               </svg>
-              <span>GitHub</span>
+              <span className="hidden xs:inline">GitHub</span>
             </a>
 
             <a
               href="#claude-desktop-demo"
-              className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all duration-200 shadow-md font-medium"
+              onClick={(e) => scrollToAnchor(e, 'claude-desktop-demo')}
+              className="inline-flex items-center justify-center px-3 sm:px-4 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-label-md text-xs sm:text-label-md hover:bg-primary hover:text-on-primary transition-all duration-200 shadow-md font-medium whitespace-nowrap shrink-0 cursor-pointer"
             >
               Live Demo
             </a>
@@ -117,15 +147,15 @@ export default function Home() {
           <div className="lg:hidden bg-[#161413] border-b border-[#2E2B28] px-6 py-4 space-y-3 font-mono text-sm animate-in fade-in slide-in-from-top-2 duration-200">
             <a
               href="#claude-desktop-demo"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+              onClick={(e) => scrollToAnchor(e, 'claude-desktop-demo')}
+              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors cursor-pointer"
             >
               Interactive App
             </a>
             <a
               href="#soundboard-matrix"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+              onClick={(e) => scrollToAnchor(e, 'soundboard-matrix')}
+              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors cursor-pointer"
             >
               Soundboard
             </a>
@@ -139,8 +169,8 @@ export default function Home() {
             </Link>
             <a
               href="#slash-commands"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+              onClick={(e) => scrollToAnchor(e, 'slash-commands')}
+              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors cursor-pointer"
             >
               Slash Commands
             </a>
@@ -204,6 +234,7 @@ export default function Home() {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <a
               href="#claude-desktop-demo"
+              onClick={(e) => scrollToAnchor(e, 'claude-desktop-demo')}
               className="px-6 py-3 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all duration-200 shadow-lg hover:shadow-primary-container/25 flex items-center gap-2 select-none font-medium cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px]">play_circle</span>
@@ -211,6 +242,7 @@ export default function Home() {
             </a>
             <a
               href="#soundboard-matrix"
+              onClick={(e) => scrollToAnchor(e, 'soundboard-matrix')}
               className="px-5 py-3 rounded-xl bg-surface-container-high/80 hover:bg-surface-bright text-tertiary hover:text-on-surface font-label-md text-label-md transition-all flex items-center gap-2 border border-outline-variant/30 hover:border-outline-variant/60 cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px] text-primary-container">library_music</span>
@@ -220,7 +252,12 @@ export default function Home() {
 
           {/* Scroll Down Indicator */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-tertiary/60 hover:text-primary-container transition-colors">
-            <a href="#claude-desktop-demo" aria-label="Scroll to live demo" className="flex flex-col items-center gap-1">
+            <a
+              href="#claude-desktop-demo"
+              onClick={(e) => scrollToAnchor(e, 'claude-desktop-demo')}
+              aria-label="Scroll to live demo"
+              className="flex flex-col items-center gap-1 cursor-pointer"
+            >
               <span className="font-label-sm text-[10px] uppercase tracking-widest text-outline">Interactive Demo</span>
               <span className="material-symbols-outlined text-[18px] animate-bounce">expand_more</span>
             </a>
@@ -418,16 +455,28 @@ export default function Home() {
             </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-6 text-xs font-mono text-on-surface-variant">
-              <a href="#claude-desktop-demo" className="hover:text-on-surface transition-colors">
+              <a
+                href="#claude-desktop-demo"
+                onClick={(e) => scrollToAnchor(e, 'claude-desktop-demo')}
+                className="hover:text-on-surface transition-colors cursor-pointer"
+              >
                 Interactive App
               </a>
-              <a href="#soundboard-matrix" className="hover:text-on-surface transition-colors">
+              <a
+                href="#soundboard-matrix"
+                onClick={(e) => scrollToAnchor(e, 'soundboard-matrix')}
+                className="hover:text-on-surface transition-colors cursor-pointer"
+              >
                 Soundboard
               </a>
-              <a href="/studio" className="hover:text-on-surface transition-colors">
+              <Link href="/studio" className="hover:text-on-surface transition-colors">
                 Pack Studio
-              </a>
-              <a href="#slash-commands" className="hover:text-on-surface transition-colors">
+              </Link>
+              <a
+                href="#slash-commands"
+                onClick={(e) => scrollToAnchor(e, 'slash-commands')}
+                className="hover:text-on-surface transition-colors cursor-pointer"
+              >
                 Slash Commands
               </a>
               <a
