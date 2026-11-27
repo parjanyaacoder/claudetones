@@ -12,6 +12,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false)
   const [bottomCopied, setBottomCopied] = useState(false)
   const [faqOpen, setFaqOpen] = useState<{ [key: number]: boolean }>({ 0: true })
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const PLUGIN_ONE_LINER = 'claude plugin marketplace add parjanyaacoder/claudetones && claude plugin install claudetones'
 
@@ -46,7 +47,7 @@ export default function Home() {
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
+            <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
               <a
                 href="#claude-desktop-demo"
                 className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
@@ -75,7 +76,17 @@ export default function Home() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-1.5 rounded-lg text-tertiary hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer"
+              aria-label="Toggle navigation menu"
+            >
+              <span className="material-symbols-outlined text-[22px]">
+                {mobileMenuOpen ? "close" : "menu"}
+              </span>
+            </button>
             <a
               href={GITHUB_URL}
               target="_blank"
@@ -100,6 +111,41 @@ export default function Home() {
             </a>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-[#161413] border-b border-[#2E2B28] px-6 py-4 space-y-3 font-mono text-sm animate-in fade-in slide-in-from-top-2 duration-200">
+            <a
+              href="#claude-desktop-demo"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+            >
+              Interactive App
+            </a>
+            <a
+              href="#soundboard-matrix"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+            >
+              Soundboard
+            </a>
+            <Link
+              href="/studio"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-between py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+            >
+              <span>Pack Studio</span>
+              <span className="px-1.5 py-0.5 rounded text-[10px] bg-primary-container/20 text-primary-container font-semibold">New</span>
+            </Link>
+            <a
+              href="#slash-commands"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+            >
+              Slash Commands
+            </a>
+          </div>
+        )}
       </header>
 
       {/* AMBIENT GLOW & GRID BACKGROUND (Inspired by Magic UI / Aceternity) */}
@@ -123,7 +169,7 @@ export default function Home() {
           </div>
 
           {/* Headline with Zero-Jitter Single-Line Typewriter (Aceternity UI style) */}
-          <h1 className="font-headline-lg text-[1.25rem] xs:text-[1.5rem] sm:text-[1.85rem] md:text-[2.2rem] lg:text-[2.6rem] xl:text-[2.9rem] text-on-surface tracking-tight leading-tight mb-3.5 whitespace-nowrap w-full text-center">
+          <h1 className="font-headline-lg text-[1.1rem] xs:text-[1.35rem] sm:text-[1.85rem] md:text-[2.2rem] lg:text-[2.6rem] xl:text-[2.9rem] text-on-surface tracking-tight leading-tight mb-3.5 whitespace-normal sm:whitespace-nowrap w-full text-center">
             Give your Claude Code sounds on every <RotatingWord />
           </h1>
 

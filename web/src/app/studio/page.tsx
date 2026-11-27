@@ -42,6 +42,7 @@ export default function StudioPage() {
   const [isExporting, setIsExporting] = useState(false)
   const [showCliModal, setShowCliModal] = useState(false)
   const [copiedCli, setCopiedCli] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Catalog Section ref for smooth scroll
   const catalogSectionRef = useRef<HTMLDivElement | null>(null)
@@ -113,9 +114,12 @@ export default function StudioPage() {
     setSelectedIds(new Set())
   }
 
-  // Smooth scroll to catalog
+  // Smooth scroll to catalog with header offset
   const scrollToCatalog = () => {
-    catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const el = document.getElementById("catalog-section")
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" })
+    }
   }
 
   // Handle Export Soundpack Zip
@@ -204,7 +208,7 @@ export default function StudioPage() {
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
+            <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
               <Link
                 href="/#claude-desktop-demo"
                 className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
@@ -233,7 +237,17 @@ export default function StudioPage() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-1.5 rounded-lg text-tertiary hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer"
+              aria-label="Toggle navigation menu"
+            >
+              <span className="material-symbols-outlined text-[22px]">
+                {mobileMenuOpen ? "close" : "menu"}
+              </span>
+            </button>
             <a
               href={GITHUB_URL}
               target="_blank"
@@ -259,6 +273,48 @@ export default function StudioPage() {
             </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-[#161413] border-b border-[#2E2B28] px-6 py-4 space-y-3 font-mono text-sm animate-in fade-in slide-in-from-top-2 duration-200">
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+            >
+              Home
+            </Link>
+            <Link
+              href="/#claude-desktop-demo"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+            >
+              Interactive App
+            </Link>
+            <Link
+              href="/#soundboard-matrix"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+            >
+              Soundboard
+            </Link>
+            <Link
+              href="/studio"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-between py-1.5 text-primary-container font-semibold transition-colors"
+            >
+              <span>Pack Studio</span>
+              <span className="px-1.5 py-0.5 rounded text-[10px] bg-primary-container/20 text-primary-container font-semibold">New</span>
+            </Link>
+            <Link
+              href="/#slash-commands"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-1.5 text-on-surface-variant hover:text-primary-container transition-colors"
+            >
+              Slash Commands
+            </Link>
+          </div>
+        )}
       </header>
 
       {/* ================= FULL-WIDTH SUB-HEADER 3-STEP STEPPER ================= */}
@@ -277,7 +333,7 @@ export default function StudioPage() {
               }`}
             >
               <span>1</span>
-              <span>Select Sounds</span>
+              <span className="hidden sm:inline">Select </span><span>Sounds</span>
               <span
                 className={`px-1.5 py-0.2 rounded-full text-[10px] ${
                   activeStep === 1 ? "bg-black/25 text-white" : "bg-primary-container/20 text-primary-container"
@@ -300,7 +356,7 @@ export default function StudioPage() {
               }`}
             >
               <span>2</span>
-              <span>Map to Events</span>
+              <span className="hidden sm:inline">Map to </span><span>Events</span>
             </button>
 
             <span className="text-[#3A3530] text-xs">›</span>
@@ -316,7 +372,7 @@ export default function StudioPage() {
               }`}
             >
               <span>3</span>
-              <span>Export & Publish</span>
+              <span>Export</span><span className="hidden sm:inline"> & Publish</span>
             </button>
           </div>
 
@@ -327,7 +383,7 @@ export default function StudioPage() {
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#201D1A] hover:bg-[#2B2724] border border-[#352F2B] text-tertiary-fixed text-xs font-mono transition-colors shrink-0 cursor-pointer"
           >
             <span>🎲</span>
-            <span>Random 26 Presets</span>
+            <span className="hidden sm:inline">Random </span><span>26<span className="hidden sm:inline"> Presets</span></span>
           </button>
         </div>
       </div>
@@ -335,8 +391,8 @@ export default function StudioPage() {
       {/* ================= STEP 1: SOUND SELECTION VIEW ================= */}
       {activeStep === 1 && (
         <main className="relative flex-1 w-full flex flex-col">
-          {/* HERO SECTION */}
-          <section className="relative w-full px-6 py-14 sm:py-20 text-center flex flex-col items-center justify-center border-b border-[#1E1C1A]">
+          {/* HERO SECTION - FULL VIEWPORT HEIGHT */}
+          <section className="relative w-full min-h-[calc(100dvh-7.5rem)] flex flex-col justify-center items-center text-center px-4 sm:px-6 py-12 pb-20 border-b border-[#1E1C1A] overflow-hidden">
             {/* Palette Composer Pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#1B1816] border border-[#302B27] text-xs font-mono text-tertiary mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-primary-container" />
@@ -373,14 +429,21 @@ export default function StudioPage() {
                 className="px-4 py-2.5 rounded-xl bg-[#1C1917] hover:bg-[#26221F] border border-[#332E2A] text-tertiary-fixed font-mono text-xs flex items-center gap-2 transition-all cursor-pointer"
               >
                 <span>🎲</span>
-                <span>Random 26 Presets</span>
+                <span className="hidden sm:inline">Random </span><span>26<span className="hidden sm:inline"> Presets</span></span>
               </button>
             </div>
 
-            {/* Scroll down prompt */}
-            <div className="mt-12 flex flex-col items-center gap-1 text-[10px] font-mono tracking-widest uppercase text-outline">
-              <span>SCROLL TO EXPLORE SOUNDS</span>
-              <span className="material-symbols-outlined text-[14px] animate-bounce">keyboard_arrow_down</span>
+            {/* Interactive Scroll Down Button - positioned cleanly above floating dock */}
+            <div className="absolute bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 z-20">
+              <button
+                type="button"
+                onClick={scrollToCatalog}
+                className="flex flex-col items-center gap-1.5 text-[10px] font-mono tracking-widest uppercase text-outline hover:text-primary-container transition-colors cursor-pointer group"
+                aria-label="Scroll down to sound catalog"
+              >
+                <span className="group-hover:text-primary-container transition-colors">Scroll to explore sounds</span>
+                <span className="material-symbols-outlined text-[18px] animate-bounce text-primary-container">keyboard_arrow_down</span>
+              </button>
             </div>
           </section>
 
@@ -388,7 +451,7 @@ export default function StudioPage() {
           <section
             ref={catalogSectionRef}
             id="catalog-section"
-            className="w-full max-w-7xl mx-auto p-6 sm:p-8 space-y-6 scroll-mt-24"
+            className="w-full max-w-7xl mx-auto p-6 sm:p-8 space-y-6 scroll-mt-32"
           >
             {/* Catalog Section Header with Search Bar */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -758,42 +821,51 @@ export default function StudioPage() {
       )}
 
       {/* ================= FIXED BOTTOM FLOATING BAR ================= */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4 pointer-events-none">
-        <div className="pointer-events-auto rounded-2xl bg-[#181513]/95 border border-[#332E2A] p-2.5 sm:p-3 shadow-[0_15px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl flex items-center justify-between gap-3">
+      <div className="fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-2.5 sm:px-4 pointer-events-none">
+        <div className="pointer-events-auto rounded-2xl bg-[#181513]/95 border border-[#332E2A] p-2 sm:p-3 shadow-[0_15px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl flex items-center justify-between gap-1.5 sm:gap-3">
           {/* Left: Selected count & Threshold Met badge */}
-          <div className="flex items-center gap-2.5 font-mono text-xs shrink-0">
-            <span className="material-symbols-outlined text-[18px] text-primary-container shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 font-mono text-xs shrink-0">
+            <span className="material-symbols-outlined text-[17px] text-primary-container shrink-0">
               queue_music
             </span>
-            <span className="font-bold text-on-surface whitespace-nowrap">{selectedIds.size} / 26 Ready</span>
+            <span className="font-bold text-on-surface whitespace-nowrap text-xs sm:text-sm">{selectedIds.size}/26</span>
             <span
-              className={`px-2 py-0.5 rounded text-[10px] font-semibold shrink-0 whitespace-nowrap ${
+              className={`px-1.5 sm:px-2 py-0.5 rounded text-[9.5px] sm:text-[10px] font-semibold shrink-0 whitespace-nowrap ${
                 selectedIds.size === 26
-                  ? 'bg-[#61C554]/20 text-[#61C554] border border-[#61C554]/30'
-                  : 'bg-primary-container/20 text-primary-container border border-primary-container/30'
+                  ? "bg-[#61C554]/20 text-[#61C554] border border-[#61C554]/30"
+                  : "bg-primary-container/20 text-primary-container border border-primary-container/30"
               }`}
             >
-              {selectedIds.size === 26 ? 'Threshold Met' : `${selectedIds.size}/26`}
+              {selectedIds.size === 26 ? (
+                <>
+                  <span className="sm:hidden">✓ Met</span>
+                  <span className="hidden sm:inline">Threshold Met</span>
+                </>
+              ) : (
+                `${selectedIds.size}/26`
+              )}
             </span>
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={handleClearAll}
-              className="px-2.5 py-1 rounded-lg text-outline hover:text-on-surface text-xs font-mono hover:bg-[#201D1A] transition-colors cursor-pointer"
+              className="px-2 py-1 rounded-lg text-outline hover:text-on-surface text-xs font-mono hover:bg-[#201D1A] transition-colors cursor-pointer whitespace-nowrap"
             >
-              Clear All
+              <span className="sm:hidden">Clear</span>
+              <span className="hidden sm:inline">Clear All</span>
             </button>
 
             {activeStep === 1 && (
               <button
                 type="button"
                 onClick={() => setActiveStep(2)}
-                className="px-4 py-1.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-2.5 sm:px-4 py-1.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1 transition-all shadow-md cursor-pointer whitespace-nowrap"
               >
-                <span>Proceed to Event Mapping</span>
+                <span className="sm:hidden">Map Events</span>
+                <span className="hidden sm:inline">Proceed to Event Mapping</span>
                 <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
               </button>
             )}
@@ -802,9 +874,10 @@ export default function StudioPage() {
               <button
                 type="button"
                 onClick={() => setActiveStep(3)}
-                className="px-4 py-1.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-2.5 sm:px-4 py-1.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1 transition-all shadow-md cursor-pointer whitespace-nowrap"
               >
-                <span>Proceed to Export</span>
+                <span className="sm:hidden">Export</span>
+                <span className="hidden sm:inline">Proceed to Export</span>
                 <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
               </button>
             )}
@@ -814,10 +887,10 @@ export default function StudioPage() {
                 type="button"
                 onClick={handleExportSoundpack}
                 disabled={isExporting}
-                className="px-4 py-1.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-2.5 sm:px-4 py-1.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1 transition-all shadow-md cursor-pointer whitespace-nowrap"
               >
                 <span className="material-symbols-outlined text-[14px]">download</span>
-                <span>{isExporting ? 'Packaging...' : 'Download .zip'}</span>
+                <span>{isExporting ? "Packaging..." : "Download"}</span>
               </button>
             )}
           </div>
@@ -836,7 +909,7 @@ export default function StudioPage() {
               <button
                 type="button"
                 onClick={() => setShowCliModal(false)}
-                className="text-outline hover:text-on-surface"
+                className="text-outline hover:text-on-surface cursor-pointer"
               >
                 ✕
               </button>
