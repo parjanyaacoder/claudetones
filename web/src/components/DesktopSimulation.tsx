@@ -118,7 +118,7 @@ export default function DesktopSimulation() {
 
   return (
     <section
-      className="min-h-[calc(100vh-4rem)] max-h-[860px] flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 overflow-hidden"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 overflow-hidden"
       id="claude-desktop-demo"
     >
       {/* Title & Compact Header */}
@@ -164,7 +164,7 @@ export default function DesktopSimulation() {
       {/* Main Showcase Layout: Vertical Stages Stepper (Left) + Balanced Window (Right) */}
       <div className="flex flex-col lg:flex-row gap-6 items-stretch justify-center max-w-6xl mx-auto w-full">
         {/* ================= VERTICAL STAGES STEPPER ================= */}
-        <div className="w-full lg:w-72 shrink-0 bg-surface-container-low rounded-2xl p-4 border border-outline-variant/20 shadow-xl flex flex-col justify-between h-[480px]">
+        <div className="w-full lg:w-72 shrink-0 bg-surface-container-low rounded-2xl p-4 border border-outline-variant/20 shadow-xl flex flex-col justify-between h-[600px]">
           <div>
             {/* Header with Auto-play & Replay Controls */}
             <div className="flex items-center justify-between pb-3 border-b border-outline-variant/15">
@@ -308,7 +308,7 @@ export default function DesktopSimulation() {
         {/* ================= CLAUDE CODE DESKTOP WINDOW (EXACT REPLICA) ================= */}
         <div className="w-full flex-1 min-w-0">
           {view === 'desktop' && (
-            <div className="relative w-full rounded-2xl bg-[#131316] border border-[#27272a] shadow-2xl overflow-hidden transition-all duration-300 h-[480px] flex flex-col justify-between border-beam-glow">
+            <div className="relative w-full rounded-2xl bg-[#131316] border border-[#27272a] shadow-2xl overflow-hidden transition-all duration-300 h-[600px] flex flex-col justify-between border-beam-glow">
               {/* Dynamic Acoustic Ripple Overlay on Sound Cue */}
               <div className="absolute inset-0 pointer-events-none z-30 transition-opacity duration-300 flex items-center justify-center overflow-hidden audio-ripple-target opacity-0">
                 <div className="w-64 h-64 rounded-full border-2 border-primary-container/60 bg-primary-container/10 blur-[2px] animate-ripple"></div>
@@ -608,7 +608,7 @@ export default function DesktopSimulation() {
 
           {/* ================= TERMINAL CLI VIEW ================= */}
           {view === 'terminal' && (
-            <div className="relative w-full rounded-2xl bg-[#141210] border border-[#38332f] shadow-2xl overflow-hidden transition-all duration-300 h-[480px] flex flex-col justify-between border-beam-glow">
+            <div className="relative w-full rounded-2xl bg-[#141210] border border-[#38332f] shadow-2xl overflow-hidden transition-all duration-300 h-[600px] flex flex-col justify-between border-beam-glow">
               {/* Dynamic Acoustic Ripple Overlay on Sound Cue */}
               <div className="absolute inset-0 pointer-events-none z-30 transition-opacity duration-300 flex items-center justify-center overflow-hidden audio-ripple-target opacity-0">
                 <div className="w-64 h-64 rounded-full border-2 border-primary-container/60 bg-primary-container/10 blur-[2px] animate-ripple"></div>

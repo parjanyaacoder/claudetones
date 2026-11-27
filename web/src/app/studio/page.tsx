@@ -32,38 +32,41 @@ type SoundBubble = {
   // Position as percentage on canvas
   x: number
   y: number
-  size: number // diameter in px
+  size: number // diameter in px (delicate, refined)
   floatDelay: string // animation delay
   isCustom?: boolean
 }
 
+// Delicate, airy glass bubbles spaced gently around the canvas periphery
 const INITIAL_BUBBLES: SoundBubble[] = [
-  // Top quadrant
-  { id: 'b1', name: 'launch.wav', tag: 'Boot', audioSrc: '/sounds/launch.wav', x: 8, y: 15, size: 120, floatDelay: '0s' },
-  { id: 'b2', name: 'dialup.mp3', tag: 'Search', audioSrc: '/sounds/dialup.mp3', x: 23, y: 12, size: 128, floatDelay: '1.2s' },
-  { id: 'b3', name: 'bluetooth.mp3', tag: 'MCP', audioSrc: '/sounds/the-bluetooth-device-its-connected-succesfull.mp3', x: 42, y: 14, size: 135, floatDelay: '2.4s' },
-  { id: 'b4', name: 'levelup.mp3', tag: 'Plugin', audioSrc: '/sounds/levelup.mp3', x: 61, y: 12, size: 125, floatDelay: '0.8s' },
-  { id: 'b5', name: 'dbz-teleport.mp3', tag: 'Subagent', audioSrc: '/sounds/dbz-teleport.mp3', x: 78, y: 15, size: 130, floatDelay: '1.9s' },
-  { id: 'b6', name: 'ring.wav', tag: 'Thinking', audioSrc: '/sounds/ring.wav', x: 91, y: 22, size: 115, floatDelay: '0.4s' },
+  // Top peripheral tier
+  { id: 'b1', name: 'launch.wav', tag: 'Boot', audioSrc: '/sounds/launch.wav', x: 6, y: 12, size: 66, floatDelay: '0s' },
+  { id: 'b2', name: 'dialup.mp3', tag: 'Search', audioSrc: '/sounds/dialup.mp3', x: 21, y: 9, size: 60, floatDelay: '1.2s' },
+  { id: 'b3', name: 'bluetooth.mp3', tag: 'MCP', audioSrc: '/sounds/the-bluetooth-device-its-connected-succesfull.mp3', x: 37, y: 11, size: 68, floatDelay: '2.4s' },
+  { id: 'b4', name: 'levelup.mp3', tag: 'Plugin', audioSrc: '/sounds/levelup.mp3', x: 53, y: 8, size: 62, floatDelay: '0.8s' },
+  { id: 'b5', name: 'dbz-teleport.mp3', tag: 'Agent', audioSrc: '/sounds/dbz-teleport.mp3', x: 69, y: 10, size: 66, floatDelay: '1.9s' },
+  { id: 'b6', name: 'ring.wav', tag: 'Thinking', audioSrc: '/sounds/ring.wav', x: 84, y: 8, size: 58, floatDelay: '0.4s' },
+  { id: 'b7', name: 'fahhh.mp3', tag: 'Shock', audioSrc: '/sounds/fahhhhhhhhhhhhhh.mp3', x: 94, y: 13, size: 64, floatDelay: '1.7s' },
 
-  // Middle sides
-  { id: 'b7', name: 'fahhh.mp3', tag: 'Shock', audioSrc: '/sounds/fahhhhhhhhhhhhhh.mp3', x: 6, y: 38, size: 125, floatDelay: '1.7s' },
-  { id: 'b8', name: 'confetti.mp3', tag: 'Commit', audioSrc: '/sounds/confetti-pop-sound-effect.mp3', x: 18, y: 46, size: 120, floatDelay: '2.8s' },
-  { id: 'b9', name: 'magic-spell.mp3', tag: 'MCP Tool', audioSrc: '/sounds/magic-reveal-audio.mp3', x: 82, y: 44, size: 130, floatDelay: '0.6s' },
-  { id: 'b10', name: 'fairy-sparkle.mp3', tag: 'Skill', audioSrc: '/sounds/fairy-sparkle.mp3', x: 93, y: 50, size: 125, floatDelay: '2.1s' },
+  // Far left periphery
+  { id: 'b8', name: 'confetti.mp3', tag: 'Commit', audioSrc: '/sounds/confetti-pop-sound-effect.mp3', x: 4, y: 35, size: 64, floatDelay: '2.8s' },
+  { id: 'b9', name: 'keyboard.mp3', tag: 'Bash', audioSrc: '/sounds/keyboard-click.mp3', x: 12, y: 48, size: 68, floatDelay: '2.5s' },
+  { id: 'b10', name: 'mario-coin.mp3', tag: 'Compact', audioSrc: '/sounds/mario_coin_sound.mp3', x: 5, y: 64, size: 60, floatDelay: '0.9s' },
+  { id: 'b11', name: 'fahhh.mp3', tag: 'Error', audioSrc: '/sounds/fahhhhhhhhhhhhhh.mp3', x: 13, y: 76, size: 64, floatDelay: '1.4s' },
 
-  // Lower-middle sides
-  { id: 'b11', name: 'mario-coin.mp3', tag: 'Compact', audioSrc: '/sounds/mario_coin_sound.mp3', x: 7, y: 62, size: 125, floatDelay: '0.9s' },
-  { id: 'b12', name: 'keyboard.mp3', tag: 'Bash', audioSrc: '/sounds/keyboard-click.mp3', x: 20, y: 72, size: 120, floatDelay: '2.5s' },
-  { id: 'b13', name: 'metal-gear.mp3', tag: 'Alert', audioSrc: '/sounds/metal-gear-alert.mp3', x: 80, y: 68, size: 130, floatDelay: '1.4s' },
-  { id: 'b14', name: 'doorbell.mp3', tag: 'Permission', audioSrc: '/sounds/door-bell-sound-effect.mp3', x: 92, y: 72, size: 125, floatDelay: '0.3s' },
+  // Far right periphery
+  { id: 'b12', name: 'magic-spell.mp3', tag: 'Tool', audioSrc: '/sounds/magic-reveal-audio.mp3', x: 95, y: 34, size: 64, floatDelay: '0.6s' },
+  { id: 'b13', name: 'fairy-sparkle.mp3', tag: 'Skill', audioSrc: '/sounds/fairy-sparkle.mp3', x: 87, y: 48, size: 68, floatDelay: '2.1s' },
+  { id: 'b14', name: 'metal-gear.mp3', tag: 'Alert', audioSrc: '/sounds/metal-gear-alert.mp3', x: 95, y: 63, size: 60, floatDelay: '1.4s' },
+  { id: 'b15', name: 'doorbell.mp3', tag: 'Prompt', audioSrc: '/sounds/door-bell-sound-effect.mp3', x: 88, y: 75, size: 66, floatDelay: '0.3s' },
 
-  // Bottom quadrant
-  { id: 'b15', name: 'victory-ding.mp3', tag: 'Complete', audioSrc: '/sounds/ding-sound-effect-1.mp3', x: 12, y: 84, size: 135, floatDelay: '1.8s' },
-  { id: 'b16', name: 'gta-passed.mp3', tag: 'Reward', audioSrc: '/sounds/gta-san-andreas-mission-complete.mp3', x: 29, y: 85, size: 130, floatDelay: '0.7s' },
-  { id: 'b17', name: 'timer.mp3', tag: 'Ponder', audioSrc: '/sounds/timer.mp3', x: 47, y: 86, size: 115, floatDelay: '2.3s' },
-  { id: 'b18', name: 'windows-xp.mp3', tag: 'Nostalgia', audioSrc: '/sounds/windows-xp-startup.mp3', x: 65, y: 85, size: 130, floatDelay: '1.1s' },
-  { id: 'b19', name: 'cs-go.mp3', tag: 'Hype', audioSrc: '/sounds/counter-strike-ok-lets-go.mp3', x: 83, y: 86, size: 125, floatDelay: '2.6s' },
+  // Bottom peripheral tier
+  { id: 'b16', name: 'victory-ding.mp3', tag: 'Complete', audioSrc: '/sounds/ding-sound-effect-1.mp3', x: 6, y: 90, size: 66, floatDelay: '1.8s' },
+  { id: 'b17', name: 'gta-passed.mp3', tag: 'Reward', audioSrc: '/sounds/gta-san-andreas-mission-complete.mp3', x: 22, y: 92, size: 60, floatDelay: '0.7s' },
+  { id: 'b18', name: 'timer.mp3', tag: 'Ponder', audioSrc: '/sounds/timer.mp3', x: 38, y: 93, size: 68, floatDelay: '2.3s' },
+  { id: 'b19', name: 'windows-xp.mp3', tag: 'Classic', audioSrc: '/sounds/windows-xp-startup.mp3', x: 54, y: 93, size: 62, floatDelay: '1.1s' },
+  { id: 'b20', name: 'cs-go.mp3', tag: 'Hype', audioSrc: '/sounds/counter-strike-ok-lets-go.mp3', x: 70, y: 92, size: 66, floatDelay: '2.6s' },
+  { id: 'b21', name: 'pro-tool.mp3', tag: 'Mutate', audioSrc: '/sounds/pro-tool-call.mp3', x: 86, y: 90, size: 60, floatDelay: '1.5s' },
 ]
 
 export default function StudioPage() {
@@ -77,143 +80,159 @@ export default function StudioPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  // Stop audio on unmount
-  useEffect(() => {
-    return () => {
+  // Handle bubble play / pause / glow
+  const handleBubbleClick = (bubble: SoundBubble) => {
+    if (activeBubbleId === bubble.id) {
+      // Toggle off / pause
       if (audioRef.current) {
         audioRef.current.pause()
-        audioRef.current = null
+        audioRef.current.currentTime = 0
       }
-    }
-  }, [])
-
-  const handleBubbleClick = (bubble: SoundBubble) => {
-    // If currently playing this bubble, pause it
-    if (activeBubbleId === bubble.id && audioRef.current && !audioRef.current.paused) {
-      audioRef.current.pause()
       setActiveBubbleId(null)
       setActiveColor(null)
       return
     }
 
-    // Stop existing audio if playing
-    if (audioRef.current) {
-      audioRef.current.pause()
-      audioRef.current = null
-    }
-
-    // Pick a random vibrant color from palette
+    // Pick a random vibrant neon glow color
     const randomColor = GLOW_PALETTE[Math.floor(Math.random() * GLOW_PALETTE.length)]
     setActiveColor(randomColor)
     setActiveBubbleId(bubble.id)
 
-    const audio = new Audio(bubble.audioSrc)
-    audio.volume = 0.7
-    audioRef.current = audio
-
-    audio.onended = () => {
-      setActiveBubbleId(null)
-      setActiveColor(null)
+    if (audioRef.current) {
+      audioRef.current.pause()
     }
 
-    audio.onerror = () => {
-      setActiveBubbleId(null)
-      setActiveColor(null)
-    }
+    const sound = new Audio(bubble.audioSrc)
+    audioRef.current = sound
+    sound.volume = 0.85
 
-    audio.play().catch(() => {
+    sound.play().catch((err) => {
+      console.warn('Audio playback failed:', err)
       setActiveBubbleId(null)
       setActiveColor(null)
     })
+
+    sound.onended = () => {
+      setActiveBubbleId(null)
+      setActiveColor(null)
+    }
   }
 
-  // Handle bringing your own audio (File upload / drag-and-drop)
+  // Handle drag and drop files to spawn new bubbles
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('audio/'))
+    if (!files.length) return
+
+    spawnBubblesFromFiles(files, e.clientX, e.clientY)
+  }
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files || files.length === 0) return
+    const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith('audio/'))
+    if (!files.length) return
+    spawnBubblesFromFiles(files)
+  }
 
-    Array.from(files).forEach((file, index) => {
+  const spawnBubblesFromFiles = (files: File[], clickX?: number, clickY?: number) => {
+    const newBubbles: SoundBubble[] = files.map((file, idx) => {
       const url = URL.createObjectURL(file)
-      const randomColor = GLOW_PALETTE[Math.floor(Math.random() * GLOW_PALETTE.length)]
+      // Delicate size around 60-70px
+      const size = Math.floor(Math.random() * 12) + 60
 
-      // Generate pleasant random scatter coordinates
-      const angle = Math.random() * Math.PI * 2
-      const distance = 30 + Math.random() * 25 // 30% to 55% from center
-      const posX = Math.max(8, Math.min(88, 50 + Math.cos(angle) * distance))
-      const posY = Math.max(12, Math.min(88, 50 + Math.sin(angle) * distance))
+      let x: number
+      let y: number
 
-      const newBubble: SoundBubble = {
-        id: `custom-${Date.now()}-${index}`,
-        name: file.name,
-        tag: 'Uploaded',
-        audioSrc: url,
-        x: Math.round(posX),
-        y: Math.round(posY),
-        size: 135,
-        floatDelay: `${(Math.random() * 2).toFixed(1)}s`,
-        isCustom: true,
+      if (clickX && clickY) {
+        x = Math.max(8, Math.min(92, Math.round((clickX / window.innerWidth) * 100) + (idx * 5 - 10)))
+        y = Math.max(12, Math.min(88, Math.round((clickY / window.innerHeight) * 100) + (idx * 5 - 10)))
+      } else {
+        // Spawn randomly along the safe peripheral zone
+        x = Math.random() > 0.5 ? Math.floor(Math.random() * 20) + 6 : Math.floor(Math.random() * 20) + 74
+        y = Math.floor(Math.random() * 70) + 15
       }
 
-      setBubbles((prev) => [newBubble, ...prev])
+      return {
+        id: `custom-${Date.now()}-${idx}`,
+        name: file.name,
+        tag: 'Custom',
+        audioSrc: url,
+        x,
+        y,
+        size,
+        floatDelay: `${(idx * 0.4).toFixed(1)}s`,
+        isCustom: true,
+      }
     })
 
-    // Reset input
-    if (fileInputRef.current) fileInputRef.current.value = ''
+    setBubbles((prev) => [...prev, ...newBubbles])
   }
 
-  // Export custom sound pack (.zip)
+  // Export custom soundpack zip
   const handleExportZip = async () => {
     setIsExporting(true)
     try {
       const zip = new JSZip()
       const soundsFolder = zip.folder('sounds')
 
-      // Include all sound clips currently active in bubbles
-      const manifest: Record<string, string> = {}
-      for (const b of bubbles.slice(0, 10)) {
+      const manifestEvents: Record<string, string> = {}
+
+      for (let i = 0; i < bubbles.length; i++) {
+        const b = bubbles[i]
+        const cleanName = b.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+
         try {
-          const resp = await fetch(b.audioSrc)
-          const blob = await resp.blob()
-          const fileName = b.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-          soundsFolder?.file(fileName, blob)
-          manifest[b.tag.toLowerCase()] = `sounds/${fileName}`
-        } catch {}
+          const res = await fetch(b.audioSrc)
+          const blob = await res.blob()
+          soundsFolder?.file(cleanName, blob)
+          manifestEvents[`event_${i + 1}_${b.tag.toLowerCase()}`] = cleanName
+        } catch {
+          // If remote fetch fails, skip
+        }
       }
 
-      zip.file(
-        'package.json',
-        JSON.stringify(
-          {
-            name: packName.toLowerCase().replace(/\s+/g, '-'),
-            version: '1.0.0',
-            description: 'Custom acoustic soundpack built in Claudetones Studio',
-            events: manifest,
-          },
-          null,
-          2
-        )
-      )
+      // Add pack manifest
+      const manifest = {
+        name: packName || 'custom-pack',
+        version: '1.0.0',
+        author: 'claudetones-community',
+        description: 'Custom sound pack created in Claudetones Studio',
+        events: manifestEvents,
+      }
 
-      const content = await zip.generateAsync({ type: 'blob' })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(content)
-      link.download = `${packName.toLowerCase().replace(/\s+/g, '-')}.zip`
-      link.click()
+      zip.file('pack.json', JSON.stringify(manifest, null, 2))
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' })
+      const downloadUrl = URL.createObjectURL(zipBlob)
+      const a = document.createElement('a')
+      a.href = downloadUrl
+      a.download = `${packName || 'custom-pack'}.zip`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(downloadUrl)
+    } catch (err) {
+      console.error('Export error:', err)
+      alert('Failed to package sound pack. Please try again.')
     } finally {
       setIsExporting(false)
+      setIsPackDrawerOpen(false)
     }
   }
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0d0c0a] text-on-surface flex flex-col font-sans selection:bg-primary-container selection:text-on-primary-container overflow-hidden">
-      {/* Subtle Architectural Grid Pattern & Ambient Studio Lights */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none [mask-image:radial-gradient(ellipse_80%_70%_at_50%_50%,#000_20%,transparent_85%)]" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[550px] bg-primary-container/10 blur-[180px] pointer-events-none rounded-full" />
-      <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-purple-500/5 blur-[150px] pointer-events-none rounded-full" />
-      <div className="absolute bottom-10 right-10 w-[450px] h-[450px] bg-blue-500/5 blur-[160px] pointer-events-none rounded-full" />
+    <div
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={handleDrop}
+      className="relative min-h-screen bg-[#0e0d0c] text-on-surface flex flex-col font-sans overflow-hidden selection:bg-primary-container selection:text-on-primary-container"
+    >
+      {/* Architectural Background Grid & Ambient Studio Lighting */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary-container/10 blur-[180px] pointer-events-none rounded-full" />
+      <div className="absolute -top-32 -left-32 w-[450px] h-[450px] bg-outline-variant/10 blur-[140px] pointer-events-none rounded-full" />
+      <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-primary/10 blur-[150px] pointer-events-none rounded-full" />
 
-      {/* ================= TOP NAVIGATION BAR ================= */}
-      <header className="relative z-40 w-full bg-[#141210]/80 backdrop-blur-md border-b border-[#2E2B28]/60">
+      {/* ================= HEADER NAVIGATION ================= */}
+      <header className="sticky top-0 z-50 w-full bg-[#141210]/90 backdrop-blur-md border-b border-[#2E2B28]">
         <div className="h-16 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
@@ -221,7 +240,10 @@ export default function StudioPage() {
                 <span className="material-symbols-outlined text-[19px]">graphic_eq</span>
               </div>
               <span className="font-serif text-xl tracking-tight font-medium text-on-surface">
-                claudetones <span className="font-sans text-xs px-2 py-0.5 rounded-full bg-primary-container/20 text-primary-container font-mono ml-1">Studio</span>
+                claudetones
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-primary-container/20 text-primary-container font-semibold border border-primary-container/30">
+                Studio
               </span>
             </Link>
 
@@ -257,18 +279,18 @@ export default function StudioPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed font-label-md text-xs font-mono border border-outline-variant/30 transition-all cursor-pointer shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed text-xs font-mono transition-colors border border-outline-variant/30 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[16px] text-primary-container">upload</span>
+              <span className="material-symbols-outlined text-[15px] text-primary-container">upload</span>
               <span>Upload Sounds</span>
             </button>
 
             <button
               type="button"
               onClick={() => setIsPackDrawerOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary font-label-md text-xs font-medium transition-all cursor-pointer shadow-md"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-label-md text-xs hover:bg-primary transition-all duration-200 shadow-md font-medium cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[16px]">download</span>
+              <span className="material-symbols-outlined text-[15px]">download</span>
               <span>Export Soundpack</span>
             </button>
 
@@ -276,7 +298,7 @@ export default function StudioPage() {
               href={GITHUB_URL}
               target="_blank"
               rel="noreferrer"
-              className="p-2 rounded-lg bg-surface-container text-tertiary hover:text-on-surface transition-colors"
+              className="p-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed transition-colors border border-outline-variant/30"
               title="GitHub Repository"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -310,13 +332,13 @@ export default function StudioPage() {
           </div>
 
           {/* Exact User Requested Heading */}
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-on-surface tracking-tight leading-[1.15] mb-5">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-on-surface tracking-tight leading-[1.18] mb-5">
             Bring your audio and develop sound packs in the{' '}
             <span className="italic text-primary-container font-serif">Claudetones Studio</span>.
           </h1>
 
           <p className="font-body-md text-body-md sm:text-body-lg text-tertiary max-w-xl mx-auto leading-relaxed mb-8">
-            Click any floating glass bubble below to audition, pause, and light up in radiant color.
+            Click any floating glass bubble to audition, pause, and light up in radiant color.
             Drag &amp; drop your own files anywhere to spawn custom bubbles.
           </p>
 
@@ -367,56 +389,55 @@ export default function StudioPage() {
                   animationDelay: b.floatDelay,
                   borderColor: isPlaying && activeColor ? activeColor.border : undefined,
                   boxShadow: isPlaying && activeColor
-                    ? `0 0 50px ${activeColor.glow}, inset 0 0 25px ${activeColor.glow}`
+                    ? `0 0 35px ${activeColor.glow}, inset 0 0 15px ${activeColor.glow}`
                     : undefined,
                   backgroundColor: isPlaying && activeColor
                     ? activeColor.bg
                     : undefined,
                 }}
-                className={`pointer-events-auto absolute rounded-full backdrop-blur-xl border transition-all duration-300 flex flex-col items-center justify-center p-3 select-none cursor-pointer group hover:scale-105 active:scale-95 ${
+                className={`pointer-events-auto absolute rounded-full backdrop-blur-lg border transition-all duration-300 flex flex-col items-center justify-center p-1.5 select-none cursor-pointer group hover:scale-110 active:scale-95 ${
                   isPlaying
-                    ? 'scale-110 z-30 ring-4 ring-white/10'
-                    : 'bg-white/[0.04] border-white/10 hover:border-white/30 hover:bg-white/[0.08] shadow-2xl z-10'
+                    ? 'scale-115 z-30 ring-2 ring-white/20'
+                    : 'bg-white/[0.03] border-white/10 hover:border-white/30 hover:bg-white/[0.08] shadow-lg z-10'
                 }`}
+                title={`Audition ${b.name} (${b.tag})`}
               >
-                {/* Active Pulsing Ripple Ring when lit up */}
+                {/* Active Pulsing Ring */}
                 {isPlaying && activeColor && (
                   <span
                     aria-hidden="true"
                     style={{ borderColor: activeColor.border }}
-                    className="absolute -inset-2 rounded-full border-2 animate-ping opacity-60 pointer-events-none"
+                    className="absolute -inset-1.5 rounded-full border-2 animate-ping opacity-60 pointer-events-none"
                   />
                 )}
 
                 {/* Animated Equalizer or Play Icon */}
-                <div className="mb-1 text-on-surface">
+                <div className="text-on-surface flex items-center justify-center">
                   {isPlaying ? (
-                    <span className="inline-flex items-end gap-1 h-4 w-4" aria-hidden="true">
-                      <span className="w-1 bg-current rounded-full animate-eq-1" />
-                      <span className="w-1 bg-current rounded-full animate-eq-2" />
-                      <span className="w-1 bg-current rounded-full animate-eq-3" />
+                    <span className="inline-flex items-end gap-0.5 h-3 w-3" aria-hidden="true">
+                      <span className="w-0.5 bg-current rounded-full animate-eq-1" />
+                      <span className="w-0.5 bg-current rounded-full animate-eq-2" />
+                      <span className="w-0.5 bg-current rounded-full animate-eq-3" />
                     </span>
                   ) : (
-                    <span className="material-symbols-outlined text-[20px] text-primary-container group-hover:scale-110 transition-transform">
+                    <span className="material-symbols-outlined text-[16px] text-primary-container group-hover:scale-110 transition-transform">
                       play_circle
                     </span>
                   )}
                 </div>
 
-                {/* Sound Name */}
+                {/* Sound Name (Compact & delicate) */}
                 <div
                   style={{ color: isPlaying && activeColor ? activeColor.text : undefined }}
-                  className="font-code text-[11px] font-medium text-tertiary-fixed text-center leading-tight truncate max-w-[90%] px-1"
+                  className="font-code text-[9px] font-medium text-tertiary-fixed text-center leading-none truncate max-w-[90%] px-0.5 mt-0.5"
                 >
                   {b.name}
                 </div>
 
-                {/* Event Category Tag */}
-                <div className="mt-1">
-                  <span className="text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-outline group-hover:text-on-surface transition-colors">
-                    {b.tag}
-                  </span>
-                </div>
+                {/* Event Category Micro-Tag */}
+                <span className="text-[7.5px] font-mono uppercase tracking-wider text-outline group-hover:text-on-surface transition-colors leading-none mt-0.5 scale-90">
+                  {b.tag}
+                </span>
               </button>
             )
           })}

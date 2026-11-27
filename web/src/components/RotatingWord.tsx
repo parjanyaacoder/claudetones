@@ -25,10 +25,9 @@ export default function RotatingWord() {
   const [isDeleting, setIsDeleting] = useState(false)
 
   const currentWord = WORDS[wordIndex]
+  const fullText = currentWord.text
 
   useEffect(() => {
-    const fullText = currentWord.text
-
     // Typing speed: 70ms forward, 35ms backspacing
     const typingSpeed = isDeleting ? 35 : 70
 
@@ -45,7 +44,7 @@ export default function RotatingWord() {
       const nextWordTimer = setTimeout(() => {
         setIsDeleting(false)
         setWordIndex((prev) => (prev + 1) % WORDS.length)
-      }, 200)
+      }, 250)
       return () => clearTimeout(nextWordTimer)
     }
 
@@ -56,20 +55,33 @@ export default function RotatingWord() {
     }, typingSpeed)
 
     return () => clearTimeout(timer)
-  }, [displayText, isDeleting, currentWord])
+  }, [displayText, isDeleting, fullText])
+
+  // Characters remaining to complete the current word (rendered invisibly to hold layout space)
+  const remainingText = fullText.slice(displayText.length)
 
   return (
-    // Fixed-width left-aligned slot (Aceternity UI style):
-    // 1. Surrounding headline text stays 100% frozen in place (zero horizontal shift/jitter)
-    // 2. whitespace-nowrap prevents words and cursor from ever breaking onto a second line
-    <span className="inline-block text-left align-baseline whitespace-nowrap min-w-[7.6em] sm:min-w-[8.2em] md:min-w-[8.6em]">
+    // Natural word-fit container:
+    // 1. Reserves the exact width of the active word using invisible placeholder characters
+    // 2. Zero horizontal jitter during typing or backspacing (width is strictly constant for the word)
+    // 3. Zero extra dead-space padding on the right when word finishes typing
+    // 4. Guarantees the entire headline is mathematically centered on screen at all times!
+    <span className="inline-block relative text-left align-baseline whitespace-nowrap">
       <span className={`inline font-serif italic ${currentWord.color} transition-colors duration-200`}>
         {displayText}
       </span>
+      {/* Blinking typewriter cursor positioned directly after the typed letters */}
       <span
         aria-hidden="true"
-        className="inline-block w-[2.5px] h-[0.82em] ml-0.5 bg-primary-container align-baseline animate-pulse font-normal not-italic rounded-full"
+        className="inline-block w-[2.5px] h-[0.82em] ml-0.5 mr-0.5 bg-primary-container align-baseline animate-pulse font-normal not-italic rounded-full"
       />
+      {/* Invisible layout placeholder for the rest of this word */}
+      <span
+        aria-hidden="true"
+        className="opacity-0 select-none pointer-events-none font-serif italic"
+      >
+        {remainingText}
+      </span>
     </span>
   )
 }

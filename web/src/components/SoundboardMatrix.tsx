@@ -357,7 +357,7 @@ export default function SoundboardMatrix() {
 
   return (
     <section
-      className="min-h-[calc(100vh-4rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-10"
+      className="max-w-7xl mx-auto px-6 lg:px-12 pt-4 pb-16"
       id="soundboard-matrix"
     >
       {/* Header and Pack Selector Pills */}

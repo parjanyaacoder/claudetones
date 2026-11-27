@@ -123,7 +123,7 @@ export default function Home() {
           </div>
 
           {/* Headline with Zero-Jitter Single-Line Typewriter (Aceternity UI style) */}
-          <h1 className="font-headline-lg text-[1.35rem] xs:text-[1.6rem] sm:text-[2rem] md:text-[2.4rem] lg:text-[2.8rem] xl:text-[3.1rem] text-on-surface tracking-tight leading-tight mb-3.5 whitespace-nowrap w-full text-center">
+          <h1 className="font-headline-lg text-[1.25rem] xs:text-[1.5rem] sm:text-[1.85rem] md:text-[2.2rem] lg:text-[2.6rem] xl:text-[2.9rem] text-on-surface tracking-tight leading-tight mb-3.5 whitespace-nowrap w-full text-center">
             Give your Claude Code sounds on every <RotatingWord />
           </h1>
 
