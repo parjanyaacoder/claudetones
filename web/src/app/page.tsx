@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import RotatingWord from '@/components/RotatingWord'
-import SoundMarquee from '@/components/SoundMarquee'
 import DesktopSimulation from '@/components/DesktopSimulation'
 import SoundboardMatrix from '@/components/SoundboardMatrix'
 import SoundPackStudio from '@/components/SoundPackStudio'
@@ -13,16 +12,12 @@ import { GITHUB_URL } from '@/lib/catalog'
 export default function Home() {
   const [copied, setCopied] = useState(false)
   const [bottomCopied, setBottomCopied] = useState(false)
-  const [installMethod, setInstallMethod] = useState<'plugin' | 'curl'>('plugin')
   const [faqOpen, setFaqOpen] = useState<{ [key: number]: boolean }>({ 0: true })
 
   const PLUGIN_ONE_LINER = 'claude plugin marketplace add parjanyaacoder/claudetones && claude plugin install claudetones'
-  const CURL_ONE_LINER = 'curl -fsSL https://claudetones.vercel.app/install.sh | bash'
-
-  const activeCommand = installMethod === 'plugin' ? PLUGIN_ONE_LINER : CURL_ONE_LINER
 
   const copyCliCommand = () => {
-    navigator.clipboard.writeText(activeCommand)
+    navigator.clipboard.writeText(PLUGIN_ONE_LINER)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -138,43 +133,13 @@ export default function Home() {
             screen.
           </p>
 
-          {/* Terminal Command Snippet Box with Shiny Border (Aceternity / Magic UI style) */}
+          {/* Terminal Command Snippet Box */}
           <div className="relative group w-full max-w-2xl mb-8">
-            {/* Install Method Tabs */}
-            <div className="flex items-center justify-between px-2 mb-2">
-              <div className="inline-flex p-1 rounded-xl bg-surface-container-low border border-outline-variant/30 text-xs font-mono">
-                <button
-                  type="button"
-                  onClick={() => setInstallMethod('plugin')}
-                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                    installMethod === 'plugin'
-                      ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
-                      : 'text-tertiary hover:text-on-surface'
-                  }`}
-                >
-                  Claude Plugin CLI (Recommended)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setInstallMethod('curl')}
-                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                    installMethod === 'curl'
-                      ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
-                      : 'text-tertiary hover:text-on-surface'
-                  }`}
-                >
-                  1-Line Shell Script
-                </button>
-              </div>
-
-              <span className="text-[11px] font-mono text-outline hidden sm:inline">Single-command execution</span>
-            </div>
-
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-container/40 via-outline-variant/30 to-primary-container/20 rounded-2xl blur-[2px] group-hover:blur-[6px] group-hover:from-primary-container group-hover:to-primary-container/60 transition-all duration-300 opacity-60 group-hover:opacity-100"></div>
-            <div className="relative bg-[#141210] rounded-xl p-3 pl-4 flex items-center justify-between border border-outline-variant/30 shadow-2xl gap-3">
+            <div className="absolute -inset-0.5 bg-primary-container/20 rounded-xl blur-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+            <div className="relative bg-[#141210] rounded-xl p-3 pl-4 flex items-center justify-between border border-[#2E2B28] group-hover:border-primary-container/40 shadow-xl transition-all duration-200 gap-3">
               <div className="flex items-center gap-3 font-code text-xs sm:text-sm text-on-surface overflow-hidden min-w-0">
                 <span className="text-primary-container select-none font-bold shrink-0">$</span>
-                <span className="truncate font-medium text-tertiary-fixed">{activeCommand}</span>
+                <span className="truncate font-medium text-tertiary-fixed">{PLUGIN_ONE_LINER}</span>
               </div>
               <button
                 type="button"
@@ -216,8 +181,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= TRENDING MYINSTANTS AUDIO MARQUEE (MAGIC UI STYLE) ================= */}
-        <SoundMarquee />
+        {/* Marquee removed per design adjustment */}
 
         {/* ================= SCREEN 2: HEADING & INTERACTIVE SIMULATION ================= */}
         <DesktopSimulation />
