@@ -18,8 +18,6 @@ export default function StudioPage() {
   }, [])
   // Navigation & Step state: 1 = Select Sounds, 2 = Map to Events, 3 = Export & Publish
   const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1)
-  const [activeTab, setActiveTab] = useState<'studio' | 'soundboard' | 'community' | 'docs'>('studio')
-  const [engineStatus, setEngineStatus] = useState<string>('sine_440_synth')
   const [playingToneId, setPlayingToneId] = useState<string | null>(null)
 
   // Catalog filtering & selection
@@ -67,16 +65,13 @@ export default function StudioPage() {
     if (playingToneId === tone.id) {
       studioSynth.stop()
       setPlayingToneId(null)
-      setEngineStatus('sine_440_synth')
       return
     }
 
     setPlayingToneId(tone.id)
-    setEngineStatus(`${tone.name} • ${tone.frequency}Hz`)
 
     studioSynth.playTone(tone, () => {
       setPlayingToneId(null)
-      setEngineStatus('sine_440_synth')
     })
   }
 
@@ -197,9 +192,8 @@ export default function StudioPage() {
       <div className="fixed top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[550px] bg-primary-container/10 blur-[180px] pointer-events-none rounded-full" />
 
       {/* ================= FULL-WIDTH TOP NAVIGATION BAR ================= */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#25221F] bg-[#161413]/95 backdrop-blur-md select-none">
-        <div className="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          {/* Left Logo + CLI/GUI Toggle */}
+      <header className="sticky top-0 z-50 w-full bg-[#181615]/90 backdrop-blur-md border-b border-[#2E2B28] select-none">
+        <div className="h-16 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
               <div className="w-8 h-8 rounded-lg bg-primary-container/20 border border-primary-container/40 flex items-center justify-center text-primary-container group-hover:scale-105 transition-transform">
@@ -209,115 +203,84 @@ export default function StudioPage() {
                 claudetones
               </span>
             </Link>
+
+            <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
+              <Link
+                href="/#claude-desktop-demo"
+                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
+              >
+                Interactive App
+              </Link>
+              <Link
+                href="/#soundboard-matrix"
+                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
+              >
+                Soundboard
+              </Link>
+              <Link
+                href="/studio"
+                className="px-3 py-1.5 rounded-lg bg-surface-container text-primary-container transition-colors text-body-sm font-body-sm flex items-center gap-1.5 font-semibold"
+              >
+                <span>Pack Studio</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-primary-container/20 text-primary-container font-semibold">New</span>
+              </Link>
+              <Link
+                href="/#slash-commands"
+                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-body-sm font-body-sm"
+              >
+                Slash Commands
+              </Link>
+            </nav>
           </div>
 
-          {/* Center Tabs */}
-          <nav className="hidden md:flex items-center gap-1.5 text-xs font-mono">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab('studio')
-                setActiveStep(1)
-              }}
-              className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                activeTab === 'studio'
-                  ? 'bg-[#26221F] text-primary-container font-semibold border border-primary-container/30 shadow-sm'
-                  : 'text-tertiary hover:text-on-surface hover:bg-[#1D1A18]'
-              }`}
-            >
-              Soundpack Studio
-            </button>
-            <Link
-              href="/#soundboard-matrix"
-              className="px-3.5 py-1.5 rounded-lg text-tertiary hover:text-on-surface hover:bg-[#1D1A18] transition-colors"
-            >
-              Soundboard Grid
-            </Link>
-            <Link
-              href="/#claude-desktop-demo"
-              className="px-3.5 py-1.5 rounded-lg text-tertiary hover:text-on-surface hover:bg-[#1D1A18] transition-colors"
-            >
-              Community Packs
-            </Link>
+          <div className="flex items-center gap-3">
             <a
               href={GITHUB_URL}
               target="_blank"
               rel="noreferrer"
-              className="px-3.5 py-1.5 rounded-lg text-tertiary hover:text-on-surface hover:bg-[#1D1A18] transition-colors"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary-fixed text-xs font-mono transition-colors border border-outline-variant/30"
             >
-              Docs
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                />
+              </svg>
+              <span>GitHub</span>
             </a>
-          </nav>
 
-          {/* Right Utilities */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Live Audio Engine Chip */}
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-[#1C1917] border border-[#2F2A26] text-[11px] font-mono text-tertiary">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#61C554] animate-pulse" />
-              <span className="text-[#8E8B85]">Engine:</span>
-              <span className="text-primary-container font-semibold truncate max-w-[130px]">
-                {engineStatus}
-              </span>
-              <span className="material-symbols-outlined text-[14px] text-primary-container">
-                graphic_eq
-              </span>
-            </div>
-
-            {/* Export CLI Soundpack Primary Button */}
             <button
               type="button"
               onClick={() => setActiveStep(3)}
-              className="px-3.5 py-1.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary-container font-mono text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+              className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all duration-200 shadow-md font-medium cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[14px]">terminal</span>
-              <span className="hidden xs:inline">Export CLI Soundpack</span>
+              Export Soundpack
             </button>
-
-            {/* Code button */}
-            <button
-              type="button"
-              onClick={() => setShowCliModal(true)}
-              className="p-1.5 rounded-lg bg-[#201D1A] hover:bg-[#2A2623] border border-[#332E2A] text-tertiary-fixed transition-colors cursor-pointer"
-              title="Inspect CLI Manifest"
-            >
-              <span className="material-symbols-outlined text-[16px]">code</span>
-            </button>
-
-            {/* User Avatar */}
-            <div className="w-7 h-7 rounded-full bg-primary-container/20 border border-primary-container/40 flex items-center justify-center text-primary-container text-xs font-mono font-bold">
-              C
-            </div>
           </div>
         </div>
       </header>
 
-      {/* ================= FULL-WIDTH SUB-HEADER COMPOSER STATUS BAR ================= */}
+      {/* ================= FULL-WIDTH SUB-HEADER 3-STEP STEPPER ================= */}
       <div className="w-full border-b border-[#201D1B] bg-[#141211] select-none">
-        <div className="h-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-2 overflow-x-auto">
-          {/* Left: Composer version */}
-          <div className="flex items-center gap-2 text-xs font-mono shrink-0">
-            <span className="w-2 h-2 rounded-full bg-primary-container" />
-            <span className="font-semibold text-on-surface">Soundpack Composer</span>
-            <span className="text-[10px] text-outline">v1.4.2-dev</span>
-          </div>
-
-          {/* Center 3-Step Stepper Pills */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="h-14 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4 overflow-x-auto">
+          {/* 3-Step Stepper Pills */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Step 1 */}
             <button
               type="button"
               onClick={() => setActiveStep(1)}
-              className={`px-3 py-1 rounded-full text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all flex items-center gap-2 cursor-pointer ${
                 activeStep === 1
-                  ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
-                  : 'bg-[#1C1917] text-tertiary hover:text-on-surface border border-[#2D2825]'
+                  ? "bg-primary-container text-on-primary-container font-semibold shadow-sm"
+                  : "bg-[#1C1917] text-tertiary hover:text-on-surface border border-[#2D2825]"
               }`}
             >
               <span>1</span>
               <span>Select Sounds</span>
               <span
                 className={`px-1.5 py-0.2 rounded-full text-[10px] ${
-                  activeStep === 1 ? 'bg-black/25 text-white' : 'bg-primary-container/20 text-primary-container'
+                  activeStep === 1 ? "bg-black/25 text-white" : "bg-primary-container/20 text-primary-container"
                 }`}
               >
                 {selectedIds.size}/26
@@ -330,10 +293,10 @@ export default function StudioPage() {
             <button
               type="button"
               onClick={() => setActiveStep(2)}
-              className={`px-3 py-1 rounded-full text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all flex items-center gap-2 cursor-pointer ${
                 activeStep === 2
-                  ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
-                  : 'bg-[#1C1917] text-tertiary hover:text-on-surface border border-[#2D2825]'
+                  ? "bg-primary-container text-on-primary-container font-semibold shadow-sm"
+                  : "bg-[#1C1917] text-tertiary hover:text-on-surface border border-[#2D2825]"
               }`}
             >
               <span>2</span>
@@ -346,14 +309,14 @@ export default function StudioPage() {
             <button
               type="button"
               onClick={() => setActiveStep(3)}
-              className={`px-3 py-1 rounded-full text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all flex items-center gap-2 cursor-pointer ${
                 activeStep === 3
-                  ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
-                  : 'bg-[#1C1917] text-tertiary hover:text-on-surface border border-[#2D2825]'
+                  ? "bg-primary-container text-on-primary-container font-semibold shadow-sm"
+                  : "bg-[#1C1917] text-tertiary hover:text-on-surface border border-[#2D2825]"
               }`}
             >
               <span>3</span>
-              <span>Export &amp; Publish</span>
+              <span>Export & Publish</span>
             </button>
           </div>
 
@@ -361,7 +324,7 @@ export default function StudioPage() {
           <button
             type="button"
             onClick={handleRandomize26}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#201D1A] hover:bg-[#2B2724] border border-[#352F2B] text-tertiary-fixed text-xs font-mono transition-colors shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#201D1A] hover:bg-[#2B2724] border border-[#352F2B] text-tertiary-fixed text-xs font-mono transition-colors shrink-0 cursor-pointer"
           >
             <span>🎲</span>
             <span>Random 26 Presets</span>
@@ -388,7 +351,7 @@ export default function StudioPage() {
             </h1>
 
             {/* Exact Subtitle from Stitch Screenshot */}
-            <p className="font-body-md text-sm sm:text-base text-tertiary max-w-xl mx-auto leading-relaxed mb-8">
+            <p className="font-body-md text-sm sm:text-base text-tertiary max-w-2xl mx-auto leading-relaxed mb-8">
               Compose bespoke acoustic textures for your terminal workflow. Select 26 tactile cues to map to your
               agent lifecycle events and export directly to CLI.
             </p>
@@ -795,25 +758,23 @@ export default function StudioPage() {
       )}
 
       {/* ================= FIXED BOTTOM FLOATING BAR ================= */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-xl px-4 pointer-events-none">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4 pointer-events-none">
         <div className="pointer-events-auto rounded-2xl bg-[#181513]/95 border border-[#332E2A] p-2.5 sm:p-3 shadow-[0_15px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl flex items-center justify-between gap-3">
           {/* Left: Selected count & Threshold Met badge */}
-          <div className="flex items-center gap-2.5 font-mono text-xs min-w-0">
+          <div className="flex items-center gap-2.5 font-mono text-xs shrink-0">
             <span className="material-symbols-outlined text-[18px] text-primary-container shrink-0">
               queue_music
             </span>
-            <div className="truncate">
-              <span className="font-bold text-on-surface">{selectedIds.size} / 26 Ready</span>
-              <span
-                className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-semibold ${
-                  selectedIds.size === 26
-                    ? 'bg-[#61C554]/20 text-[#61C554] border border-[#61C554]/30'
-                    : 'bg-primary-container/20 text-primary-container border border-primary-container/30'
-                }`}
-              >
-                {selectedIds.size === 26 ? 'Threshold Met' : `${selectedIds.size < 26 ? 'Select' : 'Adjust'} to 26`}
-              </span>
-            </div>
+            <span className="font-bold text-on-surface whitespace-nowrap">{selectedIds.size} / 26 Ready</span>
+            <span
+              className={`px-2 py-0.5 rounded text-[10px] font-semibold shrink-0 whitespace-nowrap ${
+                selectedIds.size === 26
+                  ? 'bg-[#61C554]/20 text-[#61C554] border border-[#61C554]/30'
+                  : 'bg-primary-container/20 text-primary-container border border-primary-container/30'
+              }`}
+            >
+              {selectedIds.size === 26 ? 'Threshold Met' : `${selectedIds.size}/26`}
+            </span>
           </div>
 
           {/* Right: Actions */}
